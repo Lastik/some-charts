@@ -117,7 +117,7 @@
                 if (dataSource != null) {
                     if (firstValue.constructor == Point) {
                         //Array of points.
-                        dataSource.sort(Point.compare);
+                        dataSource.sort(Point.compareByX);
                         dataSeries.ordered = true;
                     }
                     else if (firstValue.constructor == DataPoint) {
@@ -170,7 +170,7 @@
         this._stringLabels = newStringLabels
 
         this._isDirty = true;
-        
+
         //Notify about change in 'dataSource' property.
         this.propertyChanged.fire('dataSeries');
     }
@@ -239,7 +239,7 @@
                             result = new DataRect(value.x, value.y, 0, 0);
                         }
                         else {
-                            result.merge(new DataRect(value.x, value.y, 0, 0));
+                          result = result.merge(new DataRect(value.x, value.y, 0, 0));
                         }
                     }
                 }

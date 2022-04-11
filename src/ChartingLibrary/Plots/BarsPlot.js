@@ -263,7 +263,7 @@
         fillColor1.r += offset;
         fillColor1.g += offset;
         fillColor1.b += offset;
-                 
+
         fillColor1.r = Math.min(Math.round(fillColor1.r), 255);
         fillColor1.g = Math.min(Math.round(fillColor1.g), 255);
         fillColor1.b = Math.min(Math.round(fillColor1.b), 255);
@@ -305,7 +305,7 @@
 
         rect = new DataRect(rect.minX - w / 2, rect.minY, rect.width + w, rect.height);
         //Merge zero y coord with bounding rect.
-        rect.merge(new DataRect(rect.minX, 0, rect.width, 0));
+        rect = rect.merge(new DataRect(rect.minX, 0, rect.width, 0));
         return rect;
     }
 

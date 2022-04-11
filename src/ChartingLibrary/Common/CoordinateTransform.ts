@@ -1,5 +1,6 @@
 ﻿import {Range} from './Range';
-
+import {DataRect} from './DataRect';
+import {Point} from './Point';
 
 export class CoordinateTransform {
 
@@ -21,34 +22,37 @@ export class CoordinateTransform {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public dataToScreenY = function (value: number, visible: Range, screenHeight: number) {
+  public static dataToScreenY(value: number, visible: Range, screenHeight: number) {
     return screenHeight - CoordinateTransform.dataToScreenDim(value, visible, screenHeight);
   }
-  
+
   private static dataToScreenDim(value: number, visible: Range, screenDim: number) {
-    return (value - visible.getMin()) * screenDim / (visible.getMax() - visible.getMin());
+    return (value - visible.min) * screenDim / (visible.max - visible.getMin());
   }
 
-  CoordinateTransform.screenToDataX = function (value, visible, screenWidth) {
-    /// <summary>Transforms screen X coordinate to data X coordinate.</summary>
-    /// <param name="value" type="Number">Screen value.</param>
-    /// <param name="visible" type="Range">Visible data range</param>
-    /// <param name="screenWidth" type="Number">Screen width.</param>
-    /// <returns type="Number" />
-    return value * (visible.max - visible.min) / screenWidth + visible.min;
+  /**
+   * Transforms screen X coordinate to data X coordinate.
+   * @param {number} value - Screen value.
+   * @param {Range} visible - Visible data range
+   * @param {number} screenWidth - Screen width.
+   * @returns {number}
+   */
+  public static screenToDataX(value: number, visible: Range, screenWidth: number) {
+    return value * (visible.getMax() - visible.getMin()) / screenWidth + visible.getMin();
   }
 
-
-  CoordinateTransform.screenToDataY = function (value, visible, screenHeight) {
-    /// <summary>Transforms screen Y coordinate to data Y coordinate.</summary>
-    /// <param name="value" type="Number">Screen value.</param>
-    /// <param name="visible" type="Range">Visible data range</param>
-    /// <param name="screenHeight" type="Number">Screen height.</param>
-    /// <returns type="Number" />
+  /**
+   * Transforms screen Y coordinate to data Y coordinate.
+   * @param {number} value - Screen value.
+   * @param {Range} visible - Visible data range
+   * @param {number} screenHeight - Screen height.
+   * @returns {number}
+   */
+  public static screenToDataY(value: number, visible: Range, screenHeight: number) {
     return (screenHeight - value) * (visible.max - visible.min) / screenHeight + visible.min;
   }
 
-  CoordinateTransform.screenRegionToDataXY = function (value, visible, screenRegion) {
+  public static screenRegionToDataXY(value: number, visible: DataRect, screenRegion: DataRect) {
     /// <summary>Transforms screen XY coordinatse to data XY coordinates.</summary>
     /// <param name="value" type="Point">Screen value point.</param>
     /// <param name="visible" type="DataRect">Visible data rectangle</param>
