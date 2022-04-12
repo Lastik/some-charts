@@ -3,12 +3,12 @@
   /**
    * Point x coordinate.
    */
-  readonly x: number;
+  x: number;
 
   /**
    * Point y coordinate.
    */
-  readonly y: number;
+  y: number;
 
   /**
    * Creates point with x and y coordinates.
