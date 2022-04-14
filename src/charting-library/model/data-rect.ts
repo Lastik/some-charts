@@ -1,6 +1,6 @@
-﻿import {Range} from './Range';
-import {Point} from './Point';
-import {Size} from './Size';
+﻿import {Range} from './range';
+import {Point} from './point';
+import {Size} from './size';
 
 export class DataRect {
 

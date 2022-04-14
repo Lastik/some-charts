@@ -1,6 +1,6 @@
-﻿import {Range} from './Range';
-import {DataRect} from './DataRect';
-import {Point} from './Point';
+﻿import {Range} from '../model/range';
+import {DataRect} from '../model/data-rect';
+import {Point} from '../model/point';
 
 export class CoordinateTransform {
 
