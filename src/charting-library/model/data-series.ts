@@ -18,6 +18,7 @@ export class DataSeries<X> {
    * @param {boolean} ordered - Indicates whether DataSeries points are ordered or not.
    * @param {string} name - Data series name.
    * @param {string} color - Data series color.
+   * @template X
    */
   constructor(data: Array<Point<X>>, ordered: boolean, name: string, color: string) {
     this.data = data;

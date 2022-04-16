@@ -1,6 +1,10 @@
 import {EventBase} from "./event-base";
 
-export class ScrollEvent extends EventBase{
+export class ScrollEvent implements EventBase{
+  /**
+   * Event type;
+   */
+  readonly type: EventType;
   /**
    * Scroll delta.
    */
@@ -10,7 +14,7 @@ export class ScrollEvent extends EventBase{
    * @param {number} delta - Scroll delta.
    */
   constructor(delta: number){
-    super(EventType.Scrolling);
+    this.type = EventType.Scrolling;
     this.delta = delta;
   }
 }

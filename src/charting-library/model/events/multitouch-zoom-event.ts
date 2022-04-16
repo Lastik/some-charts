@@ -1,7 +1,13 @@
 ﻿import {DataRect} from "../data-rect";
 import {EventBase} from "./event-base";
 
-export class MultitouchZoomEvent extends EventBase{
+export class MultitouchZoomEvent implements EventBase {
+
+  /**
+   * Event type;
+   */
+  readonly type: EventType;
+
   /**
    * Rectangle for previous touch.
    */
@@ -18,7 +24,7 @@ export class MultitouchZoomEvent extends EventBase{
    * @param {DataRect} curRect - Rectangle for current touch.
    */
   constructor(prevRect: DataRect, curRect: DataRect){
-    super(EventType.MultitouchZooming);
+    this.type = EventType.MultitouchZooming;
     this.prevRect = prevRect;
     this.curRect = curRect;
   }

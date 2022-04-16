@@ -18,6 +18,7 @@ export class Point<X> {
    * Creates abstract point with y coordinate.
    * @param {X} x - Point x coordinate.
    * @param {number} y - Point y coordinate.
+   * @template X
    */
   constructor(x: X, y: number) {
     this.x = x;

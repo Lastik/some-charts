@@ -1,6 +1,12 @@
 ﻿import {EventBase} from "./event-base";
 
-export class DragEvent extends EventBase{
+export class DragEvent implements EventBase {
+
+  /**
+   * Event type;
+   */
+  readonly type: EventType;
+
   /**
    * Drag delta X.
    */
@@ -17,7 +23,7 @@ export class DragEvent extends EventBase{
    * @param {number} deltaY - Y coordinate of drag delta.
    */
   constructor(deltaX: number, deltaY: number){
-    super(EventType.Dragging);
+    this.type = EventType.Dragging;
     this.deltaX = deltaX;
     this.deltaY = deltaY;
   }
