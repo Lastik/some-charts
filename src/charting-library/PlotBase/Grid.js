@@ -56,11 +56,11 @@
                     for (var i = 0; i < horizontalTicks.length; i++) {
                         var tick = horizontalTicks[i];
 
-                        var start = new Point(
+                        var start = new NumericPoint(
                         MathHelper.optimizeValue(location.x),
                         MathHelper.optimizeValue(location.y + tick));
 
-                        var stop = new Point(
+                        var stop = new NumericPoint(
                         MathHelper.optimizeValue(location.x + size.width),
                         MathHelper.optimizeValue(location.y + tick));
 
@@ -73,11 +73,11 @@
                     for (var i = 0; i < verticalTicks.length; i++) {
                         var tick = verticalTicks[i];
 
-                        var start = new Point(
+                        var start = new NumericPoint(
                         MathHelper.optimizeValue(location.x + tick),
                         MathHelper.optimizeValue(location.y));
 
-                        var stop = new Point(
+                        var stop = new NumericPoint(
                         MathHelper.optimizeValue(location.x + tick),
                         MathHelper.optimizeValue(location.y + size.height));
 

@@ -13,7 +13,7 @@
         /// <param name="point" type="Point">Point to optimize.</param>
         /// <returns type="Point" />
         if (MathHelper.isMsIE) {
-            return new Point(
+            return new NumericPoint(
             MathHelper.optimizeValue(point.x),
             MathHelper.optimizeValue(point.y));
         }

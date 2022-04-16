@@ -1,6 +1,6 @@
 ﻿import {Range} from './range';
-import {Point} from './point';
 import {Size} from './size';
+import {NumericPoint} from './point/numeric-point';
 
 export class DataRect {
 
@@ -41,18 +41,18 @@ export class DataRect {
 
   /**
    * Left Top corner of data rectangle.
-   * @returns {Point}
+   * @returns {NumericPoint}
    */
-  getMinXMinY(): Point {
-    return new Point(this.minX, this.minY);
+  getMinXMinY(): NumericPoint {
+    return new NumericPoint(this.minX, this.minY);
   }
 
   /**
    * Right Bottom corner of data rectangle.
-   * @returns {Point}
+   * @returns {NumericPoint}
    */
-  getMaxXMaxY(): Point {
-    return new Point(this.minX + this.width, this.minY + this.height);
+  getMaxXMaxY(): NumericPoint {
+    return new NumericPoint(this.minX + this.width, this.minY + this.height);
   }
 
   /**
@@ -65,10 +65,10 @@ export class DataRect {
 
   /**
    * Returns data rectangle center.
-   * @returns {Point}
+   * @returns {NumericPoint}
    */
   getCenter() {
-    return new Point(this.minX + this.width / 2, this.minY + this.height / 2);
+    return new NumericPoint(this.minX + this.width / 2, this.minY + this.height / 2);
   }
 
   /**

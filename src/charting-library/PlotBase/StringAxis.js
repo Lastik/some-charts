@@ -138,7 +138,7 @@
         };
     }
 
-    StringAxis.prototype = new AxisBase(new Point(0, 0), new Range(0, 0, false), new Size(0, 0), Orientation.Horizontal);
+    StringAxis.prototype = new AxisBase(new NumericPoint(0, 0), new Range(0, 0, false), new Size(0, 0), Orientation.Horizontal);
 
     var p = StringAxis.prototype;
 

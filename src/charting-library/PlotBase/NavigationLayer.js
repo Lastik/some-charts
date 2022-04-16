@@ -50,7 +50,7 @@
                 if (e.touches.length == 1) {
                     var touch = event.targetTouches[0];
                     var navigationLayer = this.navigationLayer;
-                    navigationLayer._prevPoint = new Point(
+                    navigationLayer._prevPoint = new NumericPoint(
                     touch.pageX - navigationLayer.location.x,
                     touch.pageY - navigationLayer.location.y);
                 }
@@ -62,7 +62,7 @@
 
                     for (var i = 0; i < e.touches.length; i++) {
                         var t = e.touches[i];
-                        touchArray.push(new Point(t.pageX, t.pageY));
+                        touchArray.push(new NumericPoint(t.pageX, t.pageY));
                     }
                     navigationLayer._prevTouches = touchArray;
                 }
@@ -74,7 +74,7 @@
 
                 $(navigationLayer.getRenderer().getStage().getLayer('navigationLayer').canvas).css('cursor', 'move');
 
-                var prevPoint = new Point(e.pageX, e.pageY);
+                var prevPoint = new NumericPoint(e.pageX, e.pageY);
                 prevPoint.x -= navigationLayer.location.x;
                 prevPoint.y -= navigationLayer.location.y;
 
@@ -127,7 +127,7 @@
                 else if (e.touches.length == 1) {
                     var touch = event.targetTouches[0];
                     var navigationLayer = this.navigationLayer;
-                    navigationLayer._prevPoint = new Point(
+                    navigationLayer._prevPoint = new NumericPoint(
                     touch.pageX - navigationLayer.location.x,
                     touch.pageY - navigationLayer.location.y);
                 }
@@ -147,7 +147,7 @@
                 if (e.touches.length == 1) {
                     var navigationLayer = this.navigationLayer;
                     var touch = e.touches[0];
-                    var curPoint = new Point(touch.pageX, touch.pageY);
+                    var curPoint = new NumericPoint(touch.pageX, touch.pageY);
 
                     curPoint.x -= navigationLayer.location.x;
                     curPoint.y -= navigationLayer.location.y;
@@ -169,8 +169,8 @@
                         var t0 = e.touches[0];
                         var t1 = e.touches[1];
 
-                        var curTouch1 = new Point(t0.pageX, t0.pageY);
-                        var curTouch2 = new Point(t1.pageX, t1.pageY);
+                        var curTouch1 = new NumericPoint(t0.pageX, t0.pageY);
+                        var curTouch2 = new NumericPoint(t1.pageX, t1.pageY);
 
                         var prevTouch1 = navigationLayer._prevTouches[0];
                         var prevTouch2 = navigationLayer._prevTouches[1];
@@ -198,7 +198,7 @@
 
                     for (var i = 0; i < e.touches.length; i++) {
                         var touch = e.touches[i];
-                        touches.push(new Point(touch.pageX, touch.pageY));
+                        touches.push(new NumericPoint(touch.pageX, touch.pageY));
                     }
 
                     navigationLayer._prevTouches = touches;
@@ -207,7 +207,7 @@
             else {
                 if (navigationLayer._isMouseDown) {
                     var prevPoint = navigationLayer._prevPoint;
-                    var curPoint = new Point(e.pageX, e.pageY);
+                    var curPoint = new NumericPoint(e.pageX, e.pageY);
 
                     curPoint.x -= navigationLayer.location.x;
                     curPoint.y -= navigationLayer.location.y;

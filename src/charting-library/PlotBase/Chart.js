@@ -37,14 +37,14 @@
             enableNavigation = true;
 
         this._verticalAxis = new NumericAxis(location, dataRect.getVerticalRange(), new Size(null, size.height), Orientation.Vertical);
-        
+
         this._horizontalAxisType = horizontalAxisType;
 
         if (horizontalAxisType == AxisTypes.NumericAxis) {
-            this._horizontalAxis = new NumericAxis(new Point(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal);
+            this._horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal);
         }
         else if (horizontalAxisType == AxisTypes.StringAxis) {
-            this._horizontalAxis = new StringAxis(new Point(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal, null);
+            this._horizontalAxis = new StringAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal, null);
         }
         else {
             this._horizontalAxis = null;
@@ -166,14 +166,14 @@
 
         var chartAdditionalMarginRight = 0;
         var chartAdditionalMarginRightString = element.getAttribute('data-chart-additional-margin-right');
-        
+
         if (chartAdditionalMarginRightString != undefined) {
             chartAdditionalMarginRight = parseFloat(chartAdditionalMarginRightString);
-        } 
-        
+        }
+
         var chartAdditionalMarginBottom = 0;
         var chartAdditionalMarginBottomString = element.getAttribute('data-chart-additional-margin-bottom');
-        
+
         if (chartAdditionalMarginBottomString != undefined) {
             chartAdditionalMarginBottom = parseFloat(chartAdditionalMarginBottomString);
         }
@@ -183,7 +183,7 @@
         chartSize.width -= chartAdditionalMarginRight;
         chartSize.height -= chartAdditionalMarginBottom;
 
-        var chart = new Chart(new Point(customChartRenderMargin, customChartRenderMargin), chartSize, new DataRect(0, 0, 1, 1), horizontalAxisType, enableNavigation);
+        var chart = new Chart(new NumericPoint(customChartRenderMargin, customChartRenderMargin), chartSize, new DataRect(0, 0, 1, 1), horizontalAxisType, enableNavigation);
         chart.attach(renderer);
 
         if (enableNavigation) {
@@ -267,7 +267,7 @@
                     this._labelVerticalMargin = parseFloat(margin);
                 }
 
-                var labelLocation = new Point(this._location.x, this._location.y + this._labelVerticalMargin);
+                var labelLocation = new NumericPoint(this._location.x, this._location.y + this._labelVerticalMargin);
 
                 this._headerLabel = new RenderedLabel(header, headerFont, labelLocation, this._size.width, HorizontalAlignment.Center);
                 var foreground = container.getAttribute('data-header-foreground-color');
@@ -315,7 +315,7 @@
         if (legendOpacity != undefined) {
             this._legendOpacity = parseFloat(legendOpacity);
         }
-        
+
         if (offsetTop != undefined) {
             this._legendOffsetTop = parseFloat(offsetTop);
         }
@@ -359,7 +359,7 @@
             horizontalAxisHeight = this._horizontalAxis.getActualHeight();
         }
 
-        var locationWithOffset = new Point(this._location.x, this._location.y + labelOffsetY);
+        var locationWithOffset = new NumericPoint(this._location.x, this._location.y + labelOffsetY);
 
         this._verticalAxis.update(locationWithOffset, verticalRange, new Size(null, this._size.height - horizontalAxisHeight - labelOffsetY));
 
@@ -368,7 +368,7 @@
 
         if (this._horizontalAxisType != AxisTypes.None) {
             this._horizontalAxis.update(
-            new Point(this._location.x + verticalAxisWidth,
+            new NumericPoint(this._location.x + verticalAxisWidth,
             this._location.y + verticalAxisHeight + labelOffsetY - labelYtopMargin),
             horizontalRange,
             new Size(this._size.width - verticalAxisWidth, null));
@@ -377,7 +377,7 @@
         var horizontalAxisWidth = 0;
         var horizontalAxisWidth = this._size.width - verticalAxisWidth
 
-        var gridLocation = new Point(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
+        var gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
 
 
         var horizontalAxisTicks = null;
@@ -474,7 +474,7 @@
                 labelOffsetY += this._labelVerticalMargin * 2 + this._headerLabel.getActualHeight();
             }
 
-            var gridLocation = new Point(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
+            var gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
 
             plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, horizontalAxisWidth, verticalAxisHeight));
             plot.setVisible(this._dataRect);

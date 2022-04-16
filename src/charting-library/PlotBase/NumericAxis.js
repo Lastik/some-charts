@@ -109,7 +109,7 @@
             else {
 
                 var labelVerticalDelimiter = 2 - 2 * Utilities.TextVerticalOffsetMultiplier;
-                
+
                 for (var i = 0; i < ticksCount; i++) {
                     var tick = ticks[i];
 
@@ -143,7 +143,7 @@
         };
     }
 
-    NumericAxis.prototype = new AxisBase(new Point(0, 0), new Range(0, 0, false), new Size(0, 0), Orientation.Horizontal);
+    NumericAxis.prototype = new AxisBase(new NumericPoint(0, 0), new Range(0, 0, false), new Size(0, 0), Orientation.Horizontal);
 
     NumericAxis.increaseRatio = 2;
     NumericAxis.decreaseRatio = 1.5;
@@ -159,7 +159,7 @@
 
     p.ticksGenerator = null;
 
-    //Format is used to print 
+    //Format is used to print
     p._units = null;
 
     p.setUnits = function (units, addDelimiter) {

@@ -18,6 +18,8 @@
 /// <reference path="../common/legenditem.js" />
 /// <reference path="../common/stringdatapoint.js" />
 
+import {StringPoint} from "../model/point/string-point";
+
 (function (window) {
 
     var Plot = function () {
@@ -126,10 +128,10 @@
                 }
             }
 
-            if (firstValue.constructor == Point) {
+            if (firstValue.constructor == NumericPoint) {
                 newDataSeriesArray.push(dataSeries);
             }
-            else if (firstValue instanceof StringDataPoint) {
+            else if (firstValue instanceof StringPoint) {
                 var ds = [];
                 for (var j = 0; j < dataSource.length; j++) {
                     var stringPoint = dataSource[j];
@@ -145,7 +147,7 @@
                         addedXs.push(x)
                     }
 
-                    ds.push(new Point(x, stringPoint.value));
+                    ds.push(new NumericPoint(x, stringPoint.value));
 
                     var alreadyContains = false;
                     for (var k = 0; k < newStringLabels.length; k++) {
@@ -156,7 +158,7 @@
                     }
 
                     if (!alreadyContains) {
-                        newStringLabels.push(new StringDataPoint(stringPoint.key, x));
+                        newStringLabels.push(new StringPoint(stringPoint.key, x));
                     }
                 }
 
@@ -252,8 +254,8 @@
     }
 
     p._getStringLabels = function () {
-        /// <summary>Returns collection of StringDataPoint items with string labels for plot axes.
-        /// If points are not StringDataPoints, null will be returned.</summary>
+        /// <summary>Returns collection of StringPoint items with string labels for plot axes.
+        /// If points are not StringPoints, null will be returned.</summary>
         /// <returns type="Array" />
         return this._stringLabels;
     }

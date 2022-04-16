@@ -33,7 +33,7 @@
 
             var dataSeriesCollection = self._dataSeriesCollection;
 
-            var zero = CoordinateTransform.dataToScreenRegionXY(new Point(0, 0), self._visible, screen);
+            var zero = CoordinateTransform.dataToScreenRegionXY(new NumericPoint(0, 0), self._visible, screen);
             var zeroY = zero.y;
 
             var prevSeries = null;
