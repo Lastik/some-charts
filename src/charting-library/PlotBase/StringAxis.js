@@ -126,7 +126,7 @@
 
                         context.fillText(label.key,
                         location.x + tickOnScreen - labelSize.width / 2,
-                        location.y - labelSize.height * Utilities.TextVerticalOffsetMultiplier + StringAxis._verticalMargin);
+                        location.y - labelSize.height * Utilities.textVerticalOffsetMultiplier + StringAxis._verticalMargin);
                     }
                 }
                 else {

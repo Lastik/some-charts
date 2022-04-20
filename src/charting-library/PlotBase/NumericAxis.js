@@ -84,7 +84,7 @@
 
                     context.fillText(tick.toString(),
                     location.x + tickOnScreen - labelSize.width / 2,
-                    location.y + axis.tickHeight - labelSize.height * Utilities.TextVerticalOffsetMultiplier);
+                    location.y + axis.tickHeight - labelSize.height * Utilities.textVerticalOffsetMultiplier);
 
                     var xVal = MathHelper.optimizeValue(location.x + tickOnScreen);
                     var yVal = MathHelper.optimizeValue(location.y);
@@ -108,7 +108,7 @@
             }
             else {
 
-                var labelVerticalDelimiter = 2 - 2 * Utilities.TextVerticalOffsetMultiplier;
+                var labelVerticalDelimiter = 2 - 2 * Utilities.textVerticalOffsetMultiplier;
 
                 for (var i = 0; i < ticksCount; i++) {
                     var tick = ticks[i];

@@ -29,6 +29,7 @@ export class Utilities {
    */
   public static redirectMouseEventToElement(originalEvent: MouseEvent, element: EventTarget, canBubble: boolean): void {
 
+    //TODO: support old browsers?
     let event = new MouseEvent(originalEvent.type, {
       bubbles: canBubble,
       cancelable: true,
@@ -48,18 +49,20 @@ export class Utilities {
     element.dispatchEvent(event);
   }
 
-  Utilities.stopDefault = function (e) {
-    /// <summary>Stops default event behavior.</summary>
-    /// <param name="e" type="Event"> Default event behavior.</param>
-    if (!e){ e = window.event; } /* IE7, IE8, Chrome, Safari */
-    if (e.preventDefault) { e.preventDefault(); } /* Chrome, Safari, Firefox */
-    e.returnValue = false; /* IE7, IE8 */
+  /**
+   * Stops default event behavior.
+   * @param {Event} event - Event object.
+   */
+  public static stopDefault(event: Event) {
+    if (event.preventDefault) { event.preventDefault(); } /* Chrome, Safari, Firefox */
+    event.returnValue = false; /* IE7, IE8 */
   }
 
-  //Vertical multiplier, which must be used for offetting fillText canvas method.
-  //Each text must be offseted my this constant to top direction (-y axis).
-
-  Utilities.TextVerticalOffsetMultiplier = 0.17;
+  /**
+   * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
+   * Each text must be shifted by this constant in top direction (Y axis).
+   */
+  public static readonly textVerticalOffsetMultiplier: number = 0.17;
 
   Utilities.parseDate = function (input, format) {
     /// <summary>Parses date with specified format.</summary>
