@@ -21,13 +21,6 @@ export class Utilities {
     }
   }
 
-  /// <summary>Fires event on element.</summary>
-  /// <param name="element">Element.</param>
-  /// <param name="eventType" type="String">Type of event to fire.</param>
-  /// <param name="e">Event arguments.</param>
-  /// <param name="bubble" type="Boolen">To bubble or not to bubble event.</param>
-
-
   /**
    * Redirects event to element.
    * @param {MouseEvent} originalEvent - Original mouse event used to create new event.
