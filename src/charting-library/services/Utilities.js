@@ -63,18 +63,8 @@
 
     //Vertical multiplier, which must be used for offetting fillText canvas method.
     //Each text must be offseted my this constant to top direction (-y axis).
-    
-    Utilities.TextVerticalOffsetMultiplier = 0.17;
 
-    String.prototype.format = function () {
-    /// <summary>Fills this format string with specified arguments.</summary>
-        var formatted = this;
-        for (var i = 0; i < arguments.length; i++) {
-            var regexp = new RegExp('\\{' + i + '\\}', 'gi');
-            formatted = formatted.replace(regexp, arguments[i]);
-        }
-        return formatted;
-    };
+    Utilities.TextVerticalOffsetMultiplier = 0.17;
 
     Utilities.parseDate = function (input, format) {
         /// <summary>Parses date with specified format.</summary>

@@ -46,7 +46,7 @@
         this._onContainerMouseUpListener = function (e) {
             e.preventDefault();
             if (Utilities.isIphone || Utilities.isIpad || Utilities.isIpod || Utilities.isAndroid) {
-                Utilities.fireEventToElement(stageDiv[0], 'mouseup', false, e);
+                Utilities.redirectMouseEventToElement(false, stageDiv[0], 'mouseup');
             }
             eventTarget.fire('mouseClicked');
         };
