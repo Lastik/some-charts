@@ -82,7 +82,7 @@
 
                 navigationLayer._isMouseDown = true
 
-                var renderer = navigationLayer._renderer;
+                var renderer = navigationLayer.renderer;
 
                 var stage = renderer.getStage();
                 var container = stage.getContainer();
@@ -95,8 +95,8 @@
                         if (chart._navigationLayer != undefined) {
                             if (chart._navigationLayer != navigationLayer) {
                                 var chartNavigationLayer = chart._navigationLayer;
-                                if (chartNavigationLayer._renderer != undefined) {
-                                    var container2 = chartNavigationLayer._renderer.getContainer();
+                                if (chartNavigationLayer.renderer != undefined) {
+                                    var container2 = chartNavigationLayer.renderer.getContainer();
                                     if (container2 != container) {
                                         $(container2).focusout();
                                     }
@@ -314,7 +314,7 @@
         return this._isDirty;
     }
 
-    p.updateIsDirty = function () {
+    p.markDirty = function () {
         this._isDirty = false;
     }
 

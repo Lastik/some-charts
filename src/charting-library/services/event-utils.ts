@@ -3,7 +3,7 @@
  */
 import {Element} from "@angular/compiler";
 
-export class Utilities {
+export class EventUtils {
 
   /**
    * Stops event from bubbling.
@@ -58,37 +58,18 @@ export class Utilities {
     event.returnValue = false; /* IE7, IE8 */
   }
 
-  /**
-   * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
-   * Each text must be shifted by this constant in top direction (Y axis).
-   */
-  public static readonly textVerticalOffsetMultiplier: number = 0.17;
-
-  Utilities.parseDate = function (input, format) {
-    /// <summary>Parses date with specified format.</summary>
-    /// <param name="input" type="String">Date to parse.</param>
-    /// <param name="format" type="String">Date format.</param>
-    format = format || 'yyyy-MM-dd'; // default format
-    var parts = input.match(/(\d+)/g),
-      i = 0, fmt = {};
-    // extract date-part indexes from the format
-    format.replace(/(yyyy|dd|MM|hh|mm|ss)/g, function (part) { fmt[part] = i++; });
-
-    return new Date(parts[fmt['yyyy']], parts[fmt['MM']] - 1, parts[fmt['dd']], parts[fmt['hh']], parts[fmt['mm']], parts[fmt['ss']]);
-  };
-
   //Lowered user agent.
   Utilities.uagent = navigator.userAgent.toLowerCase();
   //True if is IE.
   Utilities.isMsIE = /MSIE (\d+\.\d+);/.test(navigator.userAgent);
   //True if is firefox
-  Utilities.isFirefox = Utilities.uagent.indexOf("firefox") > -1;
+  Utilities.isFirefox = EventUtils.uagent.indexOf("firefox") > -1;
   //True if device is iphone
-  Utilities.isIphone = Utilities.uagent.indexOf("iphone") > -1;
+  Utilities.isIphone = EventUtils.uagent.indexOf("iphone") > -1;
   //True if device is ipad
-  Utilities.isIpad = Utilities.uagent.indexOf("ipad") > -1;
+  Utilities.isIpad = EventUtils.uagent.indexOf("ipad") > -1;
   //True if device is ipad
-  Utilities.isIpod = Utilities.uagent.indexOf("ipod") > -1;
+  Utilities.isIpod = EventUtils.uagent.indexOf("ipod") > -1;
   //True if device is android
-  Utilities.isAndroid = Utilities.uagent.indexOf("android") > -1;
+  Utilities.isAndroid = EventUtils.uagent.indexOf("android") > -1;
 }

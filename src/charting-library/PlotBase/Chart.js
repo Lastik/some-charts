@@ -215,7 +215,7 @@
     p._headerLabel = null;
     p._labelVerticalMargin = 0;
 
-    p._renderer = null;
+    p.renderer = null;
     p._plots = null;
     p._horizontalAxisType = null;
 
@@ -287,7 +287,7 @@
 
         this.update(this._location, this._size, this._dataRect);
 
-        this._renderer = renderer;
+        this.renderer = renderer;
     }
 
     p.setHeader = function (text) {
@@ -407,15 +407,15 @@
     p.detach = function () {
         /// <summary>Detaches chart from renderer.</summary>
 
-        if (this._renderer == null)
+        if (this.renderer == null)
             throw 'Chart is not attached to any renderer';
 
-        this._renderer.remove(this._verticalAxis);
+        this.renderer.remove(this._verticalAxis);
         if (this._horizontalAxisType != AxisTypes.None)
-            this._renderer.remove(this._horizontalAxis);
-        this._renderer.remove(this._chartGrid);
+            this.renderer.remove(this._horizontalAxis);
+        this.renderer.remove(this._chartGrid);
         if (this._navigationLayer != null) {
-            this._renderer.remove(this._navigationLayer);
+            this.renderer.remove(this._navigationLayer);
         }
         if (this._keyboardNavigation != null)
         {
@@ -423,12 +423,12 @@
         }
 
         if (this._headerLabel != null) {
-            this._renderer.remove(this._headerLabel);
+            this.renderer.remove(this._headerLabel);
         }
 
         for (var i = 0; i < this._plots.length; i++) {
             var plot = this._plots[i];
-            this._renderer.remove(plot);
+            this.renderer.remove(plot);
         }
 
         if (this._legendPart != null) {
@@ -438,22 +438,22 @@
 
         this._uiLayer.remove();
 
-        this._renderer = null;
+        this.renderer = null;
     }
 
     p.addPlot = function (plot) {
         /// <summary>Adds plot to chart.</summary>
         /// <param name="plot" type="Plot">Plot to add to chart.</param>
 
-        if (this._renderer == null)
+        if (this.renderer == null)
             throw 'Attach chart to renderer first.';
 
         // TODO: remove plot layer on removePlot.
-        Chart._addPlotLayer(this, this._renderer, plot.getLayerName());
+        Chart._addPlotLayer(this, this.renderer, plot.getLayerName());
 
         this._plots.push(plot);
-        if (this._renderer != null) {
-            this._renderer.add(plot);
+        if (this.renderer != null) {
+            this.renderer.add(plot);
         }
 
         plot.propertyChanged.addListener('dataSeries', Chart._onPlotDataSeriesChanged, this);
@@ -519,8 +519,8 @@
         var plotIndex = this._plots.indexOf(plot);
         this._plots.splice(plotIndex, 1);
 
-        if (this._renderer != null) {
-            this._renderer.remove(plot);
+        if (this.renderer != null) {
+            this.renderer.remove(plot);
         }
 
         plot.propertyChanged.removeListener('dataSeries', Chart._onPlotDataSeriesChanged);
@@ -623,12 +623,12 @@
         /// <summary>Updates current legend.
         /// By default, legend is hidden and can be shown by calling 'showLegend'
         /// </summary>
-        if (this._renderer == null) {
+        if (this.renderer == null) {
             throw 'To generate legend, renderer must be attached first';
         }
 
         if (this._legendPart == null) {
-            var container = this._renderer.getContainer();
+            var container = this.renderer.getContainer();
             var legendElement = $('<div></div>').css('padding', '0.5em').css('position', 'absolute').addClass('ui-widget-content');
             legendElement.css('right', '0px');
             legendElement.css('margin-right', this._legendOffsetRight);
@@ -712,9 +712,9 @@
     p.getRenderer = function () {
         /// <summary>Returns renderer, thich chart is attached to.</summary>
         /// <returns type="Renderer" />
-        if (this._renderer == undefined)
+        if (this.renderer == undefined)
             throw 'This chart is not attached to any renderer';
-        return this._renderer;
+        return this.renderer;
     }
 
     /// <summary>Creates layers, required by chart, in specified renderer.</summary>

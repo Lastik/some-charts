@@ -179,7 +179,7 @@
         return this._isDirty;
     }
 
-    p.updateIsDirty = function () {
+    p.markDirty = function () {
         this._isDirty = false;
     }
 
