@@ -2,6 +2,8 @@
 /// <reference path="../utils/jquery-1.8.2.min.js" />
 /// <reference path="../../utils/jquery.column.min.js" />
 
+import {UagentUtils} from "../services/uagent-utils";
+
 var ColumnMode = { "FitToWidth": 0, "FixedWidth": 1 };
 
 (function (window) {
@@ -112,7 +114,7 @@ var ColumnMode = { "FitToWidth": 0, "FixedWidth": 1 };
 
                 if (removeLeftColumnHeader) {
                     var firstRowOffset = 0;
-                    if (Utilities.isMsIE || Utilities.isFirefox)
+                    if (UagentUtils.isMsIE || UagentUtils.isFirefox)
                         firstRowOffset = 1;
                     leftColOffset += headerHeight + firstRowOffset;
                 }

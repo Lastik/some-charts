@@ -2,6 +2,8 @@
 /// <reference path="chart.js" />
 /// <reference path="../common/utilities.js" />
 // Array of keys, connected with corresponding key codes.
+import {EventUtils} from "../services/event-utils";
+
 var Keys = { "LeftArrow": 37, "RightArrow": 39, "UpArrow": 38, "DownArrow": 40, "Plus": 187, "Minus": 189 };
 
 // Global variable with all currently active keyboard navigations.
@@ -138,8 +140,8 @@ var _ChartNavigations7203439c19e24470a7bd6155c3a41b79 = [];
                     chart.update(chart._location, chart._size, rect);
                 }
 
-                Utilities.stopDefault(e);
-                Utilities.stopEvent(e);
+                EventUtils.stopDefault(e);
+                EventUtils.stopEvent(e);
             }
         }
     }

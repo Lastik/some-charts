@@ -1,8 +1,6 @@
 /**
  * Contains common utility methods.
  */
-import {Element} from "@angular/compiler";
-
 export class EventUtils {
 
   /**
@@ -57,19 +55,4 @@ export class EventUtils {
     if (event.preventDefault) { event.preventDefault(); } /* Chrome, Safari, Firefox */
     event.returnValue = false; /* IE7, IE8 */
   }
-
-  //Lowered user agent.
-  Utilities.uagent = navigator.userAgent.toLowerCase();
-  //True if is IE.
-  Utilities.isMsIE = /MSIE (\d+\.\d+);/.test(navigator.userAgent);
-  //True if is firefox
-  Utilities.isFirefox = EventUtils.uagent.indexOf("firefox") > -1;
-  //True if device is iphone
-  Utilities.isIphone = EventUtils.uagent.indexOf("iphone") > -1;
-  //True if device is ipad
-  Utilities.isIpad = EventUtils.uagent.indexOf("ipad") > -1;
-  //True if device is ipad
-  Utilities.isIpod = EventUtils.uagent.indexOf("ipod") > -1;
-  //True if device is android
-  Utilities.isAndroid = EventUtils.uagent.indexOf("android") > -1;
 }

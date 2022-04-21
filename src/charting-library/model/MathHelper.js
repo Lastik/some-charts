@@ -1,18 +1,18 @@
 ﻿/// <reference path="point.js" />
 
+import {UagentUtils} from "../services/uagent-utils";
+
 (function (window) {
 
     var MathHelper = function () {
     /// <summary>Helps to perform mathematical operations with values.</summary>
     }
 
-    MathHelper.isMsIE = /MSIE (\d+\.\d+);/.test(navigator.userAgent);
-
     MathHelper.optimizePoint = function (point) {
         /// <summary>Optimizes point's coordinates for better performance.</summary>
         /// <param name="point" type="Point">Point to optimize.</param>
         /// <returns type="Point" />
-        if (MathHelper.isMsIE) {
+        if (UagentUtils.isMsIE) {
             return new NumericPoint(
             MathHelper.optimizeValue(point.x),
             MathHelper.optimizeValue(point.y));
@@ -26,7 +26,7 @@
         /// <summary>Optimizes single value for better performance.</summary>
         /// <param name="value" type="Number">Value to optimize.</param>
         /// <returns type="Number" />
-        if (MathHelper.isMsIE) {
+        if (UagentUtils.isMsIE) {
             return MathHelper.truncateValue(value);
         }
         else {

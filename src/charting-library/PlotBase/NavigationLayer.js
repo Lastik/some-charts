@@ -15,6 +15,8 @@
 /// <reference path="../common/utilities.js" />
 /// <reference path="NumericAxis.js" />
 
+import {EventUtils} from "../services/event-utils";
+
 (function (window) {
 
     var NavigationLayer = function (location, size) {
@@ -280,8 +282,8 @@
         $(container).mousewheel(function (objEvent, delta) {
             var container = this.navigationLayer9c2ee650704442b3a93db55ac24f0c5d;
             container.eventTarget.fire(new ScrollEvent(delta));
-            Utilities.stopDefault(objEvent);
-            Utilities.stopEvent(objEvent);
+          EventUtils.stopDefault(objEvent);
+            EventUtils.stopEvent(objEvent);
         });
 
         $(document).mousedown(container, this._onDocumentMouseDown);
