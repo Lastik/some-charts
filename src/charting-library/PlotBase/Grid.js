@@ -21,8 +21,8 @@
         RenderableItem.call(this);
 
         /******OPTIONS*******/
-        this.foreground = "black";
-        this.background = "white";
+        this.foregroundColor = "black";
+        this.backgroundColor = "white";
         /********************/
 
         this._horizontalTicks = horizontalTicks;
@@ -50,7 +50,7 @@
                 context.clip();
 
                 context.lineWidth = 0.5;
-                context.strokeStyle = grid.foreground;
+                context.strokeStyle = grid.foregroundColor;
 
                 if (horizontalTicks != null) {
                     for (var i = 0; i < horizontalTicks.length; i++) {
@@ -98,8 +98,8 @@
                 var grid = this.grid;
                 var location = grid.location;
                 var size = grid.size;
-                context.strokeStyle = grid.foreground;
-                context.fillStyle = grid.background;
+                context.strokeStyle = grid.foregroundColor;
+                context.fillStyle = grid.backgroundColor;
                 context.lineWidth = 1;
                 context.strokeRect(location.x, location.y, size.width, size.height);
                 context.fillRect(location.x, location.y, size.width, size.height);
@@ -114,8 +114,8 @@
 
     var p = Grid.prototype;
 
-    p.foreground = null;
-    p.background = null;
+    p.foregroundColor = null;
+    p.backgroundColor = null;
 
     p._horizontalTicks = null;
     p._verticalTicks = null;
@@ -155,14 +155,14 @@
         /// <summary>Initializes specified control from element's style.</summary>
         /// <param name="element" type="Element">Element to inilialize from.</param>
 
-        var foreground = element.getAttribute('data-grid-foreground-color');
-        if (foreground != undefined) {
-            this.foreground = foreground;
+        var foregroundColor = element.getAttribute('data-grid-foreground-color');
+        if (foregroundColor != undefined) {
+            this.foregroundColor = foregroundColor;
         }
 
-        var background = element.getAttribute('data-grid-background-color');
-        if (background != undefined) {
-            this.background = background;
+        var backgroundColor = element.getAttribute('data-grid-background-color');
+        if (backgroundColor != undefined) {
+            this.backgroundColor = backgroundColor;
         }
     }
 

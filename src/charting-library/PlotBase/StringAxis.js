@@ -56,13 +56,13 @@
             context.clip();
 
             context.font = axis.font;
-            context.fillStyle = axis.foreground;
+            context.fillStyle = axis.foregroundColor;
             context.textBaseline = "top";
 
             context.beginPath();
             context.lineWidth = 1;
 
-            context.strokeStyle = axis.foreground;
+            context.strokeStyle = axis.foregroundColor;
 
             var labels = axis._labels;
 
@@ -82,12 +82,12 @@
                             var xVal = MathHelper.optimizeValue(betweenTicksX);
                             var yVal = MathHelper.optimizeValue(location.y);
                             context.moveTo(xVal, yVal);
-                            yVal = MathHelper.optimizeValue(location.y + axis.tickHeight + StringAxis._tickIncreaseConst);
+                            yVal = MathHelper.optimizeValue(location.y + axis.majorTickHeight + StringAxis._tickIncreaseConst);
                             context.lineTo(xVal, yVal);
 
                             //If zoom is so large, that axis labels overlap
                             if (location.x + tickOnScreen + labelSize.width / 2 > betweenTicksX) {
-                                context.fillStyle = axis.background;
+                                context.fillStyle = axis.backgroundColor;
 
                                 var size = axis._actualSize;
 
@@ -99,7 +99,7 @@
 
                                 context.fillRect(roundX, roundY, roundWidth, roundHeight);
 
-                                context.fillStyle = axis.foreground;
+                                context.fillStyle = axis.foregroundColor;
                             }
                         }
                         else if (i != 0) {
@@ -108,7 +108,7 @@
 
                             //If zoom is so large, that axis labels overlap
                             if (location.x + tickOnScreen - labelSize.width / 2 < betweenTicksX) {
-                                context.fillStyle = axis.background
+                                context.fillStyle = axis.backgroundColor
 
                                 var size = axis._actualSize;
 
@@ -120,7 +120,7 @@
 
                                 context.fillRect(roundX, roundY, roundWidth, roundHeight);
 
-                                context.fillStyle = axis.foreground;
+                                context.fillStyle = axis.foregroundColor;
                             }
                         }
 
@@ -195,7 +195,7 @@
 
         if (axis.size.height == null && axis._orientation == Orientation.Horizontal) {
             if (labels != null) {
-                var maxHeight = Math.max(axis.fontHeight, axis.tickHeight + StringAxis._tickIncreaseConst);
+                var maxHeight = Math.max(axis.fontHeight, axis.majorTickHeight + StringAxis._tickIncreaseConst);
                 axis._actualSize.height = maxHeight + StringAxis._verticalMargin;
             }
             else {

@@ -360,7 +360,7 @@
 
         var element = renderer.getContainer();
 
-        var darkerBorders = element.getAttribute('data-plot-darker-border');
+        var darkerBorders = element.getAttribute('data-plot-use-darker-border');
         if (darkerBorders != undefined) {
             var darkerBordersBoolean = darkerBorders == 'true' ? true : false;
             this._darkerStroke = darkerBordersBoolean;

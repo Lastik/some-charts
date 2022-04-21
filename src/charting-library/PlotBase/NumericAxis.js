@@ -66,13 +66,13 @@
             context.clip();
 
             context.font = axis.font;
-            context.fillStyle = axis.foreground;
+            context.fillStyle = axis.foregroundColor;
             context.textBaseline = "top";
 
             context.beginPath();
             context.lineWidth = 1;
 
-            context.strokeStyle = axis.foreground;
+            context.strokeStyle = axis.foregroundColor;
 
             if (axis._orientation == Orientation.Horizontal) {
 
@@ -84,12 +84,12 @@
 
                     context.fillText(tick.toString(),
                     location.x + tickOnScreen - labelSize.width / 2,
-                    location.y + axis.tickHeight - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
+                    location.y + axis.majorTickHeight - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
 
                     var xVal = MathHelper.optimizeValue(location.x + tickOnScreen);
                     var yVal = MathHelper.optimizeValue(location.y);
                     context.moveTo(xVal, yVal);
-                    yVal = MathHelper.optimizeValue(location.y + axis.tickHeight);
+                    yVal = MathHelper.optimizeValue(location.y + axis.majorTickHeight);
                     context.lineTo(xVal, yVal);
                 }
 
@@ -116,9 +116,9 @@
                     var tickOnScreen = ticksOnScreen[i];
                     var labelSize = axis._generateLabelSize(tick);
 
-                    context.fillText(tick.toString() + axis._units, location.x + width - labelSize.width - (axis.tickHeight + 2), location.y + tickOnScreen - labelSize.height / labelVerticalDelimiter);
+                    context.fillText(tick.toString() + axis._units, location.x + width - labelSize.width - (axis.majorTickHeight + 2), location.y + tickOnScreen - labelSize.height / labelVerticalDelimiter);
 
-                    var xVal = MathHelper.optimizeValue(location.x + width - axis.tickHeight);
+                    var xVal = MathHelper.optimizeValue(location.x + width - axis.majorTickHeight);
                     var yVal = MathHelper.optimizeValue(location.y + tickOnScreen);
                     context.moveTo(xVal, yVal);
                     xVal = MathHelper.optimizeValue(location.x + width);
@@ -216,13 +216,13 @@
                 maxSize = Math.max(labelSize.width, maxSize);
             }
 
-            maxSize += axis.tickHeight + 4;
+            maxSize += axis.majorTickHeight + 4;
 
             axis._actualSize.width = maxSize;
         }
 
         if (axis.size.height == null && axis._orientation == Orientation.Horizontal) {
-            axis._actualSize.height = axis.fontHeight + axis.tickHeight + 2;
+            axis._actualSize.height = axis.fontHeight + axis.majorTickHeight + 2;
         }
 
         var actualSize = axis._actualSize;

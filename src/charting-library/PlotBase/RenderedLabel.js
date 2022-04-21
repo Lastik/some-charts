@@ -31,7 +31,7 @@ var HorizontalAlignment = { "Left": 0, "Center": 1};
             drawFunc: function () {
                 var context = this.getContext();
                 var label = this.label;
-                context.fillStyle = label.foreground;
+                context.fillStyle = label.foregroundColor;
                 context.font = label._font;
 
                 var location = label.location;
@@ -69,7 +69,7 @@ var HorizontalAlignment = { "Left": 0, "Center": 1};
 
     var p = RenderedLabel.prototype;
 
-    p.foreground = "black";
+    p.foregroundColor = "black";
 
     p.location = null;
     p.width = null;

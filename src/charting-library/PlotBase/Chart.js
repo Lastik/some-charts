@@ -270,9 +270,9 @@
                 var labelLocation = new NumericPoint(this._location.x, this._location.y + this._labelVerticalMargin);
 
                 this._headerLabel = new RenderedLabel(header, headerFont, labelLocation, this._size.width, HorizontalAlignment.Center);
-                var foreground = container.getAttribute('data-header-foreground-color');
-                if (foreground != undefined) {
-                    this._headerLabel.foreground = foreground;
+                var foregroundColor = container.getAttribute('data-header-foreground-color');
+                if (foregroundColor != undefined) {
+                    this._headerLabel.foregroundColor = foregroundColor;
                 }
                 renderer.add(this._headerLabel);
             }

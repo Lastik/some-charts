@@ -36,9 +36,9 @@ var Orientation = { "Horizontal": 0, "Vertical": 1 };
         /******OPTIONS*******/
         this.font = "10pt Calibri";
         this.fontHeight = 15;
-        this.foreground = "black";
-        this.background = "yellow";
-        this.tickHeight = 6;
+        this.foregroundColor = "black";
+        this.backgroundColor = "yellow";
+        this.majorTickHeight = 6;
         this.minorTickHeight = 3;
         this.drawBorder = true;
         /********************/
@@ -49,8 +49,8 @@ var Orientation = { "Horizontal": 0, "Vertical": 1 };
                 var context = this.getContext();
                 var axis = this.axis;
                 var location = axis.location;
-                context.strokeStyle = axis.foreground;
-                context.fillStyle = axis.background;
+                context.strokeStyle = axis.foregroundColor;
+                context.fillStyle = axis.backgroundColor;
                 context.lineWidth = 1;
 
                 var size = axis._actualSize;
@@ -85,9 +85,9 @@ var Orientation = { "Horizontal": 0, "Vertical": 1 };
 
     p.font = null;
     p.fontHeight = 15;
-    p.foreground = null;
-    p.background = null;
-    p.tickHeight = null;
+    p.foregroundColor = null;
+    p.backgroundColor = null;
+    p.majorTickHeight = null;
     p.minorTickHeight = null;
     p.drawBorder = null;
 
@@ -119,9 +119,9 @@ var Orientation = { "Horizontal": 0, "Vertical": 1 };
         /// <summary>Initializes specified control from element's style.</summary>
         /// <param name="element" type="Element">Element to inilialize from.</param>
 
-        var foreground = element.getAttribute('data-axis-foreground-color');
-        if (foreground != undefined) {
-            this.foreground = foreground;
+        var foregroundColor = element.getAttribute('data-axis-foreground-color');
+        if (foregroundColor != undefined) {
+            this.foregroundColor = foregroundColor;
         }
 
         var font = element.getAttribute('data-axis-font');
@@ -134,14 +134,14 @@ var Orientation = { "Horizontal": 0, "Vertical": 1 };
             this.fontHeight = parseFloat(fontHeight);
         }
 
-        var background = element.getAttribute('data-axis-background');
-        if (background != undefined) {
-            this.background = background;
+        var backgroundColor = element.getAttribute('data-axis-background-color');
+        if (backgroundColor != undefined) {
+            this.backgroundColor = backgroundColor;
         }
 
-        var tickHeight = element.getAttribute('data-axis-tick-height');
-        if (tickHeight != undefined) {
-            this.tickHeight = parseFloat(tickHeight);
+        var majorTickHeight = element.getAttribute('data-axis-major-tick-height');
+        if (majorTickHeight != undefined) {
+            this.majorTickHeight = parseFloat(majorTickHeight);
         }
 
         var minorTickHeight = element.getAttribute('data-axis-minor-tick-height');

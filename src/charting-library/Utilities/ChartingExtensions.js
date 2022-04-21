@@ -74,13 +74,13 @@ var ChartOptionsNames =
     "DataLegendOpacity": "data-legend-opacity", // Legend opacity.
     "DataLegendFontSize": "data-legend-font-size", // Legend font size.
     "DataLegendRectangleSize": "data-legend-rectangle-size", // Legend rectangle size.
-    "DataRendererBackground": "data-renderer-background", // Renderer background.
+    "DataRendererBackgroundColor": "data-renderer-background-color", // Renderer background color.
     "DataRendererBorder": "data-renderer-border", // Renderer border.
-    "DataAxisForegroundColor": "data-axis-foreground-color", // Axis foreground.
-    "DataAxisBackground": "data-axis-background", // Axis background.
+    "DataAxisForegroundColor": "data-axis-foreground-color", // Axis foreground color.
+    "DataAxisBackgroundColor": "data-axis-background-color", // Axis background color.
     "DataAxisFont": "data-axis-font", // Axis font.
     "DataAxisFontHeight": "data-axis-font-height", // Axis font height.
-    "DataAxisTickHeight": "data-axis-tick-height", // Height of axis ticks.
+    "DataAxisMajorTickHeight": "data-axis-major-tick-height", // Height of axis major ticks.
     "DataAxisMinorTickHeight": "data-axis-minor-tick-height", // Height of axis minor ticks.
     "DataAxisDrawBorder": "data-axis-draw-border", // True, if axis border must be drawn. Otherwise, false.
     "DataGridForegroundColor": "data-grid-foreground-color", // Axis foreground color.
@@ -88,8 +88,8 @@ var ChartOptionsNames =
     "DataHeaderText": "data-header-text", // Header text.
     "DataHeaderFont": "data-header-font", // Header font.
     "DataHeaderForegroundColor": "data-header-foreground-color", // Header foregrund color.
-    "DataHeaderVerticalMargin": "data-header-vertical-margin", // Header vertical margin. 
-    "DataPlotDarkerBorder": "data-plot-darker-border", // True, if plot border must be darker than plot backround. Otherwise, must be false.
+    "DataHeaderVerticalMargin": "data-header-vertical-margin", // Header vertical margin.
+    "DataPlotUseDarkerBorder": "data-plot-use-darker-border", // True, if plot border must be darker than plot backround. Otherwise, must be false.
     "DataBarDrawLabelsOnBars": "data-bar-draw-labels-on-bars", // True, if labels must be drawn on bars. Otherwise, false.
     "DataBarLabelsFont": "data-bar-labels-font", // Bars labels font.
     "DataBarLabelsForeground": "data-bar-labels-foreground", // Bars labels foreground color.
@@ -112,7 +112,7 @@ var ChartOptionsNames =
     var p = Option.prototype;
     p.name = null;
     p.value = null;
-    
+
     window.Option = Option;
 
 }(window));
