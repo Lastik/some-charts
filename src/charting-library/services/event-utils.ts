@@ -8,8 +8,6 @@ export class EventUtils {
    * @param {Event} e - Event to stop.
    */
   public static stopEvent(e: Event): void {
-    /// <summary>Stops event from bubbling.</summary>
-    /// <param name="e" type="Event">Event to stop.</param>
     if (!e) e = window.event!;
     if (e.stopPropagation) {
       e.stopPropagation();

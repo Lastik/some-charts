@@ -7,6 +7,8 @@
 /// <reference path="barsrenderedevent.js" />
 /// <reference path="../common/eventtarget.js" />
 
+import {TextMeasureUtils} from "../services/text-measure-utils";
+
 (function (window) {
 
     var BarsPlot = function () {
@@ -198,7 +200,7 @@
 
                             var textH = null;
                             if (self._labelsFontCalculatedTextHeightFor != self._labelsFont) {
-                                self._labelsFontCalculatedTextHeight = MathHelper.calculateTextHeight(context, self._labelsFont);
+                                self._labelsFontCalculatedTextHeight = TextMeasureUtils.measureTextHeight(context, self._labelsFont);
                                 self._labelsFontCalculatedTextHeightFor = self._labelsFont;
                             }
 

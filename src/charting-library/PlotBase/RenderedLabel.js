@@ -16,6 +16,8 @@
 /// <reference path="../../utils/linq.min.js" />
 /// <reference path="../common/stringdatapoint.js" />
 
+import {TextMeasureUtils} from "../services/text-measure-utils";
+
 var HorizontalAlignment = { "Left": 0, "Center": 1};
 
 (function (window) {
@@ -100,9 +102,9 @@ var HorizontalAlignment = { "Left": 0, "Center": 1};
         var context = canvas.getContext('2d');
         context.font = this._font;
         var w = context.measureText(this._text).width;
-        var h = MathHelper.calculateTextHeight(context, this._font);
+        var h = TextMeasureUtils.measureTextHeight(context, this._font);
         this._textSize = new Size(w, h);
-        this._textOffset = MathHelper.calculateTextVerticalOffsetHeight(context, this._font);
+        this._textOffset = TextMeasureUtils.measureTextVerticalOffsetHeight(context, this._font);
     }
 
     p.getActualHeight = function () {
