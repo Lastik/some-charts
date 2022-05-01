@@ -1,3 +1,5 @@
+import {HeaderOptions} from "./header-options";
+
 /**
 * Chart legend options
 */
@@ -22,4 +24,20 @@ export interface LegendOptions {
    * Legend rectangle size.
    */
   rectangleSize: number;
+}
+
+export class LegendOptionsDefaults
+{
+  private static _instance: LegendOptions = {
+    offsetRight: 27,
+    offsetTop: 50,
+    opacity: 0.6,
+    fontSize: 12,
+    rectangleSize: 13
+  }
+
+  public static get Instance()
+  {
+    return this._instance;
+  }
 }

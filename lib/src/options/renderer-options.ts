@@ -7,7 +7,20 @@ export interface RendererOptions {
    */
   backgroundColor: string;
   /**
-   * Renderer border color.
+   * Renderer border style.
    */
-  borderColor: number;
+  borderStyle: string;
+}
+
+export class RendererOptionsDefaults
+{
+  private static _instance: RendererOptions = {
+    backgroundColor: "#111111",
+    borderStyle: "1px solid #000000"
+  }
+
+  public static get Instance()
+  {
+    return this._instance;
+  }
 }

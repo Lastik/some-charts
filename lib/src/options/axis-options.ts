@@ -31,3 +31,21 @@ export interface AxisOptions {
    */
   drawBorder: boolean;
 }
+
+export class AxisOptionsDefaults
+{
+  private static _instance: AxisOptions = {
+    foregroundColor: 'white',
+    backgroundColor: '#111111',
+    font: '13px Calibri',
+    fontHeight: 13,
+    majorTickHeight: 6,
+    minorTickHeight: 3,
+    drawBorder: false
+  }
+
+  public static get Instance()
+  {
+    return this._instance;
+  }
+}

@@ -1,7 +1,7 @@
 ﻿import {EventListener} from "./event-listener";
 import {EventBase} from "./event-base";
 
-export class EventTarget {
+export class ACEventTarget {
 
   private readonly listeners: { [EventType: string]: Array<EventListener> };
 
