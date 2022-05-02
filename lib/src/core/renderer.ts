@@ -12,7 +12,7 @@ export class Renderer {
 
   private readonly stage: Konva.Stage;
   private handle: number;
-  private objects: RenderableItem[];
+  private renderableItems: RenderableItem[];
 
   private readonly containerMouseUpListener: (e: JQuery.MouseUpEvent) => void;
 
@@ -28,8 +28,8 @@ export class Renderer {
 
   private container: JQuery;
 
-  private backDiv: JQuery;
-  private readonly stageDiv: JQuery;
+  private readonly backgroundElt: JQuery;
+  private readonly stageElt: JQuery;
 
   private isDisposed: boolean = false;
 
@@ -86,14 +86,13 @@ export class Renderer {
       $(container).css('cursor', cursor);
     }
 
-    this.stageDiv = $(container)
-      .clone()
+    this.stageElt = $('<div></div>')
       .css('position', 'absolute')
       .css('width', size.width)
       .css('height', size.height);
 
-    JqueryHelper.setUniqueID(this.stageDiv);
-    container.append(this.stageDiv);
+    JqueryHelper.setUniqueID(this.stageElt);
+    container.append(this.stageElt);
 
     if (!enableNavigation) {
       let overlayDiv = $('<div></div>')
@@ -105,12 +104,12 @@ export class Renderer {
     }
 
     this.stage = new Konva.Stage({
-      container: this.stageDiv.attr('id')!,
+      container: this.stageElt.attr('id')!,
       width: size.width,
       height: size.height
     });
 
-    this.backDiv = backDiv;
+    this.backgroundElt = backDiv;
 
     let self = this;
 
@@ -118,14 +117,14 @@ export class Renderer {
       Renderer.redraw(self)
     });
 
-    this.objects = [];
+    this.renderableItems = [];
   }
 
   protected static createContainerMouseUpListener(self: Renderer): (e: JQuery.MouseUpEvent) => void {
     return (e: JQuery.MouseUpEvent) => {
       e.preventDefault();
       if (UagentUtils.isIphone || UagentUtils.isIpad || UagentUtils.isIpod || UagentUtils.isAndroid) {
-        EventUtils.redirectMouseEventToElement(e.originalEvent!, self.stageDiv[0], false);
+        EventUtils.redirectMouseEventToElement(e.originalEvent!, self.stageElt[0], false);
       }
       self.eventTarget.fireEventOfType(EventType.MouseClicked);
     };
@@ -157,7 +156,7 @@ export class Renderer {
    * @param {RenderableItem} item - Item to add for rendering.
    */
   add(item: RenderableItem) {
-    this.objects.push(item);
+    this.renderableItems.push(item);
     item.attach(this);
   }
 
@@ -176,7 +175,7 @@ export class Renderer {
   setSize(newSize: Size) {
     this.size = newSize;
     this.stage.setSize(newSize);
-    this.backDiv.css('width', newSize.width).css('height', newSize.height);
+    this.backgroundElt.css('width', newSize.width).css('height', newSize.height);
   }
 
   /**
@@ -193,8 +192,8 @@ export class Renderer {
    * @param {RenderableItem} item - Item to remove.
    */
   remove(item: RenderableItem) {
-    var ind = this.objects.indexOf(item);
-    this.objects.splice(ind, 1);
+    var ind = this.renderableItems.indexOf(item);
+    this.renderableItems.splice(ind, 1);
 
     item.detach();
 
@@ -248,9 +247,9 @@ export class Renderer {
   protected static redraw(renderer: Renderer) {
     //Determine layers, which are dirty.
     let dirtyLayersNames: Array<string> = [];
-    for (let obj of renderer.objects) {
-      if (obj.hasDirtyLayers && obj.hasDirtyLayers()) {
-        let objectDirtyLayers = obj.getDirtyLayers();
+    for (let item of renderer.renderableItems) {
+      if (item.hasDirtyLayers && item.hasDirtyLayers()) {
+        let objectDirtyLayers = item.getDirtyLayers();
         dirtyLayersNames = dirtyLayersNames.concat(objectDirtyLayers);
       }
     }
@@ -260,8 +259,8 @@ export class Renderer {
     }
 
     if (dirtyLayersNames.length > 0) {
-      for (let obj of renderer.objects) {
-        obj.markDirty();
+      for (let item of renderer.renderableItems) {
+        item.markDirty();
       }
       renderer.lastRenderTime = new Date();
       renderer.idleFired = false;
