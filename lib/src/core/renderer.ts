@@ -3,17 +3,18 @@ import {RenderableItem} from "./renderable-item";
 import {EventUtils} from "../services/event-utils";
 import {ACEventTarget} from "../model/events/a-c-event-target";
 import {UagentUtils} from "../services/uagent-utils";
-import {RendererOptions, RendererOptionsDefaults} from "../options/renderer-options";
+import {RendererOptionsDefaults} from "../options/renderer-options";
 import {ChartOptions, ChartOptionsDefaults} from "../options/chart-options";
 import {JqueryHelper} from "../services/jquery-helper";
+import Konva from "konva";
 
 export class Renderer {
 
-  private stage: Kinetic.IStage;
+  private readonly stage: Konva.Stage;
   private handle: number;
   private objects: RenderableItem[];
 
-  private _onContainerMouseUpListener = null;
+  private readonly containerMouseUpListener: (e: JQuery.MouseUpEvent) => void;
 
   private lastRenderTime: Date | null = null;
 
@@ -25,12 +26,10 @@ export class Renderer {
 
   private size: Size;
 
-  renderFunc = null;
+  private container: JQuery;
 
-  private container: JQuery<HTMLElement>;
-
-  private backDiv: JQuery<HTMLElement>;
-  private stageDiv: JQuery<HTMLElement>;
+  private backDiv: JQuery;
+  private readonly stageDiv: JQuery;
 
   private isDisposed: boolean = false;
 
@@ -64,7 +63,11 @@ export class Renderer {
     let backgroundStyle = options.rendererOptions.backgroundColor ?? RendererOptionsDefaults.Instance.backgroundColor;
     let cursor = options.rendererCursor ?? ChartOptionsDefaults.Instance.rendererCursor;
 
-    backDiv.css('background-color', backgroundStyle).css('border', borderStyle).css('position', 'absolute').css('width', size.width).css('height', size.height);
+    backDiv.css('background-color', backgroundStyle)
+      .css('border', borderStyle)
+      .css('position', 'absolute')
+      .css('width', size.width)
+      .css('height', size.height);
 
     container.append(backDiv);
 
@@ -76,23 +79,32 @@ export class Renderer {
 
     backDiv.css('margin-left', offsetLeft).css('margin-top', offsetTop);
 
-    container.on('mouseup', Renderer.createContainerMouseUpListener(this));
+    this.containerMouseUpListener = Renderer.createContainerMouseUpListener(this);
+    container.on('mouseup', this.containerMouseUpListener);
 
     if (cursor != undefined) {
       $(container).css('cursor', cursor);
     }
 
-    this.stageDiv = $(container).clone().css('position', 'absolute').css('width', size.width).css('height', size.height);
+    this.stageDiv = $(container)
+      .clone()
+      .css('position', 'absolute')
+      .css('width', size.width)
+      .css('height', size.height);
 
     JqueryHelper.setUniqueID(this.stageDiv);
     container.append(this.stageDiv);
 
     if (!enableNavigation) {
-      let overlayDiv = $('<div></div>').css('position', 'absolute').css('width', size.width).css('height', size.height).css('background-color', 'transparent');
+      let overlayDiv = $('<div></div>')
+        .css('position', 'absolute')
+        .css('width', size.width)
+        .css('height', size.height)
+        .css('background-color', 'transparent');
       container.append(overlayDiv);
     }
 
-    this.stage = new Kinetic.Stage({
+    this.stage = new Konva.Stage({
       container: this.stageDiv.attr('id')!,
       width: size.width,
       height: size.height
@@ -100,115 +112,130 @@ export class Renderer {
 
     this.backDiv = backDiv;
 
-    var self = this;
+    let self = this;
 
-    this._renderFunc = function () {
-      render(self);
-    }
-
-    this.handle = Renderer.requestAnimFrame(this._renderFunc);
+    this.handle = Renderer.requestAnimFrame(() => {
+      Renderer.redraw(self)
+    });
 
     this.objects = [];
   }
 
-  protected static createContainerMouseUpListener(self: Renderer) {
+  protected static createContainerMouseUpListener(self: Renderer): (e: JQuery.MouseUpEvent) => void {
     return (e: JQuery.MouseUpEvent) => {
       e.preventDefault();
       if (UagentUtils.isIphone || UagentUtils.isIpad || UagentUtils.isIpod || UagentUtils.isAndroid) {
-        EventUtils.redirectMouseEventToElement(e, self.stageDiv[0], false);
+        EventUtils.redirectMouseEventToElement(e.originalEvent!, self.stageDiv[0], false);
       }
       self.eventTarget.fireEventOfType(EventType.MouseClicked);
     };
   };
 
 
+  /**
+   * Disposes the renderer
+   */
   dispose() {
-    /// <summary>Disposes renderer.</summary>
-    this._isDisposed = true;
+    this.isDisposed = true;
     if (this.stage != null) {
-      var stages = Kinetic.GlobalObject.stages;
-      stages.splice(stages.indexOf(this.stage), 1);
+      this.stage.destroy();
     }
 
-    this._container.removeEventListener("mouseup", this._onContainerMouseUpListener, false);
+    this.container.off('mouseup', this.containerMouseUpListener);
   }
 
+  /**
+   * Returns renderer's stage instance.
+   * @returns {Konva.Stage}
+   */
   getStage() {
-    /// <summary>Returns renderer's stage instance.</summary>
-    /// <returns type="Kinetic.Stage" />
     return this.stage;
   }
 
-  add(object) {
-    /// <summary>Adds specified renderable item to renderer.</summary>
-    /// <param name="object" type="RenderableItem">Item to add.</param>
-    this.objects.push(object);
-    object.attach(this);
+  /**
+   * Adds specified item for rendering.
+   * @param {RenderableItem} item - Item to add for rendering.
+   */
+  add(item: RenderableItem) {
+    this.objects.push(item);
+    item.attach(this);
   }
 
+  /**
+   * Returns renderer's element size.
+   * @returns {Size}
+   */
   getSize() {
-    /// <summary>Returns renderer size.</summary>
-    /// <returns type="Size" />
-    return this._size;
+    return this.size;
   }
 
-  setSize(newSize) {
-    /// <summary>Sets size of renderer.</summary>
-    /// <param name="newSize" type="Size">New size of renderer.</param>
-    this._size = newSize;
-    this.stage.setSize(newSize.width, newSize.height);
-    //this._stage.setSizeWithoutRerendering(newSize.width, newSize.height);
-    $(this._backDiv).css('width', newSize.width).css('height', newSize.height);
+  /**
+   * Sets size of renderer's element
+   * @param {Size} newSize - New size of renderer's element
+   */
+  setSize(newSize: Size) {
+    this.size = newSize;
+    this.stage.setSize(newSize);
+    this.backDiv.css('width', newSize.width).css('height', newSize.height);
   }
 
-  getAvailableSize(margin) {
-    /// <summary>Returns available size on plotter for element with specified margin.</summary>
-    /// <param name="margin" type="Number">Element margin.</param>
-    /// <returns type="Size" />
-    return new Size(this._size.width - 2 * margin, this._size.height - 2 * margin);
+  /**
+   * Returns available size on renderer for element with specified margin.
+   * @param {number} margin - Element margin.
+   * @returns number
+   */
+  getAvailableSize(margin: number) {
+    return new Size(this.size.width - 2 * margin, this.size.height - 2 * margin);
   }
 
-  remove(object) {
-    var ind = this.objects.indexOf(object);
+  /**
+   * Removes specified renderable item from renderer.
+   * @param {RenderableItem} item - Item to remove.
+   */
+  remove(item: RenderableItem) {
+    var ind = this.objects.indexOf(item);
     this.objects.splice(ind, 1);
 
-    object.detach(this);
+    item.detach();
 
-    var dependantLayers = object.getDependantLayers();
-
-    for (var i = 0; i < dependantLayers.length; i++) {
-      var layer = dependantLayers[i];
-      this.stage.getLayer(layer).draw();
+    for (let layerName of item.getDependantLayers()) {
+      this.stage.findOne(layerName).draw();
     }
   }
 
+  /**
+   * Returns renderer's containing HTML element.
+   * @returns {HTMLElement}
+   */
   getContainer() {
-    /// <summary>Returns element's parent container.</summary>
-    /// <returns type="Element" />
-    return this.stage.getContainer();
+    return this.stage.container();
   }
 
-  createLayer(layerName) {
-    /// <summary>Creates layer on renderer with specified name.</summary>
-    /// <param name="layerName" type="String">Name of layer.</param>
-    var stage = this.stage;
-    var layer = new Kinetic.Layer();
-    layer.name = layerName;
+  /**
+   * Creates layer on renderer with specified name.
+   * @param {string} layerName - Name of the layer.
+   */
+  createLayer(layerName: string) {
+    let stage = this.stage;
+    let layer = new Konva.Layer({name: layerName});
     stage.add(layer);
   }
 
-  createLayers(layersNames) {
-    /// <summary>Creates layers on renderer with specified names.</summary>
-    /// <param name="layersNames" type="Array">Array of layers names.</param>
-    for (var i = 0; i < layersNames.length; i++) {
-      this.createLayer(layersNames[i]);
-
+  /**
+   * Creates multiple layers on renderer with specified names.
+   * @param {Array<string>} layersNames - Array of layers names.
+   */
+  createLayers(layersNames: Array<string>) {
+    for (let layerName of layersNames) {
+      this.createLayer(layerName);
     }
   }
 
-  forceRender() {
-    /// <summary>Forses renderer to render. Must be called only in special cases.</summary>
-    Renderer.render(this);
+  /**
+   * Forces renderer to redraw the entire scene.
+   */
+  forceRedraw() {
+    Renderer.redraw(this);
   }
 
   protected static requestAnimFrame: (callback: FrameRequestCallback) => number = (function () {
@@ -218,7 +245,7 @@ export class Renderer {
       };
   })();
 
-  static render(renderer: Renderer) {
+  protected static redraw(renderer: Renderer) {
     //Determine layers, which are dirty.
     let dirtyLayersNames: Array<string> = [];
     for (let obj of renderer.objects) {
@@ -229,7 +256,7 @@ export class Renderer {
     }
     //Render each dirty layer.
     for (let layerName of dirtyLayersNames) {
-      renderer.stage.find(layerName).draw();
+      renderer.stage.findOne(layerName).draw();
     }
 
     if (dirtyLayersNames.length > 0) {
@@ -248,7 +275,7 @@ export class Renderer {
     }
 
     if (!renderer.isDisposed) {
-      Renderer.requestAnimFrame(renderer.renderFunc);
+      Renderer.requestAnimFrame(() => Renderer.redraw((renderer)));
     }
   }
 }
