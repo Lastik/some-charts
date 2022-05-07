@@ -4,7 +4,7 @@
 /// <reference path="../core/commonrenderableitem.js" />
 /// <reference path="../../utils/kinetic-v3.6.1.js" />
 /// <reference path="../common/range.js" />
-import {EventBase} from "../model/events/event-base";
+import {EventBase} from "../../model/events/event-base";
 
 var TickCountChange = { "Increase": -1, "OK": 0, "Decrease": 1 };
 var Orientation = { "Horizontal": 0, "Vertical": 1 };
