@@ -32,7 +32,7 @@ export interface ChartOptions {
   /**
    *  Chart legend options
    */
-  legendOptions: LegendOptions;
+  legendOptions?: LegendOptions;
   /**
    *  Chart plot options
    */

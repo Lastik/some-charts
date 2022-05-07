@@ -1,6 +1,6 @@
 import {Size} from "../model/size";
 import {LegendItem} from "../model/legend-item";
-import {LegendOptions} from "../options/legend-options";
+import {LegendOptions, LegendOptionsDefaults} from "../options/legend-options";
 
 export class Legend {
 
@@ -17,7 +17,7 @@ export class Legend {
    * @param {Size} size - Legend element size.
    * @param {LegendOptions} options - Legend element display options.
    */
-  constructor(elementID: string, size: Size, options: LegendOptions) {
+  constructor(elementID: string, size: Size, options?: LegendOptions) {
 
     let container = $(elementID);
 
@@ -35,7 +35,7 @@ export class Legend {
 
     container.append(this.uiElt);
 
-    this.options = options;
+    this.options = options ?? LegendOptionsDefaults.Instance;
   }
 
   /**

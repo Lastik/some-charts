@@ -1,26 +1,53 @@
-﻿/// <reference path="../common/size.js" />
-/// <reference path="../core/renderableitem.js" />
-/// <reference path="../common/point.js" />
-/// <reference path="../core/commonrenderableitem.js" />
-/// <reference path="../../utils/kinetic-v3.6.1.js" />
-/// <reference path="../common/range.js" />
-import {EventBase} from "../../model/events/event-base";
+﻿import {CommonRenderableItem} from "../../core/common-renderable-item";
+import {NumericPoint} from "../../model/point/numeric-point";
+import {Range} from "../../model/range";
+import {Size} from "../../model/size";
+import {AxisOptions} from "../../options/axis-options";
 
-var TickCountChange = { "Increase": -1, "OK": 0, "Decrease": 1 };
-var Orientation = { "Horizontal": 0, "Vertical": 1 };
-
-
-
-export class AxisBase  {
+export class AxisBase extends CommonRenderableItem {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
    */
   public static readonly textVerticalOffsetMultiplier: number = 0.17;
+
+  private location: NumericPoint;
+  private range: Range;
+  private size: Size | null;
+  private orientation: AxisOrientation;
+
+  public constructor(location: NumericPoint,
+                     range: Range,
+                     size: Size,
+                     orientation: AxisOrientation,
+                     options?: AxisOptions) {
+    super();
+
+    this.location = location;
+    this.range = range;
+    this.size = size;
+
+    this.markDirty();
+    this.orientation = orientation;
+
+    /******OPTIONS*******/
+    this.font = "10pt Calibri";
+    this.fontHeight = 15;
+    this.foregroundColor = "black";
+    this.backgroundColor = "yellow";
+    this.majorTickHeight = 6;
+    this.minorTickHeight = 3;
+    this.drawBorder = true;
+  }
+
+  getDependantLayers(): Array<string> {
+    return undefined;
+  }
 }
 
 (function (window) {
     var AxisBase = function (location, range, size, orientation) {
+
         /// <summary>New instance of base axis class.</summary>
         /// <param name="location" type="Point">NumericAxis left top location on renderer.</param>
         /// <param name="range" type="Range">NumericAxis visible range.</param>
