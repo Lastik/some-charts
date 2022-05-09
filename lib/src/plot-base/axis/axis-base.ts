@@ -2,9 +2,11 @@
 import {NumericPoint} from "../../model/point/numeric-point";
 import {Range} from "../../model/range";
 import {Size} from "../../model/size";
-import {AxisOptions} from "../../options/axis-options";
+import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
+import Konva from "konva";
+import {MathHelper} from "../../services/math-helper";
 
-export class AxisBase extends CommonRenderableItem {
+export abstract class AxisBase extends CommonRenderableItem {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -15,6 +17,9 @@ export class AxisBase extends CommonRenderableItem {
   private range: Range;
   private size: Size | null;
   private orientation: AxisOrientation;
+  private options: AxisOptions;
+
+  private border: Konva.Shape;
 
   public constructor(location: NumericPoint,
                      range: Range,
@@ -30,84 +35,58 @@ export class AxisBase extends CommonRenderableItem {
     this.markDirty();
     this.orientation = orientation;
 
-    /******OPTIONS*******/
-    this.font = "10pt Calibri";
-    this.fontHeight = 15;
-    this.foregroundColor = "black";
-    this.backgroundColor = "yellow";
-    this.majorTickHeight = 6;
-    this.minorTickHeight = 3;
-    this.drawBorder = true;
+    this.options = options ?? AxisOptionsDefaults.Instance;
+
+    let axis = this;
+
+    this.border = new Konva.Shape({
+      fill: this.options.backgroundColor,
+      stroke: this.options.foregroundColor,
+      strokeWidth: 1,
+      sceneFunc: function (context, shape) {
+        let location = axis.location;
+        let size = axis.size;
+
+        let roundedX = MathHelper.optimizeValue(location.x);
+        let roundedY = MathHelper.optimizeValue(location.y);
+
+        let roundedWidth = MathHelper.optimizeValue(size!.width);
+        let roundedHeight = MathHelper.optimizeValue(size!.height);
+        if (axis.options.drawBorder) {
+          context.strokeRect(roundedX, roundedY, roundedWidth, roundedHeight);
+        }
+        context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
+      }
+    });
   }
+
+  protected abstract get axisShape(): Konva.Shape;
 
   getDependantLayers(): Array<string> {
     return undefined;
+  }
+
+  override attach(renderer) {
+    /// <summary>Attaches axis to specified renderer.</summary>
+    /// <param name="renderer" type="Renderer">Renderer to attach to.</param>
+    this._attachBase(renderer);
+
+    this.initializeFromElement(renderer.getContainer());
+
+    var stage = renderer.getStage();
+    var layer = stage.getLayer('chartLayer');
+    this.chartLayer = layer;
+
+    this.update(this.location, this.range, this.size);
+
+    layer.add(this.border);
+    layer.add(this.compositeShape);
   }
 }
 
 (function (window) {
     var AxisBase = function (location, range, size, orientation) {
 
-        /// <summary>New instance of base axis class.</summary>
-        /// <param name="location" type="Point">NumericAxis left top location on renderer.</param>
-        /// <param name="range" type="Range">NumericAxis visible range.</param>
-        /// <param name="size" type="Size">NumericAxis size (width and height).</param>
-        /// <param name="orientation" type="Number">NumericAxis orientation.</param>
-
-        //Call base constructor.
-        CommonRenderableItem.call(this);
-
-
-        // Axis state properties.
-        // Although, these properties are public (they don't have _), it is not recommended to modify them from outside of class or subclasses.
-        // They must be used as as readonly properties.
-        this.location = location;
-        this.range = range;
-        this.size = size;
-
-        // Axis internal properties.
-        // They must not be readen or modified.
-        // There are special methods for their read/write operations.
-        this._actualSize = new Size(size.width, size.height);
-        this._isDirty = true;
-        this._orientation = orientation;
-
-        /******OPTIONS*******/
-        this.font = "10pt Calibri";
-        this.fontHeight = 15;
-        this.foregroundColor = "black";
-        this.backgroundColor = "yellow";
-        this.majorTickHeight = 6;
-        this.minorTickHeight = 3;
-        this.drawBorder = true;
-        /********************/
-
-        this.compositeShape = new Kinetic.Shape({ drawFunc: function (){ } });
-        this.border = new Kinetic.Shape({
-            drawFunc: function () {
-                var context = this.getContext();
-                var axis = this.axis;
-                var location = axis.location;
-                context.strokeStyle = axis.foregroundColor;
-                context.fillStyle = axis.backgroundColor;
-                context.lineWidth = 1;
-
-                var size = axis._actualSize;
-
-                var roundX = MathHelper.optimizeValue(location.x);
-                var roundY = MathHelper.optimizeValue(location.y);
-
-                var roundWidth = MathHelper.optimizeValue(size.width);
-                var roundHeight = MathHelper.optimizeValue(size.height);
-                if (axis.drawBorder) {
-                    context.strokeRect(roundX, roundY, roundWidth, roundHeight);
-                }
-                context.fillRect(roundX, roundY, roundWidth, roundHeight);
-            }
-        });
-
-        this.compositeShape.axis = this;
-        this.border.axis = this;
     }
 
     AxisBase.prototype = new CommonRenderableItem();
