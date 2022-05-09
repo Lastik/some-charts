@@ -1,12 +1,14 @@
-﻿import {CommonRenderableItem} from "../../core/common-renderable-item";
+﻿import {CommonChartElement} from "../../core/common-chart-element";
 import {NumericPoint} from "../../model/point/numeric-point";
 import {Range} from "../../model/range";
 import {Size} from "../../model/size";
 import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
 import Konva from "konva";
 import {MathHelper} from "../../services/math-helper";
+import {Renderer} from "../../core/renderer";
+import {Chart} from "../chart";
 
-export abstract class AxisBase extends CommonRenderableItem {
+export abstract class AxisBase extends CommonChartElement {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -20,6 +22,7 @@ export abstract class AxisBase extends CommonRenderableItem {
   private options: AxisOptions;
 
   private border: Konva.Shape;
+  private chartLayer: Konva.Layer | undefined;
 
   public constructor(location: NumericPoint,
                      range: Range,
@@ -66,21 +69,18 @@ export abstract class AxisBase extends CommonRenderableItem {
     return undefined;
   }
 
-  override attach(renderer) {
+  override attach(chart: Chart) {
     /// <summary>Attaches axis to specified renderer.</summary>
     /// <param name="renderer" type="Renderer">Renderer to attach to.</param>
-    this._attachBase(renderer);
+    super.attach(chart);
 
-    this.initializeFromElement(renderer.getContainer());
-
-    var stage = renderer.getStage();
-    var layer = stage.getLayer('chartLayer');
-    this.chartLayer = layer;
+    let chartLayer = chart.getChartLayer();
+    this.chartLayer = chartLayer;
 
     this.update(this.location, this.range, this.size);
 
-    layer.add(this.border);
-    layer.add(this.compositeShape);
+    chartLayer?.add(this.border);
+    chartLayer?.add(this.axisShape);
   }
 }
 
@@ -89,7 +89,7 @@ export abstract class AxisBase extends CommonRenderableItem {
 
     }
 
-    AxisBase.prototype = new CommonRenderableItem();
+    AxisBase.prototype = new CommonChartElement();
 
     var p = AxisBase.prototype;
 

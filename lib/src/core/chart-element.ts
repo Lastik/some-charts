@@ -1,29 +1,30 @@
 ﻿import {Renderer} from "./renderer";
+import {Chart} from "../plot-base/chart";
 
 /**
- * Base class for all items, rendered by a renderer.
+ * Base class for all elements, placed on chart.
  */
-export abstract class RenderableItem {
+export abstract class ChartElement {
 
-  private renderer?: Renderer;
+  private chart?: Chart;
 
   protected constructor() {
-    this.renderer = undefined;
+    this.chart = undefined;
   }
 
   /**
-   * Attaches item the to renderer.
-   * @param {Renderer} renderer - Renderer to use for item rendering.
+   * Attaches item the to chart.
+   * @param {Chart} chart - Chart, where this element is placed.
    */
-  attach(renderer: Renderer) {
-    this.renderer = renderer;
+  attach(chart: Chart) {
+    this.chart = chart;
   }
 
   /**
-   * Detaches item the to renderer.
+   * Detaches item from the chart.
    */
   detach() {
-    this.renderer = undefined;
+    this.chart = undefined;
   }
 
   /**
@@ -51,10 +52,18 @@ export abstract class RenderableItem {
   abstract markDirty(): void;
 
   /**
-   * Returns renderer, this item is attached to.
+   * Returns chart, where this element is placed.
+   * @returns Chart
+   */
+  getChart(): Chart | undefined {
+    return this.chart;
+  }
+
+  /**
+   * Returns renderer, which renders this chart element.
    * @returns Renderer
    */
   getRenderer(): Renderer | undefined {
-    return this.renderer;
+    return this.chart?.getRenderer();
   }
 }
