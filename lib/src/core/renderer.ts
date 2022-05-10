@@ -1,5 +1,5 @@
 import {Size} from "../model/size";
-import {ChartElement} from "./chart-element";
+import {RenderableItem} from "./renderable-item";
 import {EventUtils} from "../services/event-utils";
 import {ACEventTarget} from "../model/events/a-c-event-target";
 import {UagentUtils} from "../services/uagent-utils";
@@ -7,13 +7,12 @@ import {RendererOptionsDefaults} from "../options/renderer-options";
 import {ChartOptions, ChartOptionsDefaults} from "../options/chart-options";
 import {JqueryHelper} from "../services/jquery-helper";
 import Konva from "konva";
-import {Chart} from "../plot-base/chart";
 
 export class Renderer {
 
   private readonly stage: Konva.Stage;
   private handle: number;
-  private chart?: Chart;
+  private renderableItems: RenderableItem[];
 
   private readonly containerMouseUpListener: (e: JQuery.MouseUpEvent) => void;
 
@@ -118,7 +117,7 @@ export class Renderer {
       Renderer.redraw(self)
     });
 
-    this.chart = undefined;
+    this.renderableItems = [];
   }
 
   protected static createContainerMouseUpListener(self: Renderer): (e: JQuery.MouseUpEvent) => void {
@@ -153,12 +152,12 @@ export class Renderer {
   }
 
   /**
-   * Attaches this renderer to the chart.
-   * @param {Chart} chart - chart to render with this renderer.
+   * Adds specified item for rendering.
+   * @param {RenderableItem} item - Item to add for rendering.
    */
-  attach(chart: Chart) {
-    this.chart = chart;
-    chart.attachTo(this);
+  add(item: RenderableItem) {
+    this.renderableItems.push(item);
+    item.attach(this);
   }
 
   /**
@@ -189,11 +188,18 @@ export class Renderer {
   }
 
   /**
-   * Detaches the attached chart from this renderer.
+   * Removes specified renderable item from renderer.
+   * @param {RenderableItem} item - Item to remove.
    */
-  detach() {
-    this.chart?.detach();
-    this.chart = undefined;
+  remove(item: RenderableItem) {
+    var ind = this.renderableItems.indexOf(item);
+    this.renderableItems.splice(ind, 1);
+
+    item.detach();
+
+    for (let layerName of item.getDependantLayers()) {
+      this.stage.findOne(layerName).draw();
+    }
   }
 
   /**
@@ -241,7 +247,7 @@ export class Renderer {
   protected static redraw(renderer: Renderer) {
     //Determine layers, which are dirty.
     let dirtyLayersNames: Array<string> = [];
-    for (let item of renderer.chart?.chartElements!) {
+    for (let item of renderer.renderableItems) {
       if (item.hasDirtyLayers && item.hasDirtyLayers()) {
         let objectDirtyLayers = item.getDirtyLayers();
         dirtyLayersNames = dirtyLayersNames.concat(objectDirtyLayers);
@@ -253,7 +259,7 @@ export class Renderer {
     }
 
     if (dirtyLayersNames.length > 0) {
-      for (let item of renderer.chart?.chartElements!) {
+      for (let item of renderer.renderableItems) {
         item.markDirty();
       }
       renderer.lastRenderTime = new Date();

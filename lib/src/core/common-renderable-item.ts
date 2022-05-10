@@ -1,9 +1,9 @@
-﻿import {ChartElement} from "./chart-element";
+﻿import {RenderableItem} from "./renderable-item";
 
 /**
- * Common implementation of ChartElement class.
+ * Common implementation of RenderableItem class.
  */
-export abstract class CommonChartElement extends ChartElement {
+export abstract class CommonRenderableItem extends RenderableItem {
 
   private isDirty: boolean;
 
