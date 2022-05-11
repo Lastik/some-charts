@@ -1,12 +1,15 @@
-﻿import {CommonRenderableItem} from "../../core/common-renderable-item";
+﻿
 import {NumericPoint} from "../../model/point/numeric-point";
 import {Range} from "../../model/range";
 import {Size} from "../../model/size";
 import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
 import Konva from "konva";
 import {MathHelper} from "../../services/math-helper";
+import {Renderer} from "../../core/renderer";
+import {ChartRenderableItem} from "../../core/chart-renderable-item";
+import {Chart} from "../chart";
 
-export abstract class AxisBase extends CommonRenderableItem {
+export abstract class AxisBase extends ChartRenderableItem {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -20,6 +23,7 @@ export abstract class AxisBase extends CommonRenderableItem {
   private options: AxisOptions;
 
   private border: Konva.Shape;
+  private layer?: Konva.Layer;
 
   public constructor(location: NumericPoint,
                      range: Range,
@@ -62,25 +66,26 @@ export abstract class AxisBase extends CommonRenderableItem {
 
   protected abstract get axisShape(): Konva.Shape;
 
-  getDependantLayers(): Array<string> {
-    return undefined;
+  override getDependantLayers(): Array<string> {
+    return ["visibleObjects"];
   }
 
-  override attach(renderer) {
-    /// <summary>Attaches axis to specified renderer.</summary>
-    /// <param name="renderer" type="Renderer">Renderer to attach to.</param>
-    this._attachBase(renderer);
+  override placeOnChart(chart?: Chart) {
+    super.placeOnChart(chart);
 
-    this.initializeFromElement(renderer.getContainer());
+    if(chart) {
+      let visibleObjectsLayer = chart!.getLayer('visibleObjects');
+      this.layer = visibleObjectsLayer;
 
-    var stage = renderer.getStage();
-    var layer = stage.getLayer('chartLayer');
-    this.chartLayer = layer;
+      visibleObjectsLayer.add(this.border);
+      visibleObjectsLayer.add(this.axisShape);
 
-    this.update(this.location, this.range, this.size);
+      this.updateAxisSize();
+    }
+  }
 
-    layer.add(this.border);
-    layer.add(this.compositeShape);
+  private updateAxisSize() {
+
   }
 }
 
@@ -89,7 +94,7 @@ export abstract class AxisBase extends CommonRenderableItem {
 
     }
 
-    AxisBase.prototype = new CommonRenderableItem();
+    AxisBase.prototype = new ChartRenderableItem();
 
     var p = AxisBase.prototype;
 
@@ -124,7 +129,7 @@ export abstract class AxisBase extends CommonRenderableItem {
         this.initializeFromElement(renderer.getContainer());
 
         var stage = renderer.getStage();
-        var layer = stage.getLayer('chartLayer');
+        var layer = stage.getLayer('visibleObjects');
         this.chartLayer = layer;
 
         this.update(this.location, this.range, this.size);
@@ -209,7 +214,7 @@ export abstract class AxisBase extends CommonRenderableItem {
         /// <param name="renderer" type="Renderer">Renderer to detach from.</param>
         this._detachBase(renderer);
         var stage = renderer.getStage();
-        var layer = stage.getLayer('chartLayer');
+        var layer = stage.getLayer('visibleObjects');
         layer.remove(this.compositeShape);
         layer.remove(this.border);
     }
@@ -217,7 +222,7 @@ export abstract class AxisBase extends CommonRenderableItem {
     p.getDependantLayers = function () {
         /// <summary>Returns axis dependant layers.</summary>
         /// <returns type="Array" />
-        return new Array("chartLayer");
+        return new Array("visibleObjects");
     }
 
     p.getCoordinateFromTick = function (tick, screenWidth, screenHeight, range) {
