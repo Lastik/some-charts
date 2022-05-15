@@ -1,4 +1,5 @@
-import {GridOptions} from "./grid-options";
+import {FontInUnits} from "../model/font/font-in-units";
+import {FontUnits} from "../model/font/font-units";
 
 /**
  * Chart header options
@@ -11,7 +12,7 @@ export interface HeaderOptions {
   /**
    * Header font
    */
-  headerFont: string;
+  headerFont: FontInUnits;
   /**
    * Header foreground color
    */
@@ -26,7 +27,11 @@ export class HeaderOptionsDefaults
 {
   private static _instance: HeaderOptions = {
     headerText: '',
-    headerFont: '16pt Calibri',
+    headerFont: {
+      size: 16,
+      units: FontUnits.Points,
+      family: 'Calibri'
+    },
     headerForegroundColor: 'white',
     headerVerticalMargin: 6
   }

@@ -13,6 +13,13 @@ export function ChartContent<TBase extends abstract new (...args: any[]) => any>
     }
 
     /**
+     * Removes this item from the chart.
+     */
+    removeFromChart() {
+      this._chart = undefined;
+    }
+
+    /**
      * Returns related chart
      * @returns {Chart} chart.
      */

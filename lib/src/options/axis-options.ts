@@ -1,6 +1,9 @@
 /**
  * Chart renderer options
  */
+import {FontInPx} from "../model/font/font-in-px";
+
+
 export interface AxisOptions {
   /**
    * Axis foreground color
@@ -13,11 +16,7 @@ export interface AxisOptions {
   /**
    * Axis font
    */
-  font: string;
-  /**
-   * Axis font height
-   */
-  fontHeight: number;
+  font: FontInPx;
   /**
    * Height of axis major ticks
    */
@@ -37,8 +36,10 @@ export class AxisOptionsDefaults
   private static _instance: AxisOptions = {
     foregroundColor: 'white',
     backgroundColor: '#111111',
-    font: '13px Calibri',
-    fontHeight: 13,
+    font: {
+      size: 13,
+      family: 'Calibri'
+    },
     majorTickHeight: 6,
     minorTickHeight: 3,
     drawBorder: false

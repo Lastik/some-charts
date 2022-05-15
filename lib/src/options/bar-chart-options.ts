@@ -1,4 +1,5 @@
 import {ChartOptions} from "./chart-options";
+import {FontInUnits} from "../model/font/font-in-units";
 /**
  * Chart renderer options
  */
@@ -10,7 +11,7 @@ export interface BarChartOptions extends ChartOptions{
   /**
    * Bars labels font.
    */
-  labelsFont: string;
+  labelsFont: FontInUnits;
   /**
    * Bars labels foreground color.
    */
