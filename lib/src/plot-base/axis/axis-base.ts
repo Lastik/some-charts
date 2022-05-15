@@ -66,6 +66,10 @@ export abstract class AxisBase extends ChartRenderableItem {
 
   protected abstract get axisShape(): Konva.Shape;
 
+  /**
+   * Returns axis dependant layers.
+   * @returns {Array<string>} Axis dependant layers.
+   */
   override getDependantLayers(): Array<string> {
     return ["visibleObjects"];
   }
@@ -84,8 +88,24 @@ export abstract class AxisBase extends ChartRenderableItem {
     }
   }
 
-  private updateAxisSize() {
+  protected updateAxisSize() { }
 
+  /**
+   * Returns axis size
+   * @returns {Size} axis size.
+   */
+  getSize() {
+    /// <summary>Returns axis actual width.</summary>
+    /// <returns type="Number" />
+    return this.size;
+  }
+
+  /**
+   * Returns axis orientation
+   * @returns {AxisOrientation} axis orientation.
+   */
+  getOrientation() {
+    return this.orientation;
   }
 }
 
