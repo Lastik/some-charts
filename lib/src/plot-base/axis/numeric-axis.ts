@@ -2,7 +2,6 @@
 import {AxisBase} from "./axis-base";
 import Konva from "konva";
 import {NumericPoint} from "../../model/point/numeric-point";
-import {Range} from "../../model/range";
 import {Size} from "../../model/size";
 
 export class NumericAxis extends AxisBase {

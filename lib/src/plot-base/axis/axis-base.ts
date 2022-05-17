@@ -1,5 +1,4 @@
 ﻿import {NumericPoint} from "../../model/point/numeric-point";
-import {Range} from "../../model/range";
 import {Size} from "../../model/size";
 import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
 import Konva from "konva";

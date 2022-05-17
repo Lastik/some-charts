@@ -1,6 +1,7 @@
 ﻿import {Range} from '../model/range';
 import {DataRect} from '../model/data-rect';
 import {NumericPoint} from '../model/point/numeric-point';
+import {NumericRange} from "../model/numeric-range";
 
 export class CoordinateTransform {
 
@@ -11,7 +12,7 @@ export class CoordinateTransform {
    * @param {number} screenWidth - Screen width.
    * @returns {number}
    */
-  public static dataToScreenX(value: number, visible: Range, screenWidth: number): number {
+  public static dataToScreenX(value: number, visible: NumericRange, screenWidth: number): number {
     return CoordinateTransform.dataToScreenDim(value, visible, screenWidth);
   }
 
@@ -22,11 +23,11 @@ export class CoordinateTransform {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public static dataToScreenY(value: number, visible: Range, screenHeight: number): number {
+  public static dataToScreenY(value: number, visible: NumericRange, screenHeight: number): number {
     return screenHeight - CoordinateTransform.dataToScreenDim(value, visible, screenHeight);
   }
 
-  private static dataToScreenDim(value: number, visible: Range, screenDim: number): number {
+  private static dataToScreenDim(value: number, visible: NumericRange, screenDim: number): number {
     return (value - visible.min) * screenDim / (visible.max - visible.min);
   }
 
@@ -37,7 +38,7 @@ export class CoordinateTransform {
    * @param {number} screenWidth - Screen width.
    * @returns {number}
    */
-  public static screenToDataX(value: number, visible: Range, screenWidth: number): number {
+  public static screenToDataX(value: number, visible: NumericRange, screenWidth: number): number {
     return value * (visible.max - visible.min) / screenWidth + visible.min;
   }
 
@@ -48,7 +49,7 @@ export class CoordinateTransform {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public static screenToDataY(value: number, visible: Range, screenHeight: number): number {
+  public static screenToDataY(value: number, visible: NumericRange, screenHeight: number): number {
     return (screenHeight - value) * (visible.max - visible.min) / screenHeight + visible.min;
   }
 

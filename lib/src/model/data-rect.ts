@@ -1,4 +1,4 @@
-﻿import {Range} from './range';
+﻿import {NumericRange} from './numeric-range';
 import {Size} from './size';
 import {NumericPoint} from './point/numeric-point';
 
@@ -27,16 +27,16 @@ export class DataRect {
    * Returns horizontal range for this data rectangle.
    * @returns {Range}
    */
-  getHorizontalRange(): Range {
-    return new Range(this.minX, this.minX + this.width, false);
+  getHorizontalRange(): NumericRange {
+    return new NumericRange(this.minX, this.minX + this.width, false);
   }
 
   /**
    * Returns vertical range for this data rectangle.
    * @returns {Range}
    */
-  getVerticalRange(): Range {
-    return new Range(this.minY, this.minY + this.height, false);
+  getVerticalRange(): NumericRange {
+    return new NumericRange(this.minY, this.minY + this.height, false);
   }
 
   /**
