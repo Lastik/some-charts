@@ -13,10 +13,10 @@ export class NumericAxis extends AxisBase {
    * @param {Range} range - Axis range (it's min and max values)
    * @param {Size} size - Axis size.
    * @param {AxisOrientation} orientation - Axis orientation.
-   * @returns {Array<string>} Axis dependant layers.
    */
   constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation) {
-    super();
+    super(location, range, size, orientation);
+
   }
 
   protected get axisShape(): Konva.Shape {
