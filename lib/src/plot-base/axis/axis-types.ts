@@ -1,4 +1,5 @@
 enum AxisTypes {
-  Horizontal = 0,
-  Vertical = 1
+  NumericAxis = 0,
+  StringAxis = 1 ,
+  None = 2
 }
