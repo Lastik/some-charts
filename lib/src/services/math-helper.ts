@@ -45,4 +45,32 @@ export class MathHelper {
   private static truncateValue(value: number) {
     return (value + .5) | 0
   }
+
+  public static clamp(val: number, min: number, max: number) {
+    return Math.max(min, Math.min(val, max))
+  }
+
+  public static toFixed(num: number, digits: number) {
+    return Math.round(num * Math.pow(10, digits)) / Math.pow(10, digits);
+  }
+
+  public static floor(number: number, rem: number) {
+    if (rem <= 0)
+      rem = MathHelper.clamp(-rem, 0, 15);
+    let pow = Math.pow(10, rem - 1);
+    return pow * Math.floor(number / Math.pow(10, rem - 1));
+  }
+
+  public static round(number: number, rem: number) {
+    if (rem <= 0) {
+      rem = MathHelper.clamp(-rem, 0, 15);
+      return MathHelper.toFixed(number, rem);
+    }
+    let pow = Math.pow(10, rem - 1);
+    return pow * Math.round(number / Math.pow(10, rem - 1));
+  }
+
+  public static log10(number: number) {
+    return Math.log(number) / 2.302585092994046;
+  }
 }
