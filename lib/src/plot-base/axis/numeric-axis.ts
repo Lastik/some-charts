@@ -3,8 +3,13 @@ import {AxisBase} from "./axis-base";
 import Konva from "konva";
 import {NumericPoint} from "../../model/point/numeric-point";
 import {Size} from "../../model/size";
+import {NumericMajorTicksGenerator} from "./ticks/numeric/numeric-major-ticks-generator";
+import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
+import {NumericMinorTicksGenerator} from "./ticks/numeric/numeric-minor-ticks-generator";
 
 export class NumericAxis extends AxisBase {
+  private majorTicksGenerator: NumericMajorTicksGenerator;
+  private minorTicksGenerator: NumericMinorTicksGenerator;
 
   /**
    * Creates axis with numbers and ticks on it.
@@ -12,10 +17,13 @@ export class NumericAxis extends AxisBase {
    * @param {Range} range - Axis range (it's min and max values)
    * @param {Size} size - Axis size.
    * @param {AxisOrientation} orientation - Axis orientation.
+   * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation) {
+  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions) {
     super(location, range, size, orientation);
 
+    this.majorTicksGenerator = new NumericMajorTicksGenerator(options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
+    this.minorTicksGenerator = new NumericMinorTicksGenerator(options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
   }
 
   protected get axisShape(): Konva.Shape {

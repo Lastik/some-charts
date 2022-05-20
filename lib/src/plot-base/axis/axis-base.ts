@@ -8,6 +8,7 @@ import {Chart} from "../chart";
 import {CoordinateTransform} from "../../services/coordinate-transform";
 import {TextMeasureUtils} from "../../services/text-measure-utils";
 import {FontHelper} from "../../services/font-helper";
+import {NumericRange} from "../../model/numeric-range";
 
 export abstract class AxisBase extends ChartRenderableItem {
   /**
@@ -123,7 +124,7 @@ export abstract class AxisBase extends ChartRenderableItem {
    * Returns tick's screen coordinate
    * @returns {number} Tick's screen coordinate.
    */
-  protected getTickScreenCoordinate(tick: number, screenWidth: number, screenHeight: number, range: Range) {
+  protected getTickScreenCoordinate(tick: number, screenWidth: number, screenHeight: number, range: NumericRange) {
     if (this.orientation == AxisOrientation.Horizontal)
       return CoordinateTransform.dataToScreenX(tick, range, screenWidth);
     else
@@ -135,7 +136,7 @@ export abstract class AxisBase extends ChartRenderableItem {
    * @param {string} label - Label to measure.
    * @returns {Size} Label's size.
    */
-  protected generateLabelSize(label: string) {
+  protected generateLabelSize(label: string): Size {
     let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options.font), label);
     let height = this.options.font.size;
     return new Size(width, height);

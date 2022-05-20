@@ -10,7 +10,7 @@ export class NumericMajorTicksGenerator implements MajorTicksGenerator<number> {
 
   protected majorTickHeight: number;
 
-  constructor(majorTickHeight: number, minorTicksCount?: number) {
+  constructor(majorTickHeight: number) {
     this.majorTickHeight = majorTickHeight;
   }
 
