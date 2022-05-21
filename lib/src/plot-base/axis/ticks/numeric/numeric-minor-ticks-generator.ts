@@ -29,14 +29,15 @@ export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
       let maxBound = lastTick.value > range.max ? range.max : lastTick.value;
 
       let x = majorTicks[1].value - step;
+      let tickIndex = 0;
       while (x >= minBound) {
-        res.push({value: x, length: this.minorTickHeight});
+        res.push({value: x, length: this.minorTickHeight, index: tickIndex++});
         x -= step;
       }
 
       x = majorTicks[majorTicks.length - 2].value + step;
       while (x <= maxBound) {
-        res.push({value: x, length: this.minorTickHeight});
+        res.push({value: x, length: this.minorTickHeight, index: tickIndex++});
         x += step;
       }
 
@@ -44,7 +45,7 @@ export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
         x = majorTicks[i].value + step;
 
         for (let j = 0; j < this.minorTicksCount; j++) {
-          res.push({value: x, length: this.minorTickHeight});
+          res.push({value: x, length: this.minorTickHeight, index: tickIndex++});
           x += step;
         }
       }

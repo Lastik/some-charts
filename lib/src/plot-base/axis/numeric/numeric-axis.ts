@@ -8,12 +8,11 @@ import {Size} from "../../../model/size";
 import {AxisOptions, AxisOptionsDefaults} from "../../../options/axis-options";
 import {MathHelper} from "../../../services/math-helper";
 import {FontHelper} from "../../../services/font-helper";
+import {tick} from "@angular/core/testing";
 
 export class NumericAxis extends AxisBase<number> {
   private majorTicksGenerator: NumericMajorTicksGenerator;
   private minorTicksGenerator: NumericMinorTicksGenerator;
-
-  private units = '';
 
   /**
    * Creates axis with numbers and ticks on it.
@@ -22,106 +21,12 @@ export class NumericAxis extends AxisBase<number> {
    * @param {Size} size - Axis size.
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
-   * @param {Units} units - axis units.
    */
-  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions, units?: Units) {
+  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions) {
     super(location, range, size, orientation);
 
     this.majorTicksGenerator = new NumericMajorTicksGenerator(options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
     this.minorTicksGenerator = new NumericMinorTicksGenerator(options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
-  }
-
-  protected drawAxis(context: Konva.Context, shape: Konva.Shape): Konva.Shape {
-    let majorTicks = this.majorTicks;
-    let minorTicks = this.minorTicks;
-
-    let majorTicksCount = this.majorTicks.length;
-    let minorTicksCount = this.minorTicks.length;
-
-    let majorTicksScreenCoords = this.majorTicksScreenCoords;
-    let minorTicksScreenCoords = this.minorTicksScreenCoords;
-
-    let axisRenderOriginX = MathHelper.optimizeValue(this.location.x);
-    let axisRenderOriginY = MathHelper.optimizeValue(this.location.y);
-
-    let axisRenderWidth = MathHelper.optimizeValue(this.size.width);
-    let axisRenderHeight = MathHelper.optimizeValue(this.size.height);
-
-    context.save();
-    context.beginPath();
-    context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
-    context.clip();
-
-    context.setAttr('font', FontHelper.fontToString(this.options.font));
-    context.setAttr('textBaseline', 'top');
-
-    context.beginPath();
-
-    if (this.orientation == AxisOrientation.Horizontal) {
-
-      for (let i = 0; i < majorTicksCount; i++) {
-        let tick = majorTicks[i];
-
-        let tickOnScreen = majorTicksScreenCoords[i];
-        let labelSize = this.generateLabelSize(tick, i);
-
-        context.fillText(tick.toString(),
-          location.x + tickOnScreen - labelSize.width / 2,
-          location.y + this.majorTickHeight - labelSize.height * thisBase.textVerticalOffsetMultiplier);
-
-        let xVal = MathHelper.optimizeValue(location.x + tickOnScreen);
-        let yVal = MathHelper.optimizeValue(location.y);
-        context.moveTo(xVal, yVal);
-        yVal = MathHelper.optimizeValue(location.y + this.majorTickHeight);
-        context.lineTo(xVal, yVal);
-      }
-
-      //Place minor ticks
-
-      for (let i = 0; i < minorTicksCount; i++) {
-        let minorTick = minorTicks[i];
-        let minorTickOnScreen = minorTicksScreenCoords[i]
-
-        let xVal = MathHelper.optimizeValue(location.x + minorTickOnScreen);
-        let yVal = MathHelper.optimizeValue(location.y);
-        context.moveTo(xVal, yVal);
-        yVal = MathHelper.optimizeValue(location.y + this.minorTickHeight);
-        context.lineTo(xVal, yVal);
-      }
-    } else {
-
-      let labelVerticalDelimiter = 2 - 2 * thisBase.textVerticalOffsetMultiplier;
-
-      for (let i = 0; i < majorTicksCount; i++) {
-        let tick = majorTicks[i];
-
-        let tickOnScreen = majorTicksScreenCoords[i];
-        let labelSize = this._generateLabelSize(tick);
-
-        context.fillText(tick.toString() + this._units, location.x + width - labelSize.width - (this.majorTickHeight + 2), location.y + tickOnScreen - labelSize.height / labelVerticalDelimiter);
-
-        let xVal = MathHelper.optimizeValue(location.x + width - this.majorTickHeight);
-        let yVal = MathHelper.optimizeValue(location.y + tickOnScreen);
-        context.moveTo(xVal, yVal);
-        xVal = MathHelper.optimizeValue(location.x + width);
-        context.lineTo(xVal, yVal);
-      }
-
-      //Place minor ticks
-
-      for (let i = 0; i < minorTicksCount; i++) {
-        let minorTick = minorTicks[i];
-        let minorTickOnScreen = minorTicksScreenCoords[i];
-
-        let xVal = MathHelper.optimizeValue(location.x + width - this.minorTickHeight);
-        let yVal = MathHelper.optimizeValue(location.y + minorTickOnScreen);
-        context.moveTo(xVal, yVal);
-        xVal = MathHelper.optimizeValue(location.x + width);
-        context.lineTo(xVal, yVal);
-      }
-    }
-    context.stroke();
-    context.restore();
   }
 }
 

@@ -10,6 +10,7 @@ import {TextMeasureUtils} from "../../services/text-measure-utils";
 import {FontHelper} from "../../services/font-helper";
 import {NumericRange} from "../../model/numeric-range";
 import {Tick} from "./ticks/tick";
+import {tick} from "@angular/core/testing";
 
 export abstract class AxisBase<T> extends ChartRenderableItem {
   /**
@@ -30,7 +31,7 @@ export abstract class AxisBase<T> extends ChartRenderableItem {
   protected majorTicks: Tick<T>[];
   protected minorTicks: Tick<T>[];
 
-  protected majorTicksLabelsSizes: number[];
+  protected majorTicksLabelsSizes: Size[];
   protected majorTicksScreenCoords: number[];
   protected minorTicksScreenCoords: number[];
 
@@ -87,12 +88,100 @@ export abstract class AxisBase<T> extends ChartRenderableItem {
       stroke: this.options.foregroundColor,
       strokeWidth: 1,
       sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
-        self.drawAxis.apply(self, [context, shape]);
+        let majorTicks = self.majorTicks;
+        let minorTicks = self.minorTicks;
+
+        let majorTicksCount = self.majorTicks.length;
+        let minorTicksCount = self.minorTicks.length;
+
+        let majorTicksScreenXCoords = self.majorTicksScreenCoords;
+        let minorTicksScreenXCoords = self.minorTicksScreenCoords;
+
+        let axisRenderOriginX = MathHelper.optimizeValue(self.location.x);
+        let axisRenderOriginY = MathHelper.optimizeValue(self.location.y);
+
+        let axisRenderWidth = MathHelper.optimizeValue(self.size.width);
+        let axisRenderHeight = MathHelper.optimizeValue(self.size.height);
+
+        context.save();
+        context.beginPath();
+        context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
+        context.clip();
+
+        context.setAttr('font', FontHelper.fontToString(self.options.font));
+        context.setAttr('textBaseline', 'top');
+
+        context.beginPath();
+
+        if (self.orientation == AxisOrientation.Horizontal) {
+
+          for (let i = 0; i < majorTicksCount; i++) {
+            let tick = majorTicks[i];
+
+            let tickScreenXCoord = majorTicksScreenXCoords[i];
+            let labelSize = self.generateMajorTickLabelSize(tick);
+
+            context.fillText(tick.value.toString(),
+              self.location.x + tickScreenXCoord - labelSize.width / 2,
+              self.location.y + tick.length - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
+
+            let xVal = MathHelper.optimizeValue(self.location.x + tickScreenXCoord);
+            let yVal = MathHelper.optimizeValue(self.location.y);
+            context.moveTo(xVal, yVal);
+            yVal = MathHelper.optimizeValue(self.location.y + tick.length);
+            context.lineTo(xVal, yVal);
+          }
+
+          for (let i = 0; i < minorTicksCount; i++) {
+            let tick = minorTicks[i];
+            let ticksScreenXCoord = minorTicksScreenXCoords[i]
+
+            let xVal = MathHelper.optimizeValue(self.location.x + ticksScreenXCoord);
+            let yVal = MathHelper.optimizeValue(self.location.y);
+            context.moveTo(xVal, yVal);
+            yVal = MathHelper.optimizeValue(self.location.y + tick.length);
+            context.lineTo(xVal, yVal);
+          }
+        } else {
+
+          let labelVerticalDelimiter = 2 - 2 * AxisBase.textVerticalOffsetMultiplier;
+
+          for (let i = 0; i < majorTicksCount; i++) {
+            let tick = majorTicks[i];
+
+            let tickScreenXCoord = majorTicksScreenXCoords[i];
+            let labelSize = self.generateMajorTickLabelSize(tick);
+
+            context.fillText(tick.toString(),
+              self.location.x + self.size.width - labelSize.width - (tick.length + 2),
+              self.location.y + tickScreenXCoord - labelSize.height / labelVerticalDelimiter);
+
+            let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
+            let yVal = MathHelper.optimizeValue(self.location.y + tickScreenXCoord);
+            context.moveTo(xVal, yVal);
+            xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
+            context.lineTo(xVal, yVal);
+          }
+
+          //Place minor ticks
+
+          for (let i = 0; i < minorTicksCount; i++) {
+            let tickSceenXCoord = minorTicksScreenXCoords[i];
+
+            let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
+            let yVal = MathHelper.optimizeValue(self.location.y + tickSceenXCoord);
+            context.moveTo(xVal, yVal);
+            xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
+            context.lineTo(xVal, yVal);
+          }
+        }
+        context.stroke();
+        context.restore();
       }
     })
   }
 
-  protected abstract drawAxis(context: Konva.Context, shape: Konva.Shape): Konva.Shape;
+  protected abstract drawAxis(context: Konva.Context, shape: Konva.Shape): void;
 
   /**
    * Returns axis dependant layers.
@@ -156,11 +245,24 @@ export abstract class AxisBase<T> extends ChartRenderableItem {
   }
 
   /**
-   * Generates label's size for specified tick.
-   * @param {string} label - Label to measure.
+   * Generates label's size for specified major tick.
+   * @param {string} tick - Tick for which to generate label size.
    * @returns {Size} Label's size.
    */
-  protected abstract generateTickLabelSize(tick: Tick<T>, tickIndex: number): Size;
+  protected generateMajorTickLabelSize(tick: Tick<T>): Size{
+    if (this.majorTicks != null) {
+      let tickFromArr = this.majorTicks[tick.index];
+      if (tickFromArr != null && tickFromArr.index === tick.index) {
+        return this.majorTicksLabelsSizes[tick.index];
+      }
+      else {
+        return this.generateLabelSize(tick.toString());
+      }
+    }
+    else {
+      return this.generateLabelSize(tick.toString());
+    }
+  }
 
   /**
    * Generates label's size for specified label.
