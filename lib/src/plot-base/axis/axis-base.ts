@@ -9,23 +9,30 @@ import {CoordinateTransform} from "../../services/coordinate-transform";
 import {TextMeasureUtils} from "../../services/text-measure-utils";
 import {FontHelper} from "../../services/font-helper";
 import {NumericRange} from "../../model/numeric-range";
+import {Tick} from "./ticks/tick";
 
-export abstract class AxisBase extends ChartRenderableItem {
+export abstract class AxisBase<T> extends ChartRenderableItem {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
    */
   public static readonly textVerticalOffsetMultiplier: number = 0.17;
 
-  private location: NumericPoint;
-  private range: Range;
-  private size: Size | null;
-  private orientation: AxisOrientation;
-  private options: AxisOptions;
+  protected location: NumericPoint;
+  protected range: Range;
+  protected size: Size;
+  protected orientation: AxisOrientation;
+  protected options: AxisOptions;
 
   private border: Konva.Shape;
+  private axisShape: Konva.Shape;
 
-  protected majorTicksScreenCoords: Array<number>;
+  protected majorTicks: Tick<T>[];
+  protected minorTicks: Tick<T>[];
+
+  protected majorTicksLabelsSizes: number[];
+  protected majorTicksScreenCoords: number[];
+  protected minorTicksScreenCoords: number[];
 
   protected constructor(location: NumericPoint,
                         range: Range,
@@ -41,11 +48,17 @@ export abstract class AxisBase extends ChartRenderableItem {
     this.markDirty();
     this.orientation = orientation;
 
+    this.majorTicks = [];
+    this.minorTicks = [];
+
+    this.majorTicksLabelsSizes = [];
+
+    this.majorTicksScreenCoords = [];
+    this.minorTicksScreenCoords = [];
+
     this.options = options ?? AxisOptionsDefaults.Instance;
 
     let axis = this;
-
-    this.majorTicksScreenCoords = [];
 
     this.border = new Konva.Shape({
       fill: this.options.backgroundColor,
@@ -66,9 +79,20 @@ export abstract class AxisBase extends ChartRenderableItem {
         context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
       }
     });
+
+    let self = this;
+
+    this.axisShape = new Konva.Shape({
+      fill: this.options.backgroundColor,
+      stroke: this.options.foregroundColor,
+      strokeWidth: 1,
+      sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
+        self.drawAxis.apply(self, [context, shape]);
+      }
+    })
   }
 
-  protected abstract get axisShape(): Konva.Shape;
+  protected abstract drawAxis(context: Konva.Context, shape: Konva.Shape): Konva.Shape;
 
   /**
    * Returns axis dependant layers.
@@ -130,6 +154,13 @@ export abstract class AxisBase extends ChartRenderableItem {
     else
       return CoordinateTransform.dataToScreenY(tick, range, screenHeight);
   }
+
+  /**
+   * Generates label's size for specified tick.
+   * @param {string} label - Label to measure.
+   * @returns {Size} Label's size.
+   */
+  protected abstract generateTickLabelSize(tick: Tick<T>, tickIndex: number): Size;
 
   /**
    * Generates label's size for specified label.

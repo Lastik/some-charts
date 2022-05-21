@@ -1,15 +1,19 @@
-﻿import {ChartRenderableItem} from "../../core/chart-renderable-item";
-import {AxisBase} from "./axis-base";
-import Konva from "konva";
-import {NumericPoint} from "../../model/point/numeric-point";
-import {Size} from "../../model/size";
-import {NumericMajorTicksGenerator} from "./ticks/numeric/numeric-major-ticks-generator";
-import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
-import {NumericMinorTicksGenerator} from "./ticks/numeric/numeric-minor-ticks-generator";
+﻿import Konva from "konva";
+import {Units} from "./units";
+import {AxisBase} from "../axis-base";
+import {NumericMajorTicksGenerator} from "../ticks/numeric/numeric-major-ticks-generator";
+import {NumericMinorTicksGenerator} from "../ticks/numeric/numeric-minor-ticks-generator";
+import {NumericPoint} from "../../../model/point/numeric-point";
+import {Size} from "../../../model/size";
+import {AxisOptions, AxisOptionsDefaults} from "../../../options/axis-options";
+import {MathHelper} from "../../../services/math-helper";
+import {FontHelper} from "../../../services/font-helper";
 
-export class NumericAxis extends AxisBase {
+export class NumericAxis extends AxisBase<number> {
   private majorTicksGenerator: NumericMajorTicksGenerator;
   private minorTicksGenerator: NumericMinorTicksGenerator;
+
+  private units = '';
 
   /**
    * Creates axis with numbers and ticks on it.
@@ -18,18 +22,107 @@ export class NumericAxis extends AxisBase {
    * @param {Size} size - Axis size.
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
+   * @param {Units} units - axis units.
    */
-  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions) {
+  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions, units?: Units) {
     super(location, range, size, orientation);
 
     this.majorTicksGenerator = new NumericMajorTicksGenerator(options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
     this.minorTicksGenerator = new NumericMinorTicksGenerator(options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
   }
 
-  protected get axisShape(): Konva.Shape {
-    return undefined;
-  }
+  protected drawAxis(context: Konva.Context, shape: Konva.Shape): Konva.Shape {
+    let majorTicks = this.majorTicks;
+    let minorTicks = this.minorTicks;
 
+    let majorTicksCount = this.majorTicks.length;
+    let minorTicksCount = this.minorTicks.length;
+
+    let majorTicksScreenCoords = this.majorTicksScreenCoords;
+    let minorTicksScreenCoords = this.minorTicksScreenCoords;
+
+    let axisRenderOriginX = MathHelper.optimizeValue(this.location.x);
+    let axisRenderOriginY = MathHelper.optimizeValue(this.location.y);
+
+    let axisRenderWidth = MathHelper.optimizeValue(this.size.width);
+    let axisRenderHeight = MathHelper.optimizeValue(this.size.height);
+
+    context.save();
+    context.beginPath();
+    context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
+    context.clip();
+
+    context.setAttr('font', FontHelper.fontToString(this.options.font));
+    context.setAttr('textBaseline', 'top');
+
+    context.beginPath();
+
+    if (this.orientation == AxisOrientation.Horizontal) {
+
+      for (let i = 0; i < majorTicksCount; i++) {
+        let tick = majorTicks[i];
+
+        let tickOnScreen = majorTicksScreenCoords[i];
+        let labelSize = this.generateLabelSize(tick, i);
+
+        context.fillText(tick.toString(),
+          location.x + tickOnScreen - labelSize.width / 2,
+          location.y + this.majorTickHeight - labelSize.height * thisBase.textVerticalOffsetMultiplier);
+
+        let xVal = MathHelper.optimizeValue(location.x + tickOnScreen);
+        let yVal = MathHelper.optimizeValue(location.y);
+        context.moveTo(xVal, yVal);
+        yVal = MathHelper.optimizeValue(location.y + this.majorTickHeight);
+        context.lineTo(xVal, yVal);
+      }
+
+      //Place minor ticks
+
+      for (let i = 0; i < minorTicksCount; i++) {
+        let minorTick = minorTicks[i];
+        let minorTickOnScreen = minorTicksScreenCoords[i]
+
+        let xVal = MathHelper.optimizeValue(location.x + minorTickOnScreen);
+        let yVal = MathHelper.optimizeValue(location.y);
+        context.moveTo(xVal, yVal);
+        yVal = MathHelper.optimizeValue(location.y + this.minorTickHeight);
+        context.lineTo(xVal, yVal);
+      }
+    } else {
+
+      let labelVerticalDelimiter = 2 - 2 * thisBase.textVerticalOffsetMultiplier;
+
+      for (let i = 0; i < majorTicksCount; i++) {
+        let tick = majorTicks[i];
+
+        let tickOnScreen = majorTicksScreenCoords[i];
+        let labelSize = this._generateLabelSize(tick);
+
+        context.fillText(tick.toString() + this._units, location.x + width - labelSize.width - (this.majorTickHeight + 2), location.y + tickOnScreen - labelSize.height / labelVerticalDelimiter);
+
+        let xVal = MathHelper.optimizeValue(location.x + width - this.majorTickHeight);
+        let yVal = MathHelper.optimizeValue(location.y + tickOnScreen);
+        context.moveTo(xVal, yVal);
+        xVal = MathHelper.optimizeValue(location.x + width);
+        context.lineTo(xVal, yVal);
+      }
+
+      //Place minor ticks
+
+      for (let i = 0; i < minorTicksCount; i++) {
+        let minorTick = minorTicks[i];
+        let minorTickOnScreen = minorTicksScreenCoords[i];
+
+        let xVal = MathHelper.optimizeValue(location.x + width - this.minorTickHeight);
+        let yVal = MathHelper.optimizeValue(location.y + minorTickOnScreen);
+        context.moveTo(xVal, yVal);
+        xVal = MathHelper.optimizeValue(location.x + width);
+        context.lineTo(xVal, yVal);
+      }
+    }
+    context.stroke();
+    context.restore();
+  }
 }
 
 (function (window) {
@@ -53,113 +146,7 @@ export class NumericAxis extends AxisBase {
         this._units = '';
 
         this.compositeShape.drawFunc = function () {
-            var ticks = this.ticks;
-            var minorTicks = this.minorTicks;
-            var axis = this.axis;
 
-            var ticksCount = this.ticks.length;
-            var minorTicksCount = this.minorTicks.length;
-
-            var ticksOnScreen = axis._ticksOnScreen;
-            var minorTicksOnScreen = axis._minorTicksOnScreen;
-
-            var size = axis._actualSize;
-
-            var width = size.width;
-            var height = size.height;
-
-            var range = axis.range;
-
-            var context = this.getContext();
-
-            var location = this.location;
-
-            var roundX = MathHelper.optimizeValue(location.x);
-            var roundY = MathHelper.optimizeValue(location.y);
-
-            var roundWidth = MathHelper.optimizeValue(size.width);
-            var roundHeight = MathHelper.optimizeValue(size.height);
-
-            context.save();
-            context.beginPath();
-            context.rect(roundX, roundY, roundWidth, roundHeight);
-            context.clip();
-
-            context.font = axis.font;
-            context.fillStyle = axis.foregroundColor;
-            context.textBaseline = "top";
-
-            context.beginPath();
-            context.lineWidth = 1;
-
-            context.strokeStyle = axis.foregroundColor;
-
-            if (axis._orientation == Orientation.Horizontal) {
-
-                for (var i = 0; i < ticksCount; i++) {
-                    var tick = ticks[i];
-
-                    var tickOnScreen = ticksOnScreen[i];
-                    var labelSize = axis._generateLabelSize(tick, i);
-
-                    context.fillText(tick.toString(),
-                    location.x + tickOnScreen - labelSize.width / 2,
-                    location.y + axis.majorTickHeight - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
-
-                    var xVal = MathHelper.optimizeValue(location.x + tickOnScreen);
-                    var yVal = MathHelper.optimizeValue(location.y);
-                    context.moveTo(xVal, yVal);
-                    yVal = MathHelper.optimizeValue(location.y + axis.majorTickHeight);
-                    context.lineTo(xVal, yVal);
-                }
-
-                //Place minor ticks
-
-                for (var i = 0; i < minorTicksCount; i++) {
-                    var minorTick = minorTicks[i];
-                    var minorTickOnScreen = minorTicksOnScreen[i]
-
-                    var xVal = MathHelper.optimizeValue(location.x + minorTickOnScreen);
-                    var yVal = MathHelper.optimizeValue(location.y);
-                    context.moveTo(xVal, yVal);
-                    yVal = MathHelper.optimizeValue(location.y + axis.minorTickHeight);
-                    context.lineTo(xVal, yVal);
-                }
-            }
-            else {
-
-                var labelVerticalDelimiter = 2 - 2 * AxisBase.textVerticalOffsetMultiplier;
-
-                for (var i = 0; i < ticksCount; i++) {
-                    var tick = ticks[i];
-
-                    var tickOnScreen = ticksOnScreen[i];
-                    var labelSize = axis._generateLabelSize(tick);
-
-                    context.fillText(tick.toString() + axis._units, location.x + width - labelSize.width - (axis.majorTickHeight + 2), location.y + tickOnScreen - labelSize.height / labelVerticalDelimiter);
-
-                    var xVal = MathHelper.optimizeValue(location.x + width - axis.majorTickHeight);
-                    var yVal = MathHelper.optimizeValue(location.y + tickOnScreen);
-                    context.moveTo(xVal, yVal);
-                    xVal = MathHelper.optimizeValue(location.x + width);
-                    context.lineTo(xVal, yVal);
-                }
-
-                //Place minor ticks
-
-                for (var i = 0; i < minorTicksCount; i++) {
-                    var minorTick = minorTicks[i];
-                    var minorTickOnScreen = minorTicksOnScreen[i];
-
-                    var xVal = MathHelper.optimizeValue(location.x + width - axis.minorTickHeight);
-                    var yVal = MathHelper.optimizeValue(location.y + minorTickOnScreen);
-                    context.moveTo(xVal, yVal);
-                    xVal = MathHelper.optimizeValue(location.x + width);
-                    context.lineTo(xVal, yVal);
-                }
-            }
-            context.stroke();
-            context.restore();
         };
     }
 
