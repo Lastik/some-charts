@@ -12,7 +12,7 @@ export class CoordinateTransform {
    * @param {number} screenWidth - Screen width.
    * @returns {number}
    */
-  public static dataToScreenX(value: number, visible: NumericRange, screenWidth: number): number {
+  public static dataToScreenX(value: number, visible: Range<number>, screenWidth: number): number {
     return CoordinateTransform.dataToScreenDim(value, visible, screenWidth);
   }
 
@@ -23,11 +23,11 @@ export class CoordinateTransform {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public static dataToScreenY(value: number, visible: NumericRange, screenHeight: number): number {
+  public static dataToScreenY(value: number, visible: Range<number>, screenHeight: number): number {
     return screenHeight - CoordinateTransform.dataToScreenDim(value, visible, screenHeight);
   }
 
-  private static dataToScreenDim(value: number, visible: NumericRange, screenDim: number): number {
+  private static dataToScreenDim(value: number, visible: Range<number>, screenDim: number): number {
     return (value - visible.min) * screenDim / (visible.max - visible.min);
   }
 

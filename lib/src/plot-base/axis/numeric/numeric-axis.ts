@@ -1,5 +1,4 @@
 ﻿import Konva from "konva";
-import {Units} from "./units";
 import {AxisBase} from "../axis-base";
 import {NumericMajorTicksGenerator} from "../ticks/numeric/numeric-major-ticks-generator";
 import {NumericMinorTicksGenerator} from "../ticks/numeric/numeric-minor-ticks-generator";
@@ -8,12 +7,14 @@ import {Size} from "../../../model/size";
 import {AxisOptions, AxisOptionsDefaults} from "../../../options/axis-options";
 import {MathHelper} from "../../../services/math-helper";
 import {FontHelper} from "../../../services/font-helper";
-import {tick} from "@angular/core/testing";
+import {NumericRange} from "../../../model/numeric-range";
+import {Range} from "../../../model/range";
+import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
+import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
+import {CoordinateTransform} from "../../../services/coordinate-transform";
+import {Tick} from "../ticks/tick";
 
 export class NumericAxis extends AxisBase<number> {
-  private majorTicksGenerator: NumericMajorTicksGenerator;
-  private minorTicksGenerator: NumericMinorTicksGenerator;
-
   /**
    * Creates axis with numbers and ticks on it.
    * @param {NumericPoint} location - Axis location.
@@ -22,11 +23,23 @@ export class NumericAxis extends AxisBase<number> {
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, range: Range, size: Size, orientation: AxisOrientation, options?: AxisOptions) {
+  constructor(location: NumericPoint, range: NumericRange, size: Size, orientation: AxisOrientation, options?: AxisOptions) {
     super(location, range, size, orientation);
+  }
 
-    this.majorTicksGenerator = new NumericMajorTicksGenerator(options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
-    this.minorTicksGenerator = new NumericMinorTicksGenerator(options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
+  protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
+    return new NumericMajorTicksGenerator(this.options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
+  }
+
+  protected createMinorTicksGenerator(): MinorTicksGenerator<number> {
+    return new NumericMinorTicksGenerator(this.options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
+  }
+
+  protected getTickScreenCoordinate(tick: Tick<number>, screenWidth: number, screenHeight: number, range: Range<number>): number {
+    if (this.orientation == AxisOrientation.Horizontal)
+      return CoordinateTransform.dataToScreenX(tick.value, range, screenWidth);
+    else
+      return CoordinateTransform.dataToScreenY(tick.value, range, screenHeight);
   }
 }
 
