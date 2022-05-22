@@ -4,14 +4,16 @@ import {MinorTicksGenerator} from "../minor-ticks-generator";
 
 export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
 
-  protected static defaultMinorTicksCount: number = 4;
-
   protected readonly minorTicksCount: number;
   protected minorTickHeight: number;
 
   constructor(minorTickHeight: number, minorTicksCount?: number) {
-    this.minorTicksCount = minorTicksCount ?? NumericMinorTicksGenerator.defaultMinorTicksCount;
+    this.minorTicksCount = minorTicksCount ?? this.defaultMinorTicksCount;
     this.minorTickHeight = minorTickHeight;
+  }
+
+  get defaultMinorTicksCount(): number {
+    return 4;
   }
 
   generateMinorTicks(range: Range<number>, majorTicks: Array<Tick<number>>): Array<Tick<number>> {

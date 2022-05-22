@@ -24,9 +24,12 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
   protected location: NumericPoint;
   protected range: Range<T>;
-  protected size: Size;
+  protected initialWidth: number | undefined;
+  protected initialHeight: number | undefined;
   protected orientation: AxisOrientation;
   protected options: AxisOptions;
+
+  protected size: Size;
 
   private borderShape: Konva.Shape;
   private ticksShape: Konva.Shape;
@@ -47,16 +50,25 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
   protected constructor(location: NumericPoint,
                         range: Range<T>,
-                        size: Size,
+                        width?: number,
+                        height?: number,
                         orientation: AxisOrientation,
                         options?: AxisOptions) {
     super();
 
     this.location = location;
     this.range = range;
-    this.size = size;
+
+    this.initialWidth = width;
+    this.initialHeight = height;
+
+    this.validateAxisInitialWidth();
+    this.validateAxisInitialHeight();
+
+    this.size = new Size(width ?? 0, height ?? 0);
 
     this.markDirty();
+
     this.orientation = orientation;
 
     this.majorTicks = [];
@@ -130,7 +142,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
             let tick = majorTicks[i];
 
             let tickScreenXCoord = majorTicksScreenXCoords[i];
-            let labelSize = self.generateMajorTickLabelSize(tick);
+            let labelSize = self.measureMajorTickLabelSize(tick);
 
             context.fillText(tick.toString(),
               self.location.x + tickScreenXCoord - labelSize.width / 2,
@@ -161,7 +173,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
             let tick = majorTicks[i];
 
             let tickScreenXCoord = majorTicksScreenXCoords[i];
-            let labelSize = self.generateMajorTickLabelSize(tick);
+            let labelSize = self.measureMajorTickLabelSize(tick);
 
             context.fillText(tick.toString(),
               self.location.x + self.size.width - labelSize.width - (tick.length + 2),
@@ -190,6 +202,18 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     })
   }
 
+  protected validateAxisInitialWidth(){
+    if(this.initialWidth === undefined && this.orientation != AxisOrientation.Vertical){
+      throw "Undefined width is supported for vertical axis only";
+    }
+  }
+
+  protected validateAxisInitialHeight(){
+    if(this.initialHeight === undefined && this.orientation != AxisOrientation.Horizontal){
+      throw "Undefined width is supported for horizontal axis only";
+    }
+  }
+
   protected abstract createMajorTicksGenerator(): MajorTicksGenerator<T>;
   protected abstract createMinorTicksGenerator(): MinorTicksGenerator<T>;
 
@@ -208,34 +232,8 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
       let visibleObjectsLayer = chart!.getLayer('visibleObjects');
       visibleObjectsLayer.add(this.borderShape);
       visibleObjectsLayer.add(this.ticksShape);
-      this.update(this.location, this.range, this.size);
+      this.update(this.location, this.range, this.initialWidth, this.initialHeight);
     }
-  }
-
-  protected coerceAxisSizeToFitTicks() {
-  }
-
-  protected updateTicksData(location: NumericPoint,
-                            range: Range<T>,
-                            size: Size){
-
-    this.majorTicks = this.generateMajorTicks(range, size);
-    this.minorTicks = this.minorTicksGenerator.generateMinorTicks(range, this.majorTicks);
-
-    let majorTicksScreenCoords = [];
-    let minorTicksScreenCoords = [];
-
-    for (let tick of this.majorTicks) {
-      majorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
-    }
-
-    this.majorTicksScreenCoords = majorTicksScreenCoords;
-
-    for (let tick of this.minorTicks) {
-      minorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
-    }
-
-    this.minorTicksScreenCoords = minorTicksScreenCoords;
   }
 
   /**
@@ -277,18 +275,18 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @param {string} tick - Tick for which to generate label size.
    * @returns {Size} Label's size.
    */
-  protected generateMajorTickLabelSize(tick: Tick<T>): Size{
+  protected measureMajorTickLabelSize(tick: Tick<T>): Size{
     if (this.majorTicks != null) {
       let tickFromArr = this.majorTicks[tick.index];
       if (tickFromArr != null && tickFromArr.index === tick.index) {
         return this.majorTicksLabelsSizes[tick.index];
       }
       else {
-        return this.generateLabelSize(tick.toString());
+        return this.measureLabelSize(tick.toString());
       }
     }
     else {
-      return this.generateLabelSize(tick.toString());
+      return this.measureLabelSize(tick.toString());
     }
   }
 
@@ -297,110 +295,103 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @param {string} label - Label to measure.
    * @returns {Size} Label's size.
    */
-  protected generateLabelSize(label: string): Size {
+  protected measureLabelSize(label: string): Size {
     let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options.font), label);
     let height = this.options.font.size;
     return new Size(width, height);
   }
 
+  /**
+   * Updates axis state.
+   * @param {Point} location - axis location on chart.
+   * @param {Range} range - axis data range.
+   * @param {number} width - axis width. May be undefined (for vertical axis only)
+   * @param {number} height - axis height. May be undefined (for horizontal axis only)
+   */
   public update(location: NumericPoint,
                 range: Range<T>,
-                size: Size){
-    /// <summary>Updates axis state.</summary>
-    /// <param name="location" type="Point">NumericAxis location.</param>
-    /// <param name="range" type="Range">NumericAxis range.</param>
-    /// <param name="size" type="Size">NumericAxis size.</param>
+                width?: number,
+                height?: number){
 
     this.location = location;
     this.range = range;
-    this.size = size;
+
+    this.initialWidth = width;
+    this.initialHeight = height;
+
+    this.validateAxisInitialWidth();
+    this.validateAxisInitialHeight();
 
     this.updateTicksData(this.location, this.range, this.size);
-    this.coerceAxisSizeToFitTicks();
+    this.updateAxisSize();
+    this.markDirty();
   }
 
-  NumericAxis._updateInternal = function (axis, location, range, size) {
-    axis._ticksArr = null;
-    axis._labelsSizesArr = null;
+  protected updateTicksData(location: NumericPoint,
+                            range: Range<T>,
+                            size: Size){
 
-    var ticks = NumericAxis._generateTicks(axis, range, size);
-    var minorTicks = axis.ticksGenerator.generateMinorTicks(range, ticks);
+    this.majorTicks = this.generateMajorTicks(range, size);
+    this.minorTicks = this.minorTicksGenerator.generateMinorTicks(range, this.majorTicks);
 
-    axis._ticksOnScreen = [];
-    axis._minorTicksOnScreen = [];
+    let majorTicksScreenCoords = [];
+    let minorTicksScreenCoords = [];
 
-    for (var i = 0; i < ticks.length; i++) {
-      var tick = ticks[i];
-      axis._ticksOnScreen.push(axis.getCoordinateFromTick(tick, size.width, size.height, range));
+    for (let tick of this.majorTicks) {
+      majorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
     }
 
-    for (var i = 0; i < minorTicks.length; i++) {
-      var tick = minorTicks[i];
-      axis._minorTicksOnScreen.push(axis.getCoordinateFromTick(tick, size.width, size.height, range));
+    this.majorTicksScreenCoords = majorTicksScreenCoords;
+
+    for (let tick of this.minorTicks) {
+      minorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
     }
 
-    axis.compositeShape.ticks = ticks;
-    axis.compositeShape.minorTicks = minorTicks;
-    axis.compositeShape.location = location;
+    this.minorTicksScreenCoords = minorTicksScreenCoords;
+  }
 
-    if (axis.size.width == null && axis._orientation == Orientation.Vertical) {
-      var maxSize = 0;
+  protected updateAxisSize() {
 
-      for (var i = 0; i < ticks.length; i++) {
-        var tick = ticks[i];
-        var labelSize = axis._generateLabelSize(tick);
-        maxSize = Math.max(labelSize.width, maxSize);
+    let renderWidth = this.initialWidth;
+    let renderHeight = this.initialHeight;
+
+    if (this.initialWidth === undefined && this.orientation == AxisOrientation.Vertical) {
+      renderWidth = 0;
+
+      for (let tick of this.majorTicks) {
+        let labelSize = this.measureMajorTickLabelSize(tick);
+        renderWidth = Math.max(labelSize.width, renderWidth);
       }
 
-      maxSize += axis.majorTickHeight + 4;
-
-      axis._actualSize.width = maxSize;
+      renderWidth += this.options.majorTickHeight + 4;
     }
 
-    if (axis.size.height == null && axis._orientation == Orientation.Horizontal) {
-      axis._actualSize.height = axis.fontHeight + axis.majorTickHeight + 2;
+    if (this.initialHeight === undefined && this.orientation == AxisOrientation.Horizontal) {
+      renderHeight = TextMeasureUtils.measureFontHeight(this.options.font) + this.options.majorTickHeight + 2;
     }
 
-    var actualSize = axis._actualSize;
-
-    axis.border.width = actualSize.width;
-    axis.border.height = actualSize.height;
-    axis.border.location = location;
-
-    axis._isDirty = true;
+    this.size = new Size(renderWidth!, renderHeight!);
   }
 
-  protected generateMajorTicks(range: Range, size: Size) {
+  protected generateMajorTicks(range: Range<T>, size: Size) {
     /// <summary>Generates ticks for specified axis.</summary>
     /// <param name="range" type="Range">Axis range.</param>
     /// <param name="size" type="Size">Axis size.</param>
-    var result = TickCountChange.OK;
-    var prevResult;
-    var prevActualTickCount = -1;
-    var ticksCount = TicksGenerator.defaultTicksCount;
-    var iteration = 0;
-    var ticks = null;
-    var labelsLengths = null;
-
-    range = range || new Range(0, 0, false);
-    axis = axis || new NumericAxis(0, 0, 0, 0);
-
-    var axisSize = axis.size;
-
-    var ticksGenerator = axis.ticksGenerator;
+    let result = TickCountChange.OK;
+    let prevResult;
+    let prevActualTickCount = -1;
+    let ticksCount = this.majorTicksGenerator.defaultTicksCount;
+    let iteration = 0;
+    let ticks = null;
 
     do {
-      if (++iteration >= NumericAxis.maxTickArrangeIterations)
+      if (++iteration >= AxisBase.generateMajorTicksMaxAttempts)
         throw "NumericAxis assertion failed.";
 
       if (range.isPoint())
         ticksCount = 1;
 
-      var r = new Range(
-        isFinite(range.min) ? range.min : 0,
-        isFinite(range.max) ? range.max : 1);
-
-      ticks = ticksGenerator.generateTicks(r, ticksCount);
+      ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
 
       if (ticks.length == prevActualTickCount) {
         result = TickCountChange.OK;
@@ -409,25 +400,24 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
       prevActualTickCount = ticks.length;
 
-      labelsSizes = axis._generateLabelsSizes(ticks);
+      let labelsSizes = this.generateLabelsSizes(ticks);
 
       prevResult = result;
 
-      result = axis._checkLabelsArrangement(axisSize, labelsSizes, ticks, range);
+      result = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
 
       if (prevResult == TickCountChange.Decrease && result == TickCountChange.Increase) {
         result = TickCountChange.OK;
       }
       if (result != TickCountChange.OK) {
 
-        var prevTickCount = ticksCount;
+        let prevTickCount = ticksCount;
 
         if (result == TickCountChange.Decrease)
-          ticksCount = ticksGenerator.decreaseTickCount(ticksCount);
+          ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
 
         else {
-          ticksCount = ticksGenerator.increaseTicksCount(ticksCount);
-
+          ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
         }
         if (ticksCount == 0 || prevTickCount == ticksCount) {
           ticksCount = prevTickCount;

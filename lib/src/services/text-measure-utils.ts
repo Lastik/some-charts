@@ -3,6 +3,9 @@
  */
 import Konva from "konva";
 import Util = Konva.Util;
+import {FontInUnits} from "../model/font/font-in-units";
+import {FontInPx} from "../model/font/font-in-px";
+import {FontHelper} from "./font-helper";
 
 export class TextMeasureUtils {
 
@@ -37,6 +40,15 @@ export class TextMeasureUtils {
     let context = TextMeasureUtils.getDummyContext();
     context.font = font;
     return context.measureText("m").width * 1.05;
+  }
+
+  /**
+   * Measures font height in pixels.
+   * @param {FontInUnits | FontInPx} font - text font.
+   * @returns {number}
+   */
+  public static measureFontHeight(font: FontInUnits | FontInPx) {
+    return TextMeasureUtils.measureTextHeight(FontHelper.fontToString(font));
   }
 
   /**

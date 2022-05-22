@@ -2,6 +2,9 @@ import {Range} from "../../../model/range";
 import { Tick } from "./tick";
 
 export interface MajorTicksGenerator<T> {
+
+  get defaultTicksCount(): number;
+
   /**
    * Generates ticks in specified range.
    * @param {Range} range - data range.
