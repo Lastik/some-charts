@@ -397,14 +397,14 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @returns {Array<Tick>}
    * */
   protected generateMajorTicks(range: Range<T>, size: Size): Array<Tick<T>> {
-    let state: TickCountChange | undefined = undefined;
+    let state: TicksCountChange | undefined = undefined;
     let prevState;
     let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
     let attempt = 1;
     let ticks: Array<Tick<T>> = [];
 
-    do {
+    while(state != TicksCountChange.OK) {
       if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
         console.log('Axis major ticks generation failed');
         ticks = [];
@@ -418,39 +418,37 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
         ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
 
         if (ticks.length == prevTicksArrLength) {
-          state = TickCountChange.OK;
-          break;
+          state = TicksCountChange.OK;
         }
+        else {
+          prevTicksArrLength = ticks.length;
 
-        prevTicksArrLength = ticks.length;
+          let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
 
-        let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
+          prevState = state;
 
-        prevState = state;
+          state = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
 
-        state = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
-
-        if (prevState == TickCountChange.Decrease && state == TickCountChange.Increase) {
-          state = TickCountChange.OK;
-        }
-        if (state != TickCountChange.OK) {
-
-          let prevTicksCount = ticksCount;
-
-          if (state == TickCountChange.Decrease) {
-            ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
+          if (prevState == TicksCountChange.Decrease && state == TicksCountChange.Increase) {
+            state = TicksCountChange.OK;
           }
-          else {
-            ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
-          }
-          if (ticksCount == 0 || prevTicksCount == ticksCount) {
-            ticksCount = prevTicksCount;
-            state = TickCountChange.OK;
+          if (state != TicksCountChange.OK) {
+
+            let prevTicksCount = ticksCount;
+
+            if (state == TicksCountChange.Decrease) {
+              ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
+            } else {
+              ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
+            }
+            if (ticksCount == 0 || prevTicksCount == ticksCount) {
+              ticksCount = prevTicksCount;
+              state = TicksCountChange.OK;
+            }
           }
         }
       }
     }
-    while (state != TickCountChange.OK);
 
     return ticks;
   }
@@ -462,9 +460,9 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   * @param {Array<Size>} ticksLabelsSizes - sizes of ticks labels;
   * @param {Array<Tick>} ticks - ticks.
   * @param {Range} range - axis range.
-  * @returns {TickCountChange}
+  * @returns {TicksCountChange}
   * */
-  protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>): TickCountChange {
+  protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>): TicksCountChange {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
     let ticksRenderInfo = chain(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };})).map(sizeTickTuple=>{
@@ -474,18 +472,18 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
       }
     }).sortBy(i => i.coord).value();
 
-    let res: TickCountChange = TickCountChange.OK;
+    let res: TicksCountChange = TicksCountChange.OK;
 
     for (let i = 0; i < ticksRenderInfo.length - 1; i++) {
       let leftTickRenderInfo = ticksRenderInfo[i];
       let rightTickRenderInfo = ticksRenderInfo[i + 1];
 
       if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.decreaseTicksCountCoeff) > rightTickRenderInfo.coord) {
-        res = TickCountChange.Decrease;
+        res = TicksCountChange.Decrease;
         break;
       }
       if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.decreaseTicksCountCoeff) < rightTickRenderInfo.coord) {
-        res = TickCountChange.Increase;
+        res = TicksCountChange.Increase;
       }
     }
     return res;

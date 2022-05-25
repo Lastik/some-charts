@@ -163,7 +163,7 @@ export class NumericAxis extends AxisBase<number> {
         /// <summary>Generates ticks for specified axis.</summary>
         /// <param name="range" type="Range">Axis range.</param>
         /// <param name="size" type="Size">Axis size.</param>
-        var result = TickCountChange.OK;
+        var result = TicksCountChange.OK;
         var prevResult;
         var prevActualTickCount = -1;
         var ticksCount = TicksGenerator.defaultTicksCount;
@@ -192,7 +192,7 @@ export class NumericAxis extends AxisBase<number> {
             ticks = ticksGenerator.generateTicks(r, ticksCount);
 
             if (ticks.length == prevActualTickCount) {
-                result = TickCountChange.OK;
+                result = TicksCountChange.OK;
                 break;
             }
 
@@ -204,14 +204,14 @@ export class NumericAxis extends AxisBase<number> {
 
             result = axis._checkLabelsArrangement(axisSize, labelsSizes, ticks, range);
 
-            if (prevResult == TickCountChange.Decrease && result == TickCountChange.Increase) {
-                result = TickCountChange.OK;
+            if (prevResult == TicksCountChange.Decrease && result == TicksCountChange.Increase) {
+                result = TicksCountChange.OK;
             }
-            if (result != TickCountChange.OK) {
+            if (result != TicksCountChange.OK) {
 
                 var prevTickCount = ticksCount;
 
-                if (result == TickCountChange.Decrease)
+                if (result == TicksCountChange.Decrease)
                     ticksCount = ticksGenerator.decreaseTickCount(ticksCount);
 
                 else {
@@ -220,12 +220,12 @@ export class NumericAxis extends AxisBase<number> {
                 }
                 if (ticksCount == 0 || prevTickCount == ticksCount) {
                     ticksCount = prevTickCount;
-                    result = TickCountChange.OK;
+                    result = TicksCountChange.OK;
                 }
             }
         }
 
-        while (result != TickCountChange.OK);
+        while (result != TicksCountChange.OK);
 
         return ticks;
     }
@@ -270,16 +270,16 @@ export class NumericAxis extends AxisBase<number> {
             return 0;
         });
 
-        var res = TickCountChange.OK;
+        var res = TicksCountChange.OK;
 
         for (var i = 0; i < sizeInfos.length - 1; i++) {
             if ((sizeInfos[i].x + sizeInfos[i].size * NumericAxis.decreaseRatio) > sizeInfos[i + 1].x) {
-                res = TickCountChange.Decrease;
+                res = TicksCountChange.Decrease;
                 return res;
             }
             if ((sizeInfos[i].x + sizeInfos[i].size * NumericAxis.increaseRatio) < sizeInfos[i + 1].x) {
-                if (res != TickCountChange.Decrease)
-                    res = TickCountChange.Increase;
+                if (res != TicksCountChange.Decrease)
+                    res = TicksCountChange.Increase;
             }
         }
         return res;
