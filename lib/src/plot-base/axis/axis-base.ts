@@ -14,6 +14,8 @@ import {tick} from "@angular/core/testing";
 import {MajorTicksGenerator} from "./ticks/major-ticks-generator";
 import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
 import {Range} from '../../model/range';
+import map from 'lodash-es/map'
+import zipWith from 'lodash-es/zipWith'
 
 export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   /**
@@ -285,7 +287,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
     return labelsSizes;
   }
-  
+
   /**
    * Measures label's size for specified major tick.
    * @param {string} tick - Tick for which to generate label size.
@@ -452,22 +454,12 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     /// <summary>Checks labels arrangement on axis.</summary>
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
-    var actualLabels = [];
-
-    for (let i = 0; i < labelsSizes.length; i++) {
-      if (labelsSizes[i] != null) {
-        let actualLabel = {
-          label: labelsSizes[i],
-          tick: ticks[i]
-        }
-        actualLabels.push(actualLabel);
-      }
-    }
+    let ticksWithLabelSizesArr = zipWith(labelsSizes, ticks, (s, t) =>{ return {tick: t, labelSize: s };});
 
     var sizeInfos = [];
 
-    for (var i = 0; i < actualLabels.length; i++) {
-      var item = actualLabels[i];
+    for (var i = 0; i < ticksWithLabelSizesArr.length; i++) {
+      var item = ticksWithLabelSizesArr[i];
       var x = this.getTickScreenCoordinate(item.tick, axisSize.width, axisSize.height, range);
 
       var size = isAxisHorizontal ? item.label.width : item.label.height;
