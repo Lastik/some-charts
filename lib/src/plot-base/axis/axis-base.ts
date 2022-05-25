@@ -482,7 +482,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
         res = TicksCountChange.Decrease;
         break;
       }
-      if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.decreaseTicksCountCoeff) < rightTickRenderInfo.coord) {
+      if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.increaseTicksCountCoeff) < rightTickRenderInfo.coord) {
         res = TicksCountChange.Increase;
       }
     }
