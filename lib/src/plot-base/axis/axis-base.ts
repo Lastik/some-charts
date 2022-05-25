@@ -398,7 +398,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * */
   protected generateMajorTicks(range: Range<T>, size: Size): Array<Tick<T>> {
     let state: TickCountChange | undefined = undefined;
-    let prevTicksArr;
+    let prevState;
     let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
     let attempt = 1;
@@ -426,11 +426,11 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
         let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
 
-        prevTicksArr = state;
+        prevState = state;
 
         state = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
 
-        if (prevTicksArr == TickCountChange.Decrease && state == TickCountChange.Increase) {
+        if (prevState == TickCountChange.Decrease && state == TickCountChange.Increase) {
           state = TickCountChange.OK;
         }
         if (state != TickCountChange.OK) {
