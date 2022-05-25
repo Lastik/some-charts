@@ -49,10 +49,10 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   static readonly generateMajorTicksMaxAttempts = 12;
 
   protected constructor(location: NumericPoint,
+                        orientation: AxisOrientation,
                         range: Range<T>,
                         width?: number,
                         height?: number,
-                        orientation: AxisOrientation,
                         options?: AxisOptions) {
     super();
 
@@ -142,7 +142,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
             let tick = majorTicks[i];
 
             let tickScreenXCoord = majorTicksScreenXCoords[i];
-            let labelSize = self.measureMajorTickLabelSize(tick);
+            let labelSize = self.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
               self.location.x + tickScreenXCoord - labelSize.width / 2,
@@ -173,7 +173,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
             let tick = majorTicks[i];
 
             let tickScreenXCoord = majorTicksScreenXCoords[i];
-            let labelSize = self.measureMajorTickLabelSize(tick);
+            let labelSize = self.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
               self.location.x + self.size.width - labelSize.width - (tick.length + 2),
@@ -271,11 +271,27 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   protected abstract getTickScreenCoordinate(tick: Tick<T>, screenWidth: number, screenHeight: number, range: Range<T>): number;
 
   /**
-   * Generates label's size for specified major tick.
+   * Measures labels sizes for an array of major ticks
+   * @param { Array<Tick>} ticks - Array of ticks
+   * @returns {Array<Size>}
+   * */
+  protected measureLabelsSizesForMajorTicks(ticks: Array<Tick<T>>): Array<Size> {
+
+    let labelsSizes = [];
+
+    for (let tick of ticks) {
+      labelsSizes.push(this.measureLabelSizeForMajorTick(tick));
+    }
+
+    return labelsSizes;
+  }
+  
+  /**
+   * Measures label's size for specified major tick.
    * @param {string} tick - Tick for which to generate label size.
    * @returns {Size} Label's size.
    */
-  protected measureMajorTickLabelSize(tick: Tick<T>): Size{
+  protected measureLabelSizeForMajorTick(tick: Tick<T>): Size{
     if (this.majorTicks != null) {
       let tickFromArr = this.majorTicks[tick.index];
       if (tickFromArr != null && tickFromArr.index === tick.index) {
@@ -332,6 +348,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
                             size: Size){
 
     this.majorTicks = this.generateMajorTicks(range, size);
+    this.measureLabelsSizesForMajorTicks(this.majorTicks);
     this.minorTicks = this.minorTicksGenerator.generateMinorTicks(range, this.majorTicks);
 
     let majorTicksScreenCoords = [];
@@ -359,7 +376,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
       renderWidth = 0;
 
       for (let tick of this.majorTicks) {
-        let labelSize = this.measureMajorTickLabelSize(tick);
+        let labelSize = this.measureLabelSizeForMajorTick(tick);
         renderWidth = Math.max(labelSize.width, renderWidth);
       }
 
@@ -400,7 +417,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
       prevActualTickCount = ticks.length;
 
-      let labelsSizes = this.generateLabelsSizes(ticks);
+      let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
 
       prevResult = result;
 
@@ -431,15 +448,15 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     return ticks;
   }
 
-  p._checkLabelsArrangement = function (axisSize, labelsSizes, ticks, range) {
+  protected checkLabelsArrangement(axisSize: Size, labelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>) {
     /// <summary>Checks labels arrangement on axis.</summary>
-    var isHorizontal = this._orientation == Orientation.Horizontal;
+    let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
     var actualLabels = [];
 
-    for (var i = 0; i < labelsSizes.length; i++) {
+    for (let i = 0; i < labelsSizes.length; i++) {
       if (labelsSizes[i] != null) {
-        var actualLabel = {
+        let actualLabel = {
           label: labelsSizes[i],
           tick: ticks[i]
         }
@@ -453,7 +470,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
       var item = actualLabels[i];
       var x = this.getTickScreenCoordinate(item.tick, axisSize.width, axisSize.height, range);
 
-      var size = isHorizontal ? item.label.width : item.label.height;
+      var size = isAxisHorizontal ? item.label.width : item.label.height;
 
       var sizeInfo = {
         x: x,
