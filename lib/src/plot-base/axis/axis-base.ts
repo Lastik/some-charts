@@ -5,17 +5,16 @@ import Konva from "konva";
 import {MathHelper} from "../../services/math-helper";
 import {ChartRenderableItem} from "../../core/chart-renderable-item";
 import {Chart} from "../chart";
-import {CoordinateTransform} from "../../services/coordinate-transform";
 import {TextMeasureUtils} from "../../services/text-measure-utils";
 import {FontHelper} from "../../services/font-helper";
-import {NumericRange} from "../../model/numeric-range";
 import {Tick} from "./ticks/tick";
 import {tick} from "@angular/core/testing";
 import {MajorTicksGenerator} from "./ticks/major-ticks-generator";
 import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
 import {Range} from '../../model/range';
-import map from 'lodash-es/map'
-import zipWith from 'lodash-es/zipWith'
+import map from 'lodash-es/map';
+import zipWith from 'lodash-es/zipWith';
+import chain from 'lodash-es/chain';
 
 export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   /**
@@ -392,104 +391,102 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     this.size = new Size(renderWidth!, renderHeight!);
   }
 
-  protected generateMajorTicks(range: Range<T>, size: Size) {
-    /// <summary>Generates ticks for specified axis.</summary>
-    /// <param name="range" type="Range">Axis range.</param>
-    /// <param name="size" type="Size">Axis size.</param>
-    let result = TickCountChange.OK;
-    let prevResult;
-    let prevActualTickCount = -1;
+  /**
+   * Generates ticks for specified axis.
+   * @param {Range} range - axis range.
+   * @param {Size} size - axis size;
+   * @returns {Array<Tick>}
+   * */
+  protected generateMajorTicks(range: Range<T>, size: Size): Array<Tick<T>> {
+    let state: TickCountChange | undefined = undefined;
+    let prevTicksArr;
+    let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
-    let iteration = 0;
-    let ticks = null;
+    let attempt = 1;
+    let ticks: Array<Tick<T>> = [];
 
     do {
-      if (++iteration >= AxisBase.generateMajorTicksMaxAttempts)
-        throw "NumericAxis assertion failed.";
-
-      if (range.isPoint())
-        ticksCount = 1;
-
-      ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
-
-      if (ticks.length == prevActualTickCount) {
-        result = TickCountChange.OK;
+      if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
+        console.log('Axis major ticks generation failed');
+        ticks = [];
         break;
       }
+      else {
 
-      prevActualTickCount = ticks.length;
+        if (range.isPoint())
+          ticksCount = 1;
 
-      let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
+        ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
 
-      prevResult = result;
-
-      result = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
-
-      if (prevResult == TickCountChange.Decrease && result == TickCountChange.Increase) {
-        result = TickCountChange.OK;
-      }
-      if (result != TickCountChange.OK) {
-
-        let prevTickCount = ticksCount;
-
-        if (result == TickCountChange.Decrease)
-          ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
-
-        else {
-          ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
+        if (ticks.length == prevTicksArrLength) {
+          state = TickCountChange.OK;
+          break;
         }
-        if (ticksCount == 0 || prevTickCount == ticksCount) {
-          ticksCount = prevTickCount;
-          result = TickCountChange.OK;
+
+        prevTicksArrLength = ticks.length;
+
+        let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
+
+        prevTicksArr = state;
+
+        state = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
+
+        if (prevTicksArr == TickCountChange.Decrease && state == TickCountChange.Increase) {
+          state = TickCountChange.OK;
+        }
+        if (state != TickCountChange.OK) {
+
+          let prevTicksCount = ticksCount;
+
+          if (state == TickCountChange.Decrease) {
+            ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
+          }
+          else {
+            ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
+          }
+          if (ticksCount == 0 || prevTicksCount == ticksCount) {
+            ticksCount = prevTicksCount;
+            state = TickCountChange.OK;
+          }
         }
       }
     }
-
-    while (result != TickCountChange.OK);
+    while (state != TickCountChange.OK);
 
     return ticks;
   }
 
-  protected checkLabelsArrangement(axisSize: Size, labelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>) {
-    /// <summary>Checks labels arrangement on axis.</summary>
+  /**
+  * Checks labels arrangement on axis (whether they overlap with each other or not).
+  * Returns if the amount of ticks on axis must be changed or preserved.
+  * @param {Size} axisSize - axis size;
+  * @param {Array<Size>} ticksLabelsSizes - sizes of ticks labels;
+  * @param {Array<Tick>} ticks - ticks.
+  * @param {Range} range - axis range.
+  * @returns {TickCountChange}
+  * */
+  protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>): TickCountChange {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
-    let ticksWithLabelSizesArr = zipWith(labelsSizes, ticks, (s, t) =>{ return {tick: t, labelSize: s };});
-
-    var sizeInfos = [];
-
-    for (var i = 0; i < ticksWithLabelSizesArr.length; i++) {
-      var item = ticksWithLabelSizesArr[i];
-      var x = this.getTickScreenCoordinate(item.tick, axisSize.width, axisSize.height, range);
-
-      var size = isAxisHorizontal ? item.label.width : item.label.height;
-
-      var sizeInfo = {
-        x: x,
-        size: size
-      };
-
-      sizeInfos.push(sizeInfo);
-    }
-
-    sizeInfos.sort(function (obj1, obj2) {
-      if (obj1.x < obj2.x)
-        return -1;
-      else if (obj1.x > obj2.x)
-        return 1;
-      return 0;
-    });
-
-    var res = TickCountChange.OK;
-
-    for (var i = 0; i < sizeInfos.length - 1; i++) {
-      if ((sizeInfos[i].x + sizeInfos[i].size * NumericAxis.decreaseRatio) > sizeInfos[i + 1].x) {
-        res = TickCountChange.Decrease;
-        return res;
+    let ticksRenderInfo = chain(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };})).map(sizeTickTuple=>{
+      return {
+        coord: this.getTickScreenCoordinate(sizeTickTuple.tick, axisSize.width, axisSize.height, range),
+        length: isAxisHorizontal ? sizeTickTuple.labelSize.width : sizeTickTuple.labelSize.height
       }
-      if ((sizeInfos[i].x + sizeInfos[i].size * NumericAxis.increaseRatio) < sizeInfos[i + 1].x) {
-        if (res != TickCountChange.Decrease)
-          res = TickCountChange.Increase;
+    }).sortBy(i => i.coord).value();
+
+    let res: TickCountChange = TickCountChange.OK;
+
+    for (let i = 0; i < ticksRenderInfo.length - 1; i++) {
+      let leftTickRenderInfo = ticksRenderInfo[i];
+      let rightTickRenderInfo = ticksRenderInfo[i + 1];
+
+      if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.decreaseTicksCountCoeff) > rightTickRenderInfo.coord) {
+        res = TickCountChange.Decrease;
+        break;
+      }
+      if ((leftTickRenderInfo.coord + leftTickRenderInfo.length * AxisBase.decreaseTicksCountCoeff) < rightTickRenderInfo.coord) {
+        res = TickCountChange.Increase;
       }
     }
     return res;
