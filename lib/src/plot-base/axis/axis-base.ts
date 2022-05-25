@@ -12,7 +12,6 @@ import {tick} from "@angular/core/testing";
 import {MajorTicksGenerator} from "./ticks/major-ticks-generator";
 import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
 import {Range} from '../../model/range';
-import map from 'lodash-es/map';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 
