@@ -26,7 +26,7 @@ export class NumericMajorTicksGenerator implements MajorTicksGenerator<number> {
 
     if (delta == 0)
       return ([start, finish]).map((value, index) => {
-        return {value: value, length: this.majorTickHeight, index: index}
+        return new Tick<number>(value, this.majorTickHeight, index);
       });
     else {
       let log = Math.round(Math.log10(delta));
@@ -48,7 +48,6 @@ export class NumericMajorTicksGenerator implements MajorTicksGenerator<number> {
           step = unroundedStep;
       }
 
-
       let x = step * Math.floor(start / step);
       let res = [];
       let increasedFinish = finish + step;
@@ -58,7 +57,7 @@ export class NumericMajorTicksGenerator implements MajorTicksGenerator<number> {
       }
 
       return res.map((value, index) => {
-        return {value: value, length: this.majorTickHeight, index: index}
+        return new Tick<number>(value, this.majorTickHeight, index);
       });
     }
   }

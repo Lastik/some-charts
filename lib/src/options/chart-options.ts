@@ -5,8 +5,14 @@ import {LegendOptions, LegendOptionsDefaults} from "./legend-options";
 import {PlotOptions, PlotOptionsDefaults} from "./plot-options";
 import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
 import {Margin} from "../model/margin";
+import {AxesOptions, AxesOptionsDefaults} from "./axes-options";
 
 export interface ChartOptions {
+
+  /**
+   * Is chart navigation enabled or not.
+   */
+  isNavigationEnabled: boolean;
 
   /**
    * Chart render margin.
@@ -20,19 +26,19 @@ export interface ChartOptions {
   /**
    *  Chart axes options
    */
-  axesOptions: AxisOptions;
+  axes: AxesOptions;
   /**
    *  Chart grid options
    */
-  gridOptions: GridOptions;
+  grid: GridOptions;
   /**
    *  Chart header options
    */
-  headerOptions: HeaderOptions;
+  header: HeaderOptions;
   /**
    *  Chart legend options
    */
-  legendOptions?: LegendOptions;
+  legend?: LegendOptions;
   /**
    *  Chart plot options
    */
@@ -40,20 +46,21 @@ export interface ChartOptions {
   /**
    *  Chart renderer options
    */
-  rendererOptions: RendererOptions
+  renderer: RendererOptions
 }
 
 
 export class ChartOptionsDefaults
 {
   private static _instance: ChartOptions = {
+    isNavigationEnabled: true,
     renderMargin: {top: 2, right: 2, bottom: 2, left: 2},
     rendererCursor: "pointer",
-    rendererOptions: RendererOptionsDefaults.Instance,
-    axesOptions: AxisOptionsDefaults.Instance,
-    gridOptions: GridOptionsDefaults.Instance,
-    headerOptions: HeaderOptionsDefaults.Instance,
-    legendOptions: LegendOptionsDefaults.Instance,
+    renderer: RendererOptionsDefaults.Instance,
+    axes: AxesOptionsDefaults.Instance,
+    grid: GridOptionsDefaults.Instance,
+    header: HeaderOptionsDefaults.Instance,
+    legend: LegendOptionsDefaults.Instance,
     plotOptions: PlotOptionsDefaults.Instance
   }
 

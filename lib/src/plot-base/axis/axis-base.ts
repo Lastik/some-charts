@@ -35,14 +35,14 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   private ticksShape: Konva.Shape;
 
   protected majorTicks: Tick<T>[];
-  protected minorTicks: Tick<T>[];
+  protected minorTicks?: Tick<T>[];
 
   protected majorTicksLabelsSizes: Size[];
   protected majorTicksScreenCoords: number[];
   protected minorTicksScreenCoords: number[];
 
   protected readonly majorTicksGenerator: MajorTicksGenerator<T>;
-  protected readonly minorTicksGenerator: MinorTicksGenerator<T>;
+  protected readonly minorTicksGenerator?: MinorTicksGenerator<T>;
 
   static readonly increaseTicksCountCoeff = 2;
   static readonly decreaseTicksCountCoeff = 1.5;
@@ -112,10 +112,9 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
       strokeWidth: 1,
       sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
         let majorTicks = self.majorTicks;
-        let minorTicks = self.minorTicks;
 
         let majorTicksCount = self.majorTicks.length;
-        let minorTicksCount = self.minorTicks.length;
+        let minorTicksCount = self.minorTicks?.length ?? 0;
 
         let majorTicksScreenXCoords = self.majorTicksScreenCoords;
         let minorTicksScreenXCoords = self.minorTicksScreenCoords;
@@ -155,15 +154,18 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
             context.lineTo(xVal, yVal);
           }
 
-          for (let i = 0; i < minorTicksCount; i++) {
-            let tick = minorTicks[i];
-            let ticksScreenXCoord = minorTicksScreenXCoords[i]
+          if(self.minorTicks !== undefined) {
+            let minorTicks = self.minorTicks!;
+            for (let i = 0; i < minorTicksCount; i++) {
+              let tick = minorTicks[i];
+              let ticksScreenXCoord = minorTicksScreenXCoords[i]
 
-            let xVal = MathHelper.optimizeValue(self.location.x + ticksScreenXCoord);
-            let yVal = MathHelper.optimizeValue(self.location.y);
-            context.moveTo(xVal, yVal);
-            yVal = MathHelper.optimizeValue(self.location.y + tick.length);
-            context.lineTo(xVal, yVal);
+              let xVal = MathHelper.optimizeValue(self.location.x + ticksScreenXCoord);
+              let yVal = MathHelper.optimizeValue(self.location.y);
+              context.moveTo(xVal, yVal);
+              yVal = MathHelper.optimizeValue(self.location.y + tick.length);
+              context.lineTo(xVal, yVal);
+            }
           }
         } else {
 
@@ -215,7 +217,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   }
 
   protected abstract createMajorTicksGenerator(): MajorTicksGenerator<T>;
-  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<T>;
+  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<T> | undefined;
 
   /**
    * Returns axis dependant layers.
@@ -349,7 +351,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
     this.majorTicks = this.generateMajorTicks(range, size);
     this.measureLabelsSizesForMajorTicks(this.majorTicks);
-    this.minorTicks = this.minorTicksGenerator.generateMinorTicks(range, this.majorTicks);
+    this.minorTicks = this.minorTicksGenerator?.generateMinorTicks(range, this.majorTicks);
 
     let majorTicksScreenCoords = [];
     let minorTicksScreenCoords = [];
@@ -360,8 +362,10 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
     this.majorTicksScreenCoords = majorTicksScreenCoords;
 
-    for (let tick of this.minorTicks) {
-      minorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
+    if(this.minorTicks) {
+      for (let tick of this.minorTicks) {
+        minorTicksScreenCoords.push(this.getTickScreenCoordinate(tick, size.width, size.height, range));
+      }
     }
 
     this.minorTicksScreenCoords = minorTicksScreenCoords;

@@ -6,6 +6,10 @@ import {FontInPx} from "../model/font/font-in-px";
 
 export interface AxisOptions {
   /**
+   * Axis type
+   */
+  axisType: AxisTypes;
+  /**
    * Axis foreground color
    */
   foregroundColor: string;
@@ -34,6 +38,7 @@ export interface AxisOptions {
 export class AxisOptionsDefaults
 {
   private static _instance: AxisOptions = {
+    axisType: AxisTypes.NumericAxis,
     foregroundColor: 'white',
     backgroundColor: '#111111',
     font: {

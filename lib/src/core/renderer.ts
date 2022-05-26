@@ -59,8 +59,8 @@ export class Renderer {
 
     let backDiv = $('<div></div>');
 
-    let borderStyle = options.rendererOptions.borderStyle ?? RendererOptionsDefaults.Instance.borderStyle
-    let backgroundStyle = options.rendererOptions.backgroundColor ?? RendererOptionsDefaults.Instance.backgroundColor;
+    let borderStyle = options.renderer.borderStyle ?? RendererOptionsDefaults.Instance.borderStyle
+    let backgroundStyle = options.renderer.backgroundColor ?? RendererOptionsDefaults.Instance.backgroundColor;
     let cursor = options.rendererCursor ?? ChartOptionsDefaults.Instance.rendererCursor;
 
     backDiv.css('background-color', backgroundStyle)
