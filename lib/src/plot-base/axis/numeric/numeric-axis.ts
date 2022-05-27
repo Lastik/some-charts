@@ -7,8 +7,6 @@ import {NumericRange} from "../../../model/numeric-range";
 import {Range} from "../../../model/range";
 import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
 import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
-import {CoordinateTransform} from "../../../services/coordinate-transform";
-import {Tick} from "../ticks/tick";
 
 export class NumericAxis extends AxisBase<number> {
   /**
@@ -32,10 +30,7 @@ export class NumericAxis extends AxisBase<number> {
     return new NumericMinorTicksGenerator(this.options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
   }
 
-  protected getTickScreenCoordinate(tick: Tick<number>, screenWidth: number, screenHeight: number, range: Range<number>): number {
-    if (this.orientation == AxisOrientation.Horizontal)
-      return CoordinateTransform.dataToScreenX(tick.value, range, screenWidth);
-    else
-      return CoordinateTransform.dataToScreenY(tick.value, range, screenHeight);
+  axisValueToNumber(tickValue: number): number {
+    return tickValue;
   }
 }

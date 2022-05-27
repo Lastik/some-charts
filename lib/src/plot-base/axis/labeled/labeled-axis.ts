@@ -1,14 +1,10 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericMajorTicksGenerator} from "../ticks/numeric/numeric-major-ticks-generator";
-import {NumericMinorTicksGenerator} from "../ticks/numeric/numeric-minor-ticks-generator";
 import {NumericPoint} from "../../../model/point/numeric-point";
 import {AxisOptions, AxisOptionsDefaults} from "../../../options/axis-options";
 import {NumericRange} from "../../../model/numeric-range";
 import {Range} from "../../../model/range";
 import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
 import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
-import {CoordinateTransform} from "../../../services/coordinate-transform";
-import {Tick} from "../ticks/tick";
 import {LabeledMajorTicksGenerator} from "../ticks/labeled/labeled-major-ticks-generator";
 import {StringPoint} from "../../../model/point/string-point";
 
@@ -39,7 +35,7 @@ export class LabeledAxis extends AxisBase<number> {
     return undefined
   }
 
-  protected getTickScreenCoordinate(tick: Tick<number>, screenWidth: number, screenHeight: number, range: Range<number>): number {
-
+  axisValueToNumber(tickValue: number): number {
+    return tickValue;
   }
 }

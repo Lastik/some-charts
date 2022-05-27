@@ -14,6 +14,7 @@ import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
 import {Range} from '../../model/range';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
+import {CoordinateTransformHelper} from "../../services/coordinate-transform-helper";
 
 export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   /**
@@ -270,7 +271,20 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * Returns tick's screen coordinate
    * @returns {number} Tick's screen coordinate.
    */
-  protected abstract getTickScreenCoordinate(tick: Tick<T>, screenWidth: number, screenHeight: number, range: Range<T>): number;
+  protected getTickScreenCoordinate(tick: Tick<T>, screenWidth: number, screenHeight: number, range: Range<T>): number {
+
+    let numericRange = new Range<number>(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
+
+    if (this.orientation == AxisOrientation.Horizontal)
+      return CoordinateTransformHelper.dataToScreenX(this.axisValueToNumber(tick.value), numericRange, screenWidth);
+    else
+      return CoordinateTransformHelper.dataToScreenY(this.axisValueToNumber(tick.value), numericRange, screenHeight);
+  }
+
+  /**
+   * Converts value from axis inits to number.
+   * */
+  abstract axisValueToNumber(tickValue: T): number;
 
   /**
    * Measures labels sizes for an array of major ticks

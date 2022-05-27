@@ -3,7 +3,7 @@ import {DataRect} from '../model/data-rect';
 import {NumericPoint} from '../model/point/numeric-point';
 import {NumericRange} from "../model/numeric-range";
 
-export class CoordinateTransform {
+export class CoordinateTransformHelper {
 
   /**
    * Transforms value from data X coordinate to screen X coordinate.
@@ -13,7 +13,7 @@ export class CoordinateTransform {
    * @returns {number}
    */
   public static dataToScreenX(value: number, visible: Range<number>, screenWidth: number): number {
-    return CoordinateTransform.dataToScreenDim(value, visible, screenWidth);
+    return CoordinateTransformHelper.dataToScreenDim(value, visible, screenWidth);
   }
 
   /**
@@ -24,7 +24,7 @@ export class CoordinateTransform {
    * @returns {number}
    */
   public static dataToScreenY(value: number, visible: Range<number>, screenHeight: number): number {
-    return screenHeight - CoordinateTransform.dataToScreenDim(value, visible, screenHeight);
+    return screenHeight - CoordinateTransformHelper.dataToScreenDim(value, visible, screenHeight);
   }
 
   private static dataToScreenDim(value: number, visible: Range<number>, screenDim: number): number {
@@ -66,8 +66,8 @@ export class CoordinateTransform {
 
     const leftTop = screenRegion.getMinXMinY();
 
-    const newX = CoordinateTransform.screenToDataX(x - leftTop.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = CoordinateTransform.screenToDataY(y - leftTop.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = CoordinateTransformHelper.screenToDataX(x - leftTop.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = CoordinateTransformHelper.screenToDataY(y - leftTop.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -84,8 +84,8 @@ export class CoordinateTransform {
     const leftTop = rect.getMinXMinY();
     const rightBottom = rect.getMaxXMaxY();
 
-    const leftTopTransformed = CoordinateTransform.screenRegionToDataXY(leftTop, visible, screenRegion);
-    const rightBottomTransformed = CoordinateTransform.screenRegionToDataXY(rightBottom, visible, screenRegion);
+    const leftTopTransformed = CoordinateTransformHelper.screenRegionToDataXY(leftTop, visible, screenRegion);
+    const rightBottomTransformed = CoordinateTransformHelper.screenRegionToDataXY(rightBottom, visible, screenRegion);
 
     return new DataRect(
       leftTopTransformed.x, leftTopTransformed.y,
@@ -104,8 +104,8 @@ export class CoordinateTransform {
     const x = value.x;
     const y = value.y;
 
-    const newX = CoordinateTransform.dataToScreenX(x, visible.getHorizontalRange(), screenSize.width);
-    const newY = CoordinateTransform.dataToScreenY(y, visible.getVerticalRange(), screenSize.height);
+    const newX = CoordinateTransformHelper.dataToScreenX(x, visible.getHorizontalRange(), screenSize.width);
+    const newY = CoordinateTransformHelper.dataToScreenY(y, visible.getVerticalRange(), screenSize.height);
 
     return new NumericPoint(newX, newY);
   }
@@ -123,8 +123,8 @@ export class CoordinateTransform {
 
     const leftTop = screenRegion.getMinXMinY();
 
-    const newX = leftTop.x + CoordinateTransform.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = leftTop.y + CoordinateTransform.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = leftTop.x + CoordinateTransformHelper.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = leftTop.y + CoordinateTransformHelper.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -137,7 +137,7 @@ export class CoordinateTransform {
    * @returns {NumericPoint}
    */
   public static dataToScreenRegionXYwithoutYinvert = function (value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
-    let res = CoordinateTransform.dataToScreenRegionXY(value, visible, screenRegion);
+    let res = CoordinateTransformHelper.dataToScreenRegionXY(value, visible, screenRegion);
     res.y = screenRegion.getVerticalRange().getLength() - res.y;
     return res;
   }
