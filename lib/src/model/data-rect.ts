@@ -28,7 +28,7 @@ export class DataRect {
    * @returns {Range}
    */
   getHorizontalRange(): NumericRange {
-    return new NumericRange(this.minX, this.minX + this.width, false);
+    return new NumericRange(this.minX, this.minX + this.width);
   }
 
   /**
@@ -36,7 +36,7 @@ export class DataRect {
    * @returns {Range}
    */
   getVerticalRange(): NumericRange {
-    return new NumericRange(this.minY, this.minY + this.height, false);
+    return new NumericRange(this.minY, this.minY + this.height);
   }
 
   /**

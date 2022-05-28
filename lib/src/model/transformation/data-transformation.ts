@@ -1,9 +1,20 @@
-﻿import {Range} from '../model/range';
-import {DataRect} from '../model/data-rect';
-import {NumericPoint} from '../model/point/numeric-point';
-import {NumericRange} from "../model/numeric-range";
+﻿import {Range} from '../range';
+import {DataRect} from '../data-rect';
+import {NumericPoint} from '../point/numeric-point';
+import {NumericRange} from "../numeric-range";
+import {CoordinateTransformation} from "./coordinate-transformation";
 
-export class CoordinateTransformHelper {
+export class DataTransformation {
+  private coordinateTransformation?: CoordinateTransformation;
+
+  /**
+   * Creates new instance of data DataTransformation. This entity transforms data from data coordinates
+   * to screen coordinates and reverse.
+   * @param {CoordinateTransformation} coordinateTransformation - Additional transformation applied to data coordinates.
+   */
+  constructor(coordinateTransformation?: CoordinateTransformation) {
+    this.coordinateTransformation = coordinateTransformation;
+  }
 
   /**
    * Transforms value from data X coordinate to screen X coordinate.
@@ -12,8 +23,9 @@ export class CoordinateTransformHelper {
    * @param {number} screenWidth - Screen width.
    * @returns {number}
    */
-  public static dataToScreenX(value: number, visible: Range<number>, screenWidth: number): number {
-    return CoordinateTransformHelper.dataToScreenDim(value, visible, screenWidth);
+  public dataToScreenX(value: number, visible: Range<number>, screenWidth: number): number {
+    return DataTransformation.dataToScreenDim(
+      this.coordinateTransformation?.applyX(value) ?? value, visible, screenWidth);
   }
 
   /**
@@ -23,8 +35,9 @@ export class CoordinateTransformHelper {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public static dataToScreenY(value: number, visible: Range<number>, screenHeight: number): number {
-    return screenHeight - CoordinateTransformHelper.dataToScreenDim(value, visible, screenHeight);
+  public dataToScreenY(value: number, visible: Range<number>, screenHeight: number): number {
+    return screenHeight - DataTransformation.dataToScreenDim(
+      this.coordinateTransformation?.applyY(value) ?? value, visible, screenHeight);
   }
 
   private static dataToScreenDim(value: number, visible: Range<number>, screenDim: number): number {
@@ -38,8 +51,9 @@ export class CoordinateTransformHelper {
    * @param {number} screenWidth - Screen width.
    * @returns {number}
    */
-  public static screenToDataX(value: number, visible: NumericRange, screenWidth: number): number {
-    return value * (visible.max - visible.min) / screenWidth + visible.min;
+  public screenToDataX(value: number, visible: NumericRange, screenWidth: number): number {
+    return (this.coordinateTransformation?.unapplyX(value) ?? value) *
+      (visible.max - visible.min) / screenWidth + visible.min;
   }
 
   /**
@@ -49,8 +63,9 @@ export class CoordinateTransformHelper {
    * @param {number} screenHeight - Screen height.
    * @returns {number}
    */
-  public static screenToDataY(value: number, visible: NumericRange, screenHeight: number): number {
-    return (screenHeight - value) * (visible.max - visible.min) / screenHeight + visible.min;
+  public screenToDataY(value: number, visible: NumericRange, screenHeight: number): number {
+    return (screenHeight - (this.coordinateTransformation?.unapplyY(value) ?? value)) *
+      (visible.max - visible.min) / screenHeight + visible.min;
   }
 
   /**
@@ -60,14 +75,14 @@ export class CoordinateTransformHelper {
    * @param {DataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public static screenRegionToDataXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+  public screenRegionToDataXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
     const x = value.x;
     const y = value.y;
 
     const leftTop = screenRegion.getMinXMinY();
 
-    const newX = CoordinateTransformHelper.screenToDataX(x - leftTop.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = CoordinateTransformHelper.screenToDataY(y - leftTop.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = this.screenToDataX(x - leftTop.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = this.screenToDataY(y - leftTop.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -80,12 +95,12 @@ export class CoordinateTransformHelper {
    * @param {DataRect} screenRegion - Screen region.
    * @returns {DataRect}
    */
-  public static screenRegionToDataForRect(rect: DataRect, visible: DataRect, screenRegion: DataRect): DataRect {
+  public screenRegionToDataForRect(rect: DataRect, visible: DataRect, screenRegion: DataRect): DataRect {
     const leftTop = rect.getMinXMinY();
     const rightBottom = rect.getMaxXMaxY();
 
-    const leftTopTransformed = CoordinateTransformHelper.screenRegionToDataXY(leftTop, visible, screenRegion);
-    const rightBottomTransformed = CoordinateTransformHelper.screenRegionToDataXY(rightBottom, visible, screenRegion);
+    const leftTopTransformed = this.screenRegionToDataXY(leftTop, visible, screenRegion);
+    const rightBottomTransformed = this.screenRegionToDataXY(rightBottom, visible, screenRegion);
 
     return new DataRect(
       leftTopTransformed.x, leftTopTransformed.y,
@@ -100,12 +115,12 @@ export class CoordinateTransformHelper {
    * @param {DataRect} screenSize - Screen size.
    * @returns {NumericPoint}
    */
-  public static dataToScreenXY(value: NumericPoint, visible: DataRect, screenSize: DataRect): NumericPoint {
+  public dataToScreenXY(value: NumericPoint, visible: DataRect, screenSize: DataRect): NumericPoint {
     const x = value.x;
     const y = value.y;
 
-    const newX = CoordinateTransformHelper.dataToScreenX(x, visible.getHorizontalRange(), screenSize.width);
-    const newY = CoordinateTransformHelper.dataToScreenY(y, visible.getVerticalRange(), screenSize.height);
+    const newX = this.dataToScreenX(x, visible.getHorizontalRange(), screenSize.width);
+    const newY = this.dataToScreenY(y, visible.getVerticalRange(), screenSize.height);
 
     return new NumericPoint(newX, newY);
   }
@@ -117,14 +132,14 @@ export class CoordinateTransformHelper {
    * @param {DataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public static dataToScreenRegionXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+  public dataToScreenRegionXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
     const x = value.x;
     const y = value.y;
 
     const leftTop = screenRegion.getMinXMinY();
 
-    const newX = leftTop.x + CoordinateTransformHelper.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = leftTop.y + CoordinateTransformHelper.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = leftTop.x + this.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = leftTop.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -136,8 +151,8 @@ export class CoordinateTransformHelper {
    * @param {DataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public static dataToScreenRegionXYwithoutYinvert = function (value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
-    let res = CoordinateTransformHelper.dataToScreenRegionXY(value, visible, screenRegion);
+  public dataToScreenRegionXYwithoutYinvert(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+    let res = this.dataToScreenRegionXY(value, visible, screenRegion);
     res.y = screenRegion.getVerticalRange().getLength() - res.y;
     return res;
   }

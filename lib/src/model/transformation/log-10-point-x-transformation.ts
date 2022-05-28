@@ -1,12 +1,19 @@
-import { NumericPoint } from "../point/numeric-point";
-import {PointTransformation} from "./point-transformation";
+import {CoordinateTransformation} from "./coordinate-transformation";
 
-export class Log10PointXTransformation implements PointTransformation {
-  Apply(point: NumericPoint): NumericPoint {
-    return new NumericPoint(Math.log10(point.x), point.y);
+export class Log10PointXTransformation implements CoordinateTransformation {
+  applyX(x: number): number {
+    return Math.log10(x);
   }
 
-  ReverseApply(point: NumericPoint): NumericPoint {
-    return new NumericPoint(Math.pow(10, point.x), point.y);
+  applyY(y: number): number {
+    return y;
+  }
+
+  unapplyX(x: number): number {
+    return Math.pow(10, x);
+  }
+
+  unapplyY(y: number): number {
+    return y;
   }
 }
