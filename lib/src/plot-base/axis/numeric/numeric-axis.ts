@@ -7,19 +7,21 @@ import {NumericRange} from "../../../model/numeric-range";
 import {Range} from "../../../model/range";
 import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
 import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
+import {DataTransformation} from "../../../model/transformation/data-transformation";
 
 export class NumericAxis extends AxisBase<number> {
   /**
    * Creates axis with numbers and ticks on it.
    * @param {NumericPoint} location - Axis location.
    * @param {Range} range - Axis range (it's min and max values)
+   * @param {DataTransformation} dataTransformation - transformation of data from data coordinates to screen coordinate and vice versa.
    * @param {number} width - Axis width.
    * @param {number} height - Axis height.
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, width?: number, height?: number, options?: AxisOptions) {
-    super(location, orientation, range, width, height, options);
+  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, width?: number, height?: number, options?: AxisOptions) {
+    super(location, orientation, range, dataTransformation, width, height, options);
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {

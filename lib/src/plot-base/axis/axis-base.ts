@@ -30,6 +30,8 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   protected orientation: AxisOrientation;
   protected options: AxisOptions;
 
+  private dataTransformation: DataTransformation;
+
   protected size: Size;
 
   private borderShape: Konva.Shape;
@@ -52,6 +54,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   protected constructor(location: NumericPoint,
                         orientation: AxisOrientation,
                         range: Range<T>,
+                        dataTransformation: DataTransformation,
                         width?: number,
                         height?: number,
                         options?: AxisOptions) {
@@ -59,6 +62,8 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
     this.location = location;
     this.range = range;
+
+    this.dataTransformation = dataTransformation;
 
     this.initialWidth = width;
     this.initialHeight = height;
@@ -276,9 +281,9 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     let numericRange = new Range<number>(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
 
     if (this.orientation == AxisOrientation.Horizontal)
-      return DataTransformation.dataToScreenX(this.axisValueToNumber(tick.value), numericRange, screenWidth);
+      return this.dataTransformation.dataToScreenX(this.axisValueToNumber(tick.value), numericRange, screenWidth);
     else
-      return DataTransformation.dataToScreenY(this.axisValueToNumber(tick.value), numericRange, screenHeight);
+      return this.dataTransformation.dataToScreenY(this.axisValueToNumber(tick.value), numericRange, screenHeight);
   }
 
   /**
