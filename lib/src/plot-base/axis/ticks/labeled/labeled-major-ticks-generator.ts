@@ -5,13 +5,12 @@ import {StringPoint} from "../../../../model/point/string-point";
 import chain from "lodash-es/chain";
 import {LabeledTick} from "../labeled-tick";
 
-export class LabeledMajorTicksGenerator implements MajorTicksGenerator<number> {
+export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
 
-  protected majorTickHeight: number;
   private labels: Array<StringPoint>;
 
   constructor(majorTickHeight: number, labels: Array<StringPoint>) {
-    this.majorTickHeight = majorTickHeight;
+    super(majorTickHeight);
     this.labels = labels;
   }
 

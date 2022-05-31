@@ -1,11 +1,11 @@
-import {AxisOptions, AxisOptionsDefaults} from "./axis-options";
+import {AxisOptions, AxisOptionsDefaults} from "./axes/axis-options";
 import {GridOptions, GridOptionsDefaults} from "./grid-options";
 import {HeaderOptions, HeaderOptionsDefaults} from "./header-options";
 import {LegendOptions, LegendOptionsDefaults} from "./legend-options";
 import {PlotOptions, PlotOptionsDefaults} from "./plot-options";
 import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
 import {Margin} from "../model/margin";
-import {AxesOptions, AxesOptionsDefaults} from "./axes-options";
+import {AxesOptions, AxesOptionsDefaults} from "./axes/axes-options";
 
 export interface ChartOptions {
 

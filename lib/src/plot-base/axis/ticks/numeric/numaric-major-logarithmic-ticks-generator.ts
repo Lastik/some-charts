@@ -3,15 +3,10 @@ import {Range} from "../../../../model/range"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 import {MathHelper} from "../../../../services/math-helper";
 
-export class NumericMajorTicksGenerator implements MajorTicksGenerator<number> {
-
-  protected static readonly majorTicksCount = [80, 40, 20, 10, 5, 4, 3, 2, 1];
-  protected static readonly majorTicksCountRev = NumericMajorTicksGenerator.majorTicksCount.reverse();
-
-  protected majorTickHeight: number;
+export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {
 
   constructor(majorTickHeight: number) {
-    this.majorTickHeight = majorTickHeight;
+    super(majorTickHeight);
   }
 
   get defaultTicksCount(): number {

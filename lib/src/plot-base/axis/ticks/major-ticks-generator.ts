@@ -1,9 +1,15 @@
 import {Range} from "../../../model/range";
 import { Tick } from "./tick";
 
-export interface MajorTicksGenerator<T> {
+export abstract class MajorTicksGenerator<T> {
 
-  get defaultTicksCount(): number;
+  protected majorTickHeight: number;
+
+  constructor(majorTickHeight: number) {
+    this.majorTickHeight = majorTickHeight;
+  }
+
+  abstract get defaultTicksCount(): number;
 
   /**
    * Generates ticks in specified range.
@@ -11,19 +17,19 @@ export interface MajorTicksGenerator<T> {
    * @param {number} ticksCount - amount of ticks in specified range
    * @return {Array<Tick>} - array of generated ticks
    * */
-  generateTicks(range: Range<T>, ticksCount: number): Array<Tick<T>>;
+  abstract generateTicks(range: Range<T>, ticksCount: number): Array<Tick<T>>;
 
   /**
   * Suggests increased ticks count for specified ticks count.
   * @param {number} ticksCount - amount of ticks.
    * @return {number} - new ticks count
   * */
-  suggestIncreasedTicksCount(ticksCount: number): number;
+  abstract suggestIncreasedTicksCount(ticksCount: number): number;
 
   /**
    * Suggests decreased ticks count for specified ticks count.
    * @param {number} ticksCount - amount of ticks.
    * @return {number} - new ticks count
    * */
-  suggestDecreasedTickCount(ticksCount: number): number;
+  abstract suggestDecreasedTickCount(ticksCount: number): number;
 }

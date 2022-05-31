@@ -1,4 +1,4 @@
-import {AxisOptions} from "./axis-options";
+import {AxisOptions} from "./axes/axis-options";
 
 /**
  * Chart grid options

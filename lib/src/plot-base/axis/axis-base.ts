@@ -1,6 +1,6 @@
 ﻿import {NumericPoint} from "../../model/point/numeric-point";
 import {Size} from "../../model/size";
-import {AxisOptions, AxisOptionsDefaults} from "../../options/axis-options";
+import {AxisOptions, AxisOptionsDefaults} from "../../options/axes/axis-options";
 import Konva from "konva";
 import {MathHelper} from "../../services/math-helper";
 import {ChartRenderableItem} from "../../core/chart-renderable-item";

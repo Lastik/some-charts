@@ -1,8 +1,8 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericMajorTicksGenerator} from "../ticks/numeric/numeric-major-ticks-generator";
+import {NumericMajorOrdinaryTicksGenerator} from "../ticks/numeric/numeric-major-ordinary-ticks-generator";
 import {NumericMinorTicksGenerator} from "../ticks/numeric/numeric-minor-ticks-generator";
 import {NumericPoint} from "../../../model/point/numeric-point";
-import {AxisOptions, AxisOptionsDefaults} from "../../../options/axis-options";
+import {AxisOptions, AxisOptionsDefaults} from "../../../options/axes/axis-options";
 import {NumericRange} from "../../../model/numeric-range";
 import {Range} from "../../../model/range";
 import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
@@ -25,7 +25,7 @@ export class NumericAxis extends AxisBase<number> {
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
-    return new NumericMajorTicksGenerator(this.options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
+    return new NumericMajorOrdinaryTicksGenerator(this.options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
   }
 
   protected createMinorTicksGenerator(): MinorTicksGenerator<number> | undefined {
