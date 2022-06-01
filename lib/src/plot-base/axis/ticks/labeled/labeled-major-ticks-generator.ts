@@ -14,7 +14,7 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
     this.labels = labels;
   }
 
-  get defaultTicksCount(): number {
+  override get defaultTicksCount(): number {
     return this.labels.length;
   }
 

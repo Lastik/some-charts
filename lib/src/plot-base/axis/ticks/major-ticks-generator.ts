@@ -9,7 +9,9 @@ export abstract class MajorTicksGenerator<T> {
     this.majorTickHeight = majorTickHeight;
   }
 
-  abstract get defaultTicksCount(): number;
+  get defaultTicksCount(): number{
+    return 10;
+  }
 
   /**
    * Generates ticks in specified range.

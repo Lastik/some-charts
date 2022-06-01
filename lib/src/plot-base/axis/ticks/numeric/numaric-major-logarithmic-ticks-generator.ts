@@ -4,13 +4,12 @@ import {MajorTicksGenerator} from "../major-ticks-generator";
 import {MathHelper} from "../../../../services/math-helper";
 
 export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {
+  private logarithmBase: number;
 
-  constructor(majorTickHeight: number) {
+  constructor(logarithmBase: number, majorTickHeight: number) {
     super(majorTickHeight);
-  }
 
-  get defaultTicksCount(): number {
-    return 10;
+    this.logarithmBase = logarithmBase;
   }
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
@@ -78,5 +77,9 @@ export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<n
       newTickCount = NumericMajorTicksGenerator.majorTicksCountRev[0];
 
     return newTickCount;
+  }
+
+  private logByBase(value: number): number{
+    return Math.log(value) / Math.log(this.logarithmBase);
   }
 }

@@ -12,10 +12,6 @@ export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<numb
     super(majorTickHeight);
   }
 
-  get defaultTicksCount(): number {
-    return 10;
-  }
-
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
 
     let start = range.min;
