@@ -8,8 +8,13 @@ import {Range} from "../../../model/range";
 import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
 import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
 import {DataTransformation} from "../../../model/transformation/data-transformation";
+import {NumericAxisOptions} from "../../../options/axes/numeric/numeric-axis-options";
+import {NumericAxisScale} from "../../../options/axes/numeric/numeric-axis-scale";
+import {NumericMajorLogarithmicTicksGenerator} from "../ticks/numeric/numaric-major-logarithmic-ticks-generator";
+import {NumericAxisScaleType} from "../../../options/axes/numeric/numeric-axis-scale-type";
+import {NumericAxisLogarithmicScale} from "../../../options/axes/numeric/numeric-axis-logarithmic-scale";
 
-export class NumericAxis extends AxisBase<number> {
+export class NumericAxis extends AxisBase<number, NumericAxisOptions> {
   /**
    * Creates axis with numbers and ticks on it.
    * @param {NumericPoint} location - Axis location.
@@ -20,16 +25,21 @@ export class NumericAxis extends AxisBase<number> {
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, width?: number, height?: number, options?: AxisOptions) {
-    super(location, orientation, range, dataTransformation, width, height, options);
+  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, options: NumericAxisOptions, width?: number, height?: number) {
+    super(location, orientation, range, dataTransformation, options, width, height);
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
-    return new NumericMajorOrdinaryTicksGenerator(this.options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight);
+    if (this.options.scale.scaleType == NumericAxisScaleType.Logarithmic) {
+      let logScale = this.options.scale as NumericAxisLogarithmicScale;
+      return new NumericMajorLogarithmicTicksGenerator(logScale.logarithmBase, this.options?.majorTickHeight! ?? AxisOptionsDefaults.Instance.majorTickHeight);
+    } else {
+      return new NumericMajorOrdinaryTicksGenerator(this.options?.majorTickHeight! ?? AxisOptionsDefaults.Instance.majorTickHeight);
+    }
   }
 
   protected createMinorTicksGenerator(): MinorTicksGenerator<number> | undefined {
-    return new NumericMinorTicksGenerator(this.options?.minorTickHeight ?? AxisOptionsDefaults.Instance.minorTickHeight);
+    return new NumericMinorTicksGenerator(this.options?.minorTickHeight! ?? AxisOptionsDefaults.Instance.minorTickHeight);
   }
 
   axisValueToNumber(tickValue: number): number {

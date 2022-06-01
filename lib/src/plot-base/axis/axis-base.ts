@@ -16,8 +16,9 @@ import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 import {DataTransformation} from "../../model/transformation/data-transformation";
 import {NumericRange} from "../../model/numeric-range";
+import extend from "lodash-es/extend";
 
-export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
+export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -25,11 +26,11 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   public static readonly textVerticalOffsetMultiplier: number = 0.17;
 
   protected location: NumericPoint;
-  protected range: Range<T>;
+  protected range: Range<TickType>;
   protected initialWidth: number | undefined;
   protected initialHeight: number | undefined;
   protected orientation: AxisOrientation;
-  protected options: AxisOptions;
+  protected options: AxisOptionsType;
 
   private dataTransformation: DataTransformation;
 
@@ -38,15 +39,15 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   private borderShape: Konva.Shape;
   private ticksShape: Konva.Shape;
 
-  protected majorTicks: Tick<T>[];
-  protected minorTicks?: Tick<T>[];
+  protected majorTicks: Tick<TickType>[];
+  protected minorTicks?: Tick<TickType>[];
 
   protected majorTicksLabelsSizes: Size[];
   protected majorTicksScreenCoords: number[];
   protected minorTicksScreenCoords: number[];
 
-  protected readonly majorTicksGenerator: MajorTicksGenerator<T>;
-  protected readonly minorTicksGenerator?: MinorTicksGenerator<T>;
+  protected readonly majorTicksGenerator: MajorTicksGenerator<TickType>;
+  protected readonly minorTicksGenerator?: MinorTicksGenerator<TickType>;
 
   static readonly increaseTicksCountCoeff = 2;
   static readonly decreaseTicksCountCoeff = 1.5;
@@ -54,11 +55,11 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
 
   protected constructor(location: NumericPoint,
                         orientation: AxisOrientation,
-                        range: Range<T>,
+                        range: Range<TickType>,
                         dataTransformation: DataTransformation,
+                        options: AxisOptionsType,
                         width?: number,
-                        height?: number,
-                        options?: AxisOptions) {
+                        height?: number) {
     super();
 
     this.location = location;
@@ -86,7 +87,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     this.majorTicksScreenCoords = [];
     this.minorTicksScreenCoords = [];
 
-    this.options = options ?? AxisOptionsDefaults.Instance;
+    this.options = extend(options, AxisOptionsDefaults.Instance);
 
     this.majorTicksGenerator = this.createMajorTicksGenerator();
     this.minorTicksGenerator = this.createMinorTicksGenerator();
@@ -137,7 +138,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
         context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
         context.clip();
 
-        context.setAttr('font', FontHelper.fontToString(self.options.font));
+        context.setAttr('font', FontHelper.fontToString(self.options?.font!));
         context.setAttr('textBaseline', 'top');
 
         context.beginPath();
@@ -223,8 +224,8 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
     }
   }
 
-  protected abstract createMajorTicksGenerator(): MajorTicksGenerator<T>;
-  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<T> | undefined;
+  protected abstract createMajorTicksGenerator(): MajorTicksGenerator<TickType>;
+  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<TickType> | undefined;
 
   /**
    * Returns axis dependant layers.
@@ -277,7 +278,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * Returns tick's screen coordinate
    * @returns {number} Tick's screen coordinate.
    */
-  protected getTickScreenCoordinate(tick: Tick<T>, screenWidth: number, screenHeight: number, range: Range<T>): number {
+  protected getTickScreenCoordinate(tick: Tick<TickType>, screenWidth: number, screenHeight: number, range: Range<TickType>): number {
 
     let numericRange = new NumericRange(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
 
@@ -290,14 +291,14 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   /**
    * Converts value from axis inits to number.
    * */
-  abstract axisValueToNumber(tickValue: T): number;
+  abstract axisValueToNumber(tickValue: TickType): number;
 
   /**
    * Measures labels sizes for an array of major ticks
    * @param { Array<Tick>} ticks - Array of ticks
    * @returns {Array<Size>}
    * */
-  protected measureLabelsSizesForMajorTicks(ticks: Array<Tick<T>>): Array<Size> {
+  protected measureLabelsSizesForMajorTicks(ticks: Array<Tick<TickType>>): Array<Size> {
 
     let labelsSizes = [];
 
@@ -313,7 +314,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @param {string} tick - Tick for which to generate label size.
    * @returns {Size} Label's size.
    */
-  protected measureLabelSizeForMajorTick(tick: Tick<T>): Size{
+  protected measureLabelSizeForMajorTick(tick: Tick<TickType>): Size{
     if (this.majorTicks != null) {
       let tickFromArr = this.majorTicks[tick.index];
       if (tickFromArr != null && tickFromArr.index === tick.index) {
@@ -334,8 +335,8 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @returns {Size} Label's size.
    */
   protected measureLabelSize(label: string): Size {
-    let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options.font), label);
-    let height = this.options.font.size;
+    let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options?.font!), label);
+    let height = this.options?.font?.size!;
     return new Size(width, height);
   }
 
@@ -347,7 +348,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @param {number} height - axis height. May be undefined (for horizontal axis only)
    */
   public update(location: NumericPoint,
-                range: Range<T>,
+                range: Range<TickType>,
                 width?: number,
                 height?: number){
 
@@ -366,7 +367,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   }
 
   protected updateTicksData(location: NumericPoint,
-                            range: Range<T>,
+                            range: Range<TickType>,
                             size: Size){
 
     this.majorTicks = this.generateMajorTicks(range, size);
@@ -404,11 +405,11 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
         renderWidth = Math.max(labelSize.width, renderWidth);
       }
 
-      renderWidth += this.options.majorTickHeight + 4;
+      renderWidth += this.options?.majorTickHeight! + 4;
     }
 
     if (this.initialHeight === undefined && this.orientation == AxisOrientation.Horizontal) {
-      renderHeight = TextMeasureUtils.measureFontHeight(this.options.font) + this.options.majorTickHeight + 2;
+      renderHeight = TextMeasureUtils.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
     }
 
     this.size = new Size(renderWidth!, renderHeight!);
@@ -420,13 +421,13 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    * @param {Size} size - axis size;
    * @returns {Array<Tick>}
    * */
-  protected generateMajorTicks(range: Range<T>, size: Size): Array<Tick<T>> {
+  protected generateMajorTicks(range: Range<TickType>, size: Size): Array<Tick<TickType>> {
     let state: TicksCountChange | undefined = undefined;
     let prevState;
     let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
     let attempt = 1;
-    let ticks: Array<Tick<T>> = [];
+    let ticks: Array<Tick<TickType>> = [];
 
     while(state != TicksCountChange.OK) {
       if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
@@ -486,7 +487,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   * @param {Range} range - axis range.
   * @returns {TicksCountChange}
   * */
-  protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<T>>, range: Range<T>): TicksCountChange {
+  protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<TickType>>, range: Range<TickType>): TicksCountChange {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
     let ticksRenderInfo = chain(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };})).map(sizeTickTuple=>{

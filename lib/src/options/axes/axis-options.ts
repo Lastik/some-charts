@@ -11,27 +11,27 @@ export interface AxisOptions {
   /**
    * Axis foreground color
    */
-  foregroundColor: string;
+  foregroundColor?: string;
   /**
    * Axis background color
    */
-  backgroundColor: string;
+  backgroundColor?: string;
   /**
    * Axis font
    */
-  font: FontInPx;
+  font?: FontInPx;
   /**
    * Height of axis major ticks
    */
-  majorTickHeight: number;
+  majorTickHeight?: number;
   /**
    * Height of axis minor ticks
    */
-  minorTickHeight: number;
+  minorTickHeight?: number;
   /**
    * True, if axis border must be drawn. Otherwise, false.
    */
-  drawBorder: boolean;
+  drawBorder?: boolean;
 }
 
 export class AxisOptionsDefaults
