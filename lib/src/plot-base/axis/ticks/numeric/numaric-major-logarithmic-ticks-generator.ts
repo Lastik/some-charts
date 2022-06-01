@@ -1,7 +1,6 @@
 import {Tick} from "../tick";
 import {Range} from "../../../../model/range"
 import {MajorTicksGenerator} from "../major-ticks-generator";
-import {MathHelper} from "../../../../services/math-helper";
 
 export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {
   private logarithmBase: number;
@@ -13,70 +12,28 @@ export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<n
   }
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
+    let firstTickValue = Math.floor(this.logByBase(range.min));
+    let lastTickValue = Math.ceil(this.logByBase(range.max));
 
-    let start = range.min;
-    let finish = range.max;
-    let delta = finish - start;
+    let actualTicksCount = lastTickValue - firstTickValue + 1;
 
-    if (delta == 0)
-      return ([start, finish]).map((value, index) => {
-        return new Tick<number>(value, this.majorTickHeight, index);
-      });
-    else {
-      let log = Math.round(Math.log10(delta));
-      let newStart = MathHelper.round(start, log);
-      let newFinish = MathHelper.round(finish, log);
-      if (newStart == newFinish) {
-        log--;
-        newStart = MathHelper.round(start, log);
-        newFinish = MathHelper.round(finish, log);
-      }
-
-      let unroundedStep = (newFinish - newStart) / ticksCount;
-      let stepLog = log;
-      let step = MathHelper.floor(unroundedStep, stepLog);
-      if (step == 0) {
-        stepLog--;
-        step = MathHelper.floor(unroundedStep, stepLog);
-        if (step == 0)
-          step = unroundedStep;
-      }
-
-      let x = step * Math.floor(start / step);
-      let res = [];
-      let increasedFinish = finish + step;
-      while (x <= increasedFinish) {
-        res.push(MathHelper.round(x, log - 3));
-        x += step;
-      }
-
-      return res.map((value, index) => {
-        return new Tick<number>(value, this.majorTickHeight, index);
-      });
+    let ticks = Array(actualTicksCount);
+    for (let i = 0; i < actualTicksCount; i++) {
+      ticks[i] = new Tick(
+        Math.pow(this.logarithmBase, firstTickValue + i),
+        this.majorTickHeight,
+        i);
     }
+
+    return ticks;
   }
 
   suggestDecreasedTickCount(ticksCount: number): number {
-    for (let suggestion of NumericMajorTicksGenerator.majorTicksCount) {
-      if (suggestion < ticksCount)
-        return suggestion;
-    }
-    return NumericMajorTicksGenerator.majorTicksCount[NumericMajorTicksGenerator.majorTicksCount.length - 1];
+    return ticksCount;
   }
 
   suggestIncreasedTicksCount(ticksCount: number): number {
-    let newTickCount = undefined;
-    for (let suggestion of NumericMajorTicksGenerator.majorTicksCountRev) {
-      if (suggestion > ticksCount) {
-        newTickCount = suggestion;
-        break;
-      }
-    }
-
-    if (newTickCount === undefined)
-      newTickCount = NumericMajorTicksGenerator.majorTicksCountRev[0];
-
-    return newTickCount;
+    return ticksCount;
   }
 
   private logByBase(value: number): number{

@@ -15,6 +15,7 @@ import {Range} from '../../model/range';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 import {DataTransformation} from "../../model/transformation/data-transformation";
+import {NumericRange} from "../../model/numeric-range";
 
 export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
   /**
@@ -278,7 +279,7 @@ export abstract class AxisBase<T extends Object> extends ChartRenderableItem {
    */
   protected getTickScreenCoordinate(tick: Tick<T>, screenWidth: number, screenHeight: number, range: Range<T>): number {
 
-    let numericRange = new Range<number>(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
+    let numericRange = new NumericRange(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
 
     if (this.orientation == AxisOrientation.Horizontal)
       return this.dataTransformation.dataToScreenX(this.axisValueToNumber(tick.value), numericRange, screenWidth);
