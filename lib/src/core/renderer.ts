@@ -1,4 +1,4 @@
-import {Size, ACEventTarget} from "../model";
+import {Size, ACEventTarget, EventType} from "../model";
 import {RenderableItem} from "./renderable-item";
 import {EventUtils} from "../services/event-utils";
 import {UagentUtils} from "../services/uagent-utils";
