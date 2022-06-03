@@ -32,14 +32,14 @@ export class NumericAxis extends AxisBase<number, NumericAxisOptions> {
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
     if (this.options.scale.scaleType == NumericAxisScaleType.Logarithmic) {
       let logScale = this.options.scale as NumericAxisLogarithmicScale;
-      return new NumericMajorLogarithmicTicksGenerator(logScale.logarithmBase, this.options?.majorTickHeight! ?? AxisOptionsDefaults.Instance.majorTickHeight);
+      return new NumericMajorLogarithmicTicksGenerator(logScale.logarithmBase, this.options?.majorTickHeight!);
     } else {
-      return new NumericMajorOrdinaryTicksGenerator(this.options?.majorTickHeight! ?? AxisOptionsDefaults.Instance.majorTickHeight);
+      return new NumericMajorOrdinaryTicksGenerator(this.options?.majorTickHeight!);
     }
   }
 
   protected createMinorTicksGenerator(): MinorTicksGenerator<number> | undefined {
-    return new NumericMinorTicksGenerator(this.options?.minorTickHeight! ?? AxisOptionsDefaults.Instance.minorTickHeight);
+    return new NumericMinorTicksGenerator(this.options?.minorTickHeight!);
   }
 
   axisValueToNumber(tickValue: number): number {

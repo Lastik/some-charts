@@ -1,5 +1,4 @@
 ﻿import {Renderer} from "./renderer";
-import {Chart} from "../plot-base/chart";
 
 /**
  * Base class for all items, rendered by a renderer.

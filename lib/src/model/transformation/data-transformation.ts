@@ -5,7 +5,7 @@ import {NumericRange} from "../numeric-range";
 import {CoordinateTransformation} from "./coordinate-transformation";
 
 export class DataTransformation {
-  private coordinateTransformation?: CoordinateTransformation;
+  public coordinateTransformation?: CoordinateTransformation;
 
   /**
    * Creates new instance of data DataTransformation. This entity transforms data from data coordinates

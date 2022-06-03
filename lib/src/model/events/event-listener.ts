@@ -1,3 +1,5 @@
+import {EventType} from "./event-type";
+
 export abstract class EventListener {
   action: (eventType: EventType, options?: any) => void;
   self: any;

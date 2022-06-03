@@ -24,13 +24,13 @@ export class LabeledAxis extends AxisBase<number, LabeledAxisOptions> {
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, width?: number, height?: number, options?: LabeledAxisOptions) {
-    super(location, orientation, range, dataTransformation, width, height, options);
+  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, options: LabeledAxisOptions, width?: number, height?: number) {
+    super(location, orientation, range, dataTransformation, options, width, height);
     this.labels = options?.labels ?? [];
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
-    return new LabeledMajorTicksGenerator(this.options?.majorTickHeight ?? AxisOptionsDefaults.Instance.majorTickHeight, this.labels);
+    return new LabeledMajorTicksGenerator(this.options?.majorTickHeight!, this.labels);
   }
 
   protected createMinorTicksGenerator(): MinorTicksGenerator<number> | undefined {

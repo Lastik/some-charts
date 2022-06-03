@@ -1,5 +1,6 @@
 ﻿import {DataRect} from "../data-rect";
 import {EventBase} from "./event-base";
+import {EventType} from "./event-type";
 
 export class MultitouchZoomEvent implements EventBase {
 

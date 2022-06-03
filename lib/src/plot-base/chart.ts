@@ -5,6 +5,14 @@ import {DataRect} from "../model/data-rect";
 import {ChartOptions, ChartOptionsDefaults} from "../options/chart-options";
 import {NumericAxis} from "./axis/numeric/numeric-axis";
 import {AxisBase} from "./axis/axis-base";
+import extend from "lodash-es/extend";
+import {AxisOptionsDefaults} from "../options/axes/axis-options";
+import {NumericAxisOptions} from "../options/axes/numeric/numeric-axis-options";
+import {NumericAxisScaleType} from "../options/axes/numeric/numeric-axis-scale-type";
+import {LabeledAxis} from "./axis/labeled/labeled-axis";
+import { DataTransformation } from "../model/transformation/data-transformation";
+import {LabeledAxisOptions} from "../options/axes/labeled/labeled-axis-options";
+import {CoordinateTransformation} from "../model/transformation/coordinate-transformation";
 
 export class Chart {
   private location: NumericPoint;
@@ -13,8 +21,8 @@ export class Chart {
 
   private options: ChartOptions;
 
-  private horizontalAxis?: AxisBase<any>;
-  private verticalAxis: AxisBase<any>;
+  private horizontalAxis?: AxisBase<any, any>;
+  private verticalAxis: AxisBase<any, any>;
 
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
     /// <summary>Creates new instance of chart.</summary>
@@ -27,14 +35,24 @@ export class Chart {
     this.size = size;
     this.dataRect = dataRect;
 
-    this.options = options ?? ChartOptionsDefaults.Instance;
+    this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    let horizontalAxisOptions = this.options.axes.horizontal;
+    let horizontalAxisOptions = this.options?.axes.horizontal;
+    let verticalAxisOptions = this.options?.axes.vertical;
+
+    let axesCoordinateTransformations: Array<CoordinateTransformation> = [];
+
+    let dataTransformation: DataTransformation = new DataTransformation();
 
     if (horizontalAxisOptions.axisType == AxisTypes.NumericAxis) {
-      this.horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), size.width, undefined, horizontalAxisOptions);
-    } else if (horizontalAxisOptions.axisType == AxisTypes.StringAxis) {
-      this.horizontalAxis = new StringAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), size.width, undefined, null);
+      let numericAxisOptions = horizontalAxisOptions as NumericAxisOptions;
+
+      if(numericAxisOptions.scale.scaleType === NumericAxisScaleType.Logarithmic){
+      }
+
+      this.horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, numericAxisOptions, size.width, undefined,);
+    } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
+      this.horizontalAxis = new LabeledAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, horizontalAxisOptions as LabeledAxisOptions, size.width, undefined);
     }
 
 
@@ -44,7 +62,7 @@ export class Chart {
 
     if (horizontalAxisType == AxisTypes.NumericAxis) {
       this._horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal);
-    } else if (horizontalAxisType == AxisTypes.StringAxis) {
+    } else if (horizontalAxisType == AxisTypes.LabeledAxis) {
       this._horizontalAxis = new StringAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal, null);
     } else {
       this._horizontalAxis = null;

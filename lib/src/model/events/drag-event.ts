@@ -1,4 +1,5 @@
 ﻿import {EventBase} from "./event-base";
+import {EventType} from "./event-type";
 
 export class DragEvent implements EventBase {
 
