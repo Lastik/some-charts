@@ -1,10 +1,8 @@
-import {Size} from "../model/size";
+import {Size, ACEventTarget} from "../model";
 import {RenderableItem} from "./renderable-item";
 import {EventUtils} from "../services/event-utils";
-import {ACEventTarget} from "../model/events/a-c-event-target";
 import {UagentUtils} from "../services/uagent-utils";
-import {RendererOptionsDefaults} from "../options/renderer-options";
-import {ChartOptions, ChartOptionsDefaults} from "../options/chart-options";
+import {ChartOptions, ChartOptionsDefaults, RendererOptionsDefaults} from "../options";
 import {JqueryHelper} from "../services/jquery-helper";
 import Konva from "konva";
 

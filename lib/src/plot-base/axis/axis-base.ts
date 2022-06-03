@@ -1,9 +1,8 @@
-﻿import {NumericPoint} from "../../model/point/numeric-point";
-import {Size} from "../../model/size";
-import {AxisOptions, AxisOptionsDefaults} from "../../options/axes/axis-options";
+﻿import {NumericPoint} from "../../model";
+import {AxisOptions, AxisOptionsDefaults} from "../../options";
 import Konva from "konva";
 import {MathHelper} from "../../services/math-helper";
-import {ChartRenderableItem} from "../../core/chart-renderable-item";
+import {ChartRenderableItem} from "../../core";
 import {Chart} from "../chart";
 import {TextMeasureUtils} from "../../services/text-measure-utils";
 import {FontHelper} from "../../services/font-helper";
@@ -11,11 +10,9 @@ import {Tick} from "./ticks/tick";
 import {tick} from "@angular/core/testing";
 import {MajorTicksGenerator} from "./ticks/major-ticks-generator";
 import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
-import {Range} from '../../model/range';
+import {Range, Size, NumericRange, DataTransformation} from '../../model';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
-import {DataTransformation} from "../../model/transformation/data-transformation";
-import {NumericRange} from "../../model/numeric-range";
 import extend from "lodash-es/extend";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
