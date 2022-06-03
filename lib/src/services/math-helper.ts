@@ -1,5 +1,5 @@
 ﻿import {UagentUtils} from "./uagent-utils";
-import {NumericPoint} from "../model/point/numeric-point";
+import {NumericPoint} from "../model";
 
 
 /**

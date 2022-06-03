@@ -3,8 +3,7 @@
  */
 import Konva from "konva";
 import Util = Konva.Util;
-import {FontInUnits} from "../model/font/font-in-units";
-import {FontInPx} from "../model/font/font-in-px";
+import {FontInUnits, FontInPx} from "../model";
 import {FontHelper} from "./font-helper";
 
 export class TextMeasureUtils {
