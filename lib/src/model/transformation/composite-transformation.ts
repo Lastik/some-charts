@@ -4,8 +4,8 @@ export class CompositeTransformation implements CoordinateTransformation {
 
   private readonly transformations: Array<CoordinateTransformation>;
 
-  constructor() {
-    this.transformations = new Array<CoordinateTransformation>();
+  constructor(transformations: Array<CoordinateTransformation>) {
+    this.transformations = transformations;
   }
 
   applyX(x: number): number {

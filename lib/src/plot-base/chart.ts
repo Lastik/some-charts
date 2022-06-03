@@ -2,7 +2,8 @@ import Konva from "konva";
 import {
   NumericPoint, Size,
   DataRect, DataTransformation,
-  CoordinateTransformation} from "../model";
+  CoordinateTransformation, CoordinateTransformationStatic
+} from "../model";
 import {
   ChartOptions,
   ChartOptionsDefaults,
@@ -43,33 +44,20 @@ export class Chart {
     let horizontalAxisOptions = this.options?.axes.horizontal;
     let verticalAxisOptions = this.options?.axes.vertical;
 
-    let axesCoordinateTransformations: Array<CoordinateTransformation> = [];
-
-    let dataTransformation: DataTransformation = new DataTransformation();
+    let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes));
 
     if (horizontalAxisOptions.axisType == AxisTypes.NumericAxis) {
-      let numericAxisOptions = horizontalAxisOptions as NumericAxisOptions;
-
-      if(numericAxisOptions.scale.scaleType === NumericAxisScaleType.Logarithmic){
-      }
-
-      this.horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, numericAxisOptions, size.width, undefined,);
+      this.horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, horizontalAxisOptions as NumericAxisOptions, size.width, undefined);
     } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
       this.horizontalAxis = new LabeledAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, horizontalAxisOptions as LabeledAxisOptions, size.width, undefined);
     }
 
-
-    this.verticalAxis = new NumericAxis(location, dataRect.getVerticalRange(), new Size(null, size.height), Orientation.Vertical);
-
-    this._horizontalAxisType = horizontalAxisType;
-
-    if (horizontalAxisType == AxisTypes.NumericAxis) {
-      this._horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal);
-    } else if (horizontalAxisType == AxisTypes.LabeledAxis) {
-      this._horizontalAxis = new StringAxis(new NumericPoint(location.x, location.y + size.height), dataRect.getHorizontalRange(), new Size(size.width, null), Orientation.Horizontal, null);
-    } else {
-      this._horizontalAxis = null;
+    if (verticalAxisOptions.axisType == AxisTypes.NumericAxis) {
+      this.verticalAxis = new NumericAxis(location, AxisOrientation.Vertical, dataRect.getVerticalRange(), dataTransformation, verticalAxisOptions as NumericAxisOptions, undefined, size.height);
+    } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
+      this.verticalAxis = new LabeledAxis(location, AxisOrientation.Vertical, dataRect.getVerticalRange(), dataTransformation, verticalAxisOptions as LabeledAxisOptions, undefined, size.height);
     }
+
     this._chartGrid = new Grid(location, size, null, null);
 
     this._plots = [];

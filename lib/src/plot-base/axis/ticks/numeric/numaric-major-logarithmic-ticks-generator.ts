@@ -1,6 +1,7 @@
 import {Tick} from "../tick";
 import {Range} from "../../../../model"
 import {MajorTicksGenerator} from "../major-ticks-generator";
+import {MathHelper} from "../../../../services";
 
 export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {
   private logarithmBase: number;
@@ -12,8 +13,8 @@ export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<n
   }
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
-    let firstTickValue = Math.floor(this.logByBase(range.min));
-    let lastTickValue = Math.ceil(this.logByBase(range.max));
+    let firstTickValue = Math.floor(MathHelper.logByBase(this.logarithmBase, range.min));
+    let lastTickValue = Math.ceil(MathHelper.logByBase(this.logarithmBase, range.max));
 
     let actualTicksCount = lastTickValue - firstTickValue + 1;
 
@@ -34,9 +35,5 @@ export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<n
 
   suggestIncreasedTicksCount(ticksCount: number): number {
     return ticksCount;
-  }
-
-  private logByBase(value: number): number{
-    return Math.log(value) / Math.log(this.logarithmBase);
   }
 }

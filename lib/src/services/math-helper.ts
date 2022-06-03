@@ -73,4 +73,8 @@ export class MathHelper {
   public static log10(number: number) {
     return Math.log(number) / 2.302585092994046;
   }
+
+  public static logByBase(logarithmBase: number, value: number): number{
+    return Math.log(value) / Math.log(logarithmBase);
+  }
 }

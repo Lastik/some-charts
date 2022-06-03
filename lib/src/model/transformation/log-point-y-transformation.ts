@@ -1,6 +1,13 @@
 import {CoordinateTransformation} from "./coordinate-transformation";
 
-export class Log10PointYTransformation implements CoordinateTransformation {
+export class LogPointYTransformation implements CoordinateTransformation{
+
+  private base: number;
+
+  constructor(base: number) {
+    this.base = base;
+  }
+
   applyX(x: number): number {
     return x;
   }
@@ -14,6 +21,6 @@ export class Log10PointYTransformation implements CoordinateTransformation {
   }
 
   unapplyY(y: number): number {
-    return Math.pow(10, y);
+    return Math.pow(this.base, y);
   }
 }
