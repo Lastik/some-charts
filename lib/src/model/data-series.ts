@@ -1,4 +1,4 @@
-﻿import {Point} from "./point/point";
+﻿import {Point} from "./point";
 
 /**
  * DataSeries with X coordinate of generic type

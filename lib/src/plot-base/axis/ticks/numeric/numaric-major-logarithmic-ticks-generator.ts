@@ -1,5 +1,5 @@
 import {Tick} from "../tick";
-import {Range} from "../../../../model/range"
+import {Range} from "../../../../model"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 
 export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {

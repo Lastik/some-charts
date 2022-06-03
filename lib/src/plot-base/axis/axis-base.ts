@@ -1,19 +1,15 @@
-﻿import {NumericPoint} from "../../model";
-import {AxisOptions, AxisOptionsDefaults} from "../../options";
+﻿import {AxisOptions, AxisOptionsDefaults} from "../../options";
 import Konva from "konva";
-import {MathHelper} from "../../services/math-helper";
+import {MathHelper, TextMeasureUtils, FontHelper} from "../../services";
 import {ChartRenderableItem} from "../../core";
 import {Chart} from "../chart";
-import {TextMeasureUtils} from "../../services/text-measure-utils";
-import {FontHelper} from "../../services/font-helper";
-import {Tick} from "./ticks/tick";
-import {tick} from "@angular/core/testing";
-import {MajorTicksGenerator} from "./ticks/major-ticks-generator";
-import {MinorTicksGenerator} from "./ticks/minor-ticks-generator";
-import {Range, Size, NumericRange, DataTransformation} from '../../model';
+import {Tick, MajorTicksGenerator, MinorTicksGenerator} from "./ticks";
+import {Range, Size, NumericRange, DataTransformation, NumericPoint} from '../../model';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 import extend from "lodash-es/extend";
+import {AxisOrientation} from "./axis-orientation";
+import {TicksCountChange} from "./ticks-count-change";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
   /**
@@ -193,14 +189,18 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
             context.lineTo(xVal, yVal);
           }
 
-          for (let i = 0; i < minorTicksCount; i++) {
-            let tickSceenXCoord = minorTicksScreenXCoords[i];
+          if(self.minorTicks !== undefined) {
+            let minorTicks = self.minorTicks!;
+            for (let i = 0; i < minorTicksCount; i++) {
+              let tick = minorTicks[i];
+              let tickSceenXCoord = minorTicksScreenXCoords[i];
 
-            let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
-            let yVal = MathHelper.optimizeValue(self.location.y + tickSceenXCoord);
-            context.moveTo(xVal, yVal);
-            xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
-            context.lineTo(xVal, yVal);
+              let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
+              let yVal = MathHelper.optimizeValue(self.location.y + tickSceenXCoord);
+              context.moveTo(xVal, yVal);
+              xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
+              context.lineTo(xVal, yVal);
+            }
           }
         }
         context.stroke();

@@ -1,5 +1,5 @@
 import {ChartOptions} from "./chart-options";
-import {FontInUnits} from "../model/font/font-in-units";
+import {FontInUnits} from "../model";
 /**
  * Chart renderer options
  */

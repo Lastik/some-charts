@@ -1,7 +1,6 @@
 /**
  * Chart renderer options
  */
-import {FontInPx} from "../../model/font/font-in-px";
 import {AxisOptions, AxisOptionsDefaults} from "./axis-options";
 
 

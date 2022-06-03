@@ -1,5 +1,3 @@
-import {HeaderOptions} from "./header-options";
-
 /**
  * Chart plot options
  */

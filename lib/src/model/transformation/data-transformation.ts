@@ -1,6 +1,6 @@
 ﻿import {Range} from '../range';
 import {DataRect} from '../data-rect';
-import {NumericPoint} from '../point/numeric-point';
+import {NumericPoint} from '../point';
 import {NumericRange} from "../numeric-range";
 import {CoordinateTransformation} from "./coordinate-transformation";
 

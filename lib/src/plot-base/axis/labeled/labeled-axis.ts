@@ -1,14 +1,8 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericPoint} from "../../../model/point/numeric-point";
-import {AxisOptions, AxisOptionsDefaults} from "../../../options/axes/axis-options";
-import {NumericRange} from "../../../model/numeric-range";
-import {Range} from "../../../model/range";
-import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
-import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
-import {LabeledMajorTicksGenerator} from "../ticks/labeled/labeled-major-ticks-generator";
-import {StringPoint} from "../../../model/point/string-point";
-import {DataTransformation} from "../../../model/transformation/data-transformation";
-import {LabeledAxisOptions} from "../../../options/axes/labeled/labeled-axis-options";
+import {NumericPoint, NumericRange, Range, StringPoint, DataTransformation} from "../../../model";
+import {AxisOptions, LabeledAxisOptions} from "../../../options";
+import {MinorTicksGenerator, MajorTicksGenerator, LabeledMajorTicksGenerator} from "../ticks";
+import {AxisOrientation} from "../axis-orientation";
 
 export class LabeledAxis extends AxisBase<number, LabeledAxisOptions> {
 

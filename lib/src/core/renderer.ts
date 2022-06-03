@@ -1,9 +1,7 @@
 import {Size, ACEventTarget, EventType} from "../model";
 import {RenderableItem} from "./renderable-item";
-import {EventUtils} from "../services/event-utils";
-import {UagentUtils} from "../services/uagent-utils";
+import {EventUtils, UagentUtils, JqueryHelper} from "../services";
 import {ChartOptions, ChartOptionsDefaults, RendererOptionsDefaults} from "../options";
-import {JqueryHelper} from "../services/jquery-helper";
 import Konva from "konva";
 
 export class Renderer {

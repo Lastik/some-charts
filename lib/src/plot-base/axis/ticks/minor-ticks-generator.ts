@@ -1,4 +1,4 @@
-import {Range} from "../../../model/range";
+import {Range} from "../../../model";
 import { Tick } from "./tick";
 
 export interface MinorTicksGenerator<T> {

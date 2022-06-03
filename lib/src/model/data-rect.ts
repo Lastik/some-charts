@@ -1,6 +1,6 @@
 ﻿import {NumericRange} from './numeric-range';
 import {Size} from './size';
-import {NumericPoint} from './point/numeric-point';
+import {NumericPoint} from './point';
 
 export class DataRect {
 

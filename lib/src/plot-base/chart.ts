@@ -1,18 +1,21 @@
 import Konva from "konva";
-import {NumericPoint} from "../model/point/numeric-point";
-import {Size} from "../model/size";
-import {DataRect} from "../model/data-rect";
-import {ChartOptions, ChartOptionsDefaults} from "../options/chart-options";
-import {NumericAxis} from "./axis/numeric/numeric-axis";
-import {AxisBase} from "./axis/axis-base";
+import {
+  NumericPoint, Size,
+  DataRect, DataTransformation,
+  CoordinateTransformation} from "../model";
+import {
+  ChartOptions,
+  ChartOptionsDefaults,
+  NumericAxisOptions,
+  NumericAxisScaleType,
+  LabeledAxisOptions} from "../options";
+import {
+  AxisBase,
+  NumericAxis,
+  LabeledAxis,
+  AxisTypes,
+  AxisOrientation} from "./axis";
 import extend from "lodash-es/extend";
-import {AxisOptionsDefaults} from "../options/axes/axis-options";
-import {NumericAxisOptions} from "../options/axes/numeric/numeric-axis-options";
-import {NumericAxisScaleType} from "../options/axes/numeric/numeric-axis-scale-type";
-import {LabeledAxis} from "./axis/labeled/labeled-axis";
-import { DataTransformation } from "../model/transformation/data-transformation";
-import {LabeledAxisOptions} from "../options/axes/labeled/labeled-axis-options";
-import {CoordinateTransformation} from "../model/transformation/coordinate-transformation";
 
 export class Chart {
   private location: NumericPoint;

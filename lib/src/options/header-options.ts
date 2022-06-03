@@ -1,5 +1,4 @@
-import {FontInUnits} from "../model/font/font-in-units";
-import {FontUnits} from "../model/font/font-units";
+import {FontInUnits, FontUnits} from "../model";
 
 /**
  * Chart header options

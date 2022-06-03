@@ -1,18 +1,13 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericMajorOrdinaryTicksGenerator} from "../ticks/numeric/numeric-major-ordinary-ticks-generator";
-import {NumericMinorTicksGenerator} from "../ticks/numeric/numeric-minor-ticks-generator";
-import {NumericPoint} from "../../../model/point/numeric-point";
-import {AxisOptions, AxisOptionsDefaults} from "../../../options/axes/axis-options";
-import {NumericRange} from "../../../model/numeric-range";
-import {Range} from "../../../model/range";
-import {MinorTicksGenerator} from "../ticks/minor-ticks-generator";
-import {MajorTicksGenerator} from "../ticks/major-ticks-generator";
-import {DataTransformation} from "../../../model/transformation/data-transformation";
-import {NumericAxisOptions} from "../../../options/axes/numeric/numeric-axis-options";
-import {NumericAxisScale} from "../../../options/axes/numeric/numeric-axis-scale";
-import {NumericMajorLogarithmicTicksGenerator} from "../ticks/numeric/numaric-major-logarithmic-ticks-generator";
-import {NumericAxisScaleType} from "../../../options/axes/numeric/numeric-axis-scale-type";
-import {NumericAxisLogarithmicScale} from "../../../options/axes/numeric/numeric-axis-logarithmic-scale";
+import {
+  NumericMajorOrdinaryTicksGenerator,
+  NumericMinorTicksGenerator,
+  MajorTicksGenerator,
+  NumericMajorLogarithmicTicksGenerator,
+  MinorTicksGenerator} from "../ticks";
+import {DataTransformation, NumericRange, Range, NumericPoint} from "../../../model";
+import {AxisOptions, NumericAxisOptions, NumericAxisScaleType, NumericAxisLogarithmicScale} from "../../../options";
+import {AxisOrientation} from "../axis-orientation";
 
 export class NumericAxis extends AxisBase<number, NumericAxisOptions> {
   /**
