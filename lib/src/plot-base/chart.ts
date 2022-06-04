@@ -2,7 +2,7 @@ import Konva from "konva";
 import {
   NumericPoint, Size,
   DataRect, DataTransformation,
-  CoordinateTransformation, CoordinateTransformationStatic
+  CoordinateTransformationStatic
 } from "../model";
 import {
   ChartOptions,
@@ -17,6 +17,7 @@ import {
   AxisTypes,
   AxisOrientation} from "./axis";
 import extend from "lodash-es/extend";
+import {Grid} from "./grid";
 
 export class Chart {
   private location: NumericPoint;
@@ -26,7 +27,9 @@ export class Chart {
   private options: ChartOptions;
 
   private horizontalAxis?: AxisBase<any, any>;
-  private verticalAxis: AxisBase<any, any>;
+  private verticalAxis?: AxisBase<any, any>;
+
+  private chartGrid: Grid;
 
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
     /// <summary>Creates new instance of chart.</summary>
@@ -58,7 +61,7 @@ export class Chart {
       this.verticalAxis = new LabeledAxis(location, AxisOrientation.Vertical, dataRect.getVerticalRange(), dataTransformation, verticalAxisOptions as LabeledAxisOptions, undefined, size.height);
     }
 
-    this._chartGrid = new Grid(location, size, null, null);
+    this.chartGrid = new Grid(location, size, this.options.grid);
 
     this._plots = [];
 
