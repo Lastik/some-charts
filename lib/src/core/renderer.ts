@@ -3,6 +3,7 @@ import {RenderableItem} from "./renderable-item";
 import {EventUtils, UagentUtils, JqueryHelper} from "../services";
 import {ChartOptions, ChartOptionsDefaults, RendererOptionsDefaults} from "../options";
 import Konva from "konva";
+import {Cursor} from "../common";
 
 export class Renderer {
 
@@ -204,6 +205,13 @@ export class Renderer {
    */
   getContainer() {
     return this.stage.container();
+  }
+
+  /**
+   * Sets renderer's cursor.
+   */
+  setCursor(cursor: Cursor) {
+    $(this.getContainer()).css('cursor', cursor);
   }
 
   /**

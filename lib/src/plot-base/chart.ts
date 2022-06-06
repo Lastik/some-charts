@@ -8,7 +8,6 @@ import {
   ChartOptions,
   ChartOptionsDefaults,
   NumericAxisOptions,
-  NumericAxisScaleType,
   LabeledAxisOptions} from "../options";
 import {
   AxisBase,
@@ -31,13 +30,14 @@ export class Chart {
 
   private chartGrid: Grid;
 
+  /**
+   * Creates new instance of chart.
+   * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
+   * @param {Size} size - Chart's size
+   * @param {DataRect} dataRect - Currently visible rectangle on chart.
+   * @param {ChartOptions} options - Chart options.
+   * */
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
-    /// <summary>Creates new instance of chart.</summary>
-    /// <param name="location" type="Point">Chart's location relative to left up corner of canvas.</param>
-    /// <param name="size" type="Size">Chart's size.</param>
-    /// <param name="dataRect" type="DataRect">Currently visible rectangle on chart.</param>
-    /// <param name="horizontalAxisType" type="Number">Type of horizontal axis.</param>
-    /// <param name="enableNavigation" type="Boolean">Op  tional parameter, which indicates, whether chart navigation is enabled. Default value is true.</param>
     this.location = location;
     this.size = size;
     this.dataRect = dataRect;
