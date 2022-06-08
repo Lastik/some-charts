@@ -1,7 +1,7 @@
-.angular-charts {
-  .renderer {
+.#{$rootElementName} {
+  .#{$rootElementName}__renderer {
     position: relative;
-    .stage {
+    .#{$rootElementName}__stage {
       position: absolute;
     }
   }
