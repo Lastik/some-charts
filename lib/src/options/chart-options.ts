@@ -12,11 +12,6 @@ export interface ChartOptions {
    * Is chart navigation enabled or not.
    */
   isNavigationEnabled: boolean;
-
-  /**
-   * Chart render margin.
-   */
-  renderMargin: Margin;
   /**
    *  Cursor, set for chart.
    */
@@ -53,7 +48,6 @@ export class ChartOptionsDefaults
 {
   private static _instance: ChartOptions = {
     isNavigationEnabled: true,
-    renderMargin: {top: 2, right: 2, bottom: 2, left: 2},
     rendererCursor: "pointer",
     renderer: RendererOptionsDefaults.Instance,
     axes: AxesOptionsDefaults.Instance,

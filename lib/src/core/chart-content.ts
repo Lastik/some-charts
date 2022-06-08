@@ -6,7 +6,7 @@ export function ChartContent<TBase extends abstract new (...args: any[]) => any>
 
     /**
      * Places this item on the chart.
-     * @param {Chart} chart - Chart where to place this item.
+     * @param {Chart | undefined} chart - Chart where to place this item.
      */
     placeOnChart(chart?: Chart) {
       this._chart = chart;

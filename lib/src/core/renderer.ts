@@ -1,11 +1,21 @@
 import {Size, ACEventTarget, EventType} from "../model";
 import {RenderableItem} from "./renderable-item";
 import {EventUtils, UagentUtils, JqueryHelper} from "../services";
-import {ChartOptions, ChartOptionsDefaults, RendererOptionsDefaults} from "../options";
+import {
+  AxisOptionsDefaults,
+  ChartOptions,
+  ChartOptionsDefaults,
+  RendererOptions,
+  RendererOptionsDefaults
+} from "../options";
 import Konva from "konva";
 import {Cursor} from "../common";
+import extend from "lodash-es/extend";
 
 export class Renderer {
+
+  private options: RendererOptions;
+  private cursor: string;
 
   private readonly stage: Konva.Stage;
   private handle: number;
@@ -30,17 +40,15 @@ export class Renderer {
 
   private isDisposed: boolean = false;
 
-
   /**
    * Creates new instance of renderer.
    * @param {string} elementID - ID of HTML element where to create renderer.
    * @param {Size} size - Renderer size
-   * @param {ChartOptions} options - chart options
-   * @param {boolean} enableNavigation - Optional parameter, which indicates, whether navigation on renderer is enabled. Default value is true.
+   * @param {RendererOptions} options - renderer options
+   * @param {string | undefined} cursor - Cursor style for the renderer.
    */
-  constructor(elementID: string, size: Size, options: ChartOptions, enableNavigation: boolean) {
-    if (enableNavigation == undefined)
-      enableNavigation = true;
+  constructor(elementID: string, size: Size, options: RendererOptions,
+              cursor?: string) {
 
     let container = $(elementID);
 
@@ -54,11 +62,14 @@ export class Renderer {
 
     this.eventTarget = new ACEventTarget();
 
+    this.options = extend(RendererOptionsDefaults.Instance, options);
+
     let backDiv = $('<div></div>');
 
-    let borderStyle = options.renderer.borderStyle ?? RendererOptionsDefaults.Instance.borderStyle
-    let backgroundStyle = options.renderer.backgroundColor ?? RendererOptionsDefaults.Instance.backgroundColor;
-    let cursor = options.rendererCursor ?? ChartOptionsDefaults.Instance.rendererCursor;
+    let borderStyle = this.options.borderStyle!
+    let backgroundStyle = this.options.backgroundColor!
+
+    this.cursor = cursor ?? ChartOptionsDefaults.Instance.rendererCursor;
 
     backDiv.css('background-color', backgroundStyle)
       .css('border', borderStyle)
@@ -79,9 +90,7 @@ export class Renderer {
     this.containerMouseUpListener = Renderer.createContainerMouseUpListener(this);
     container.on('mouseup', this.containerMouseUpListener);
 
-    if (cursor != undefined) {
-      $(container).css('cursor', cursor);
-    }
+    $(container).css('cursor', this.cursor);
 
     this.stageElt = $('<div></div>')
       .css('position', 'absolute')
@@ -90,15 +99,6 @@ export class Renderer {
 
     JqueryHelper.setUniqueID(this.stageElt);
     container.append(this.stageElt);
-
-    if (!enableNavigation) {
-      let overlayDiv = $('<div></div>')
-        .css('position', 'absolute')
-        .css('width', size.width)
-        .css('height', size.height)
-        .css('background-color', 'transparent');
-      container.append(overlayDiv);
-    }
 
     this.stage = new Konva.Stage({
       container: this.stageElt.attr('id')!,

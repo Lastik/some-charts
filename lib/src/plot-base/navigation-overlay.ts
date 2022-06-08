@@ -3,10 +3,12 @@ import {NumericPoint, Size} from "../model";
 import Konva from "konva";
 import {Cursor} from "../common";
 
-export class NavigationLayer  extends ChartRenderableItem {
+export class NavigationOverlay {
 
   private location: NumericPoint;
   private size: Size;
+  private container: HTMLElement;
+
   private eventTarget: EventTarget;
 
   private prevPoint: NumericPoint | undefined;
@@ -15,17 +17,19 @@ export class NavigationLayer  extends ChartRenderableItem {
 
   private navigationShape: Konva.Shape;
 
-  constructor(location: NumericPoint, size: Size) {
-    super();
+  constructor(location: NumericPoint, size: Size, container: HTMLElement) {
 
     this.location = location;
     this.size = size;
+    this.container = container;
 
     this.isMouseDown = false;
 
     this.eventTarget = new EventTarget();
 
     let navigationLayer = this;
+
+    this.getRenderer()?.getContainer()
 
     this.navigationShape = new Konva.Shape({
       fill: "rgba(255, 255, 255, 0)",
@@ -218,15 +222,11 @@ export class NavigationLayer  extends ChartRenderableItem {
     this._shape.navigationLayer = this;
   }
 
-  getDependantLayers(): string[] {
-    return [LayerName.Navigation];
-  }
-
 }
 
-    NavigationLayer.prototype = new RenderableItem();
+    NavigationOverlay.prototype = new RenderableItem();
 
-    let p = NavigationLayer.prototype;
+    let p = NavigationOverlay.prototype;
 
     //Inner shape, which catches events.
     p._shape = null;
@@ -328,5 +328,5 @@ export class NavigationLayer  extends ChartRenderableItem {
         return new Array("navigationLayer");
     }
 
-    window.NavigationLayer = NavigationLayer;
+    window.NavigationLayer = NavigationOverlay;
 }(window));

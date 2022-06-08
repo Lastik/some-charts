@@ -14,7 +14,7 @@ export class Legend {
    * Creates new instance of Legend.
    * @param {string} elementID - ID of HTML element where to create renderer.
    * @param {Size} size - Legend element size.
-   * @param {LegendOptions} options - Legend element display options.
+   * @param {LegendOptions | undefined} options - Legend element display options.
    */
   constructor(elementID: string, size: Size, options?: LegendOptions) {
 

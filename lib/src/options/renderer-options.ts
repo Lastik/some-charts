@@ -5,11 +5,11 @@ export interface RendererOptions {
   /**
    * Renderer background color.
    */
-  backgroundColor: string;
+  backgroundColor?: string;
   /**
    * Renderer border style.
    */
-  borderStyle: string;
+  borderStyle?: string;
 }
 
 export class RendererOptionsDefaults
