@@ -1,12 +1,19 @@
 .angular-charts__renderer {
   position: relative;
   cursor: pointer;
-  .renderer__back{
-    background-color: #111111;
-    border: 1px solid #000000;
+
+  .renderer__back {
     position: absolute;
+    z-index: 1000;
   }
+
   .renderer__stage {
     position: absolute;
+    z-index: 1001;
+  }
+
+  .renderer__navigation {
+    position: absolute;
+    z-index: 1002;
   }
 }

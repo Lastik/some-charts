@@ -12,10 +12,6 @@ export interface ChartOptions {
    * Is chart navigation enabled or not.
    */
   isNavigationEnabled: boolean;
-  /**
-   *  Cursor, set for chart.
-   */
-  rendererCursor: string;
 
   /**
    *  Chart axes options
@@ -48,7 +44,6 @@ export class ChartOptionsDefaults
 {
   private static _instance: ChartOptions = {
     isNavigationEnabled: true,
-    rendererCursor: "pointer",
     renderer: RendererOptionsDefaults.Instance,
     axes: AxesOptionsDefaults.Instance,
     grid: GridOptionsDefaults.Instance,

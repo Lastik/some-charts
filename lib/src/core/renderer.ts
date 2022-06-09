@@ -4,8 +4,11 @@ import {EventUtils, UagentUtils, JqueryHelper} from "../services";
 import Konva from "konva";
 import {Cursor} from "../common";
 import extend from "lodash-es/extend";
+import {RendererOptions, RendererOptionsDefaults} from "../options";
 
 export class Renderer {
+
+  private options: RendererOptions;
 
   private readonly stage: Konva.Stage;
   private handle: number;
@@ -34,9 +37,11 @@ export class Renderer {
    * Creates new instance of renderer.
    * @param {string} elementID - ID of HTML element where to create renderer.
    * @param {Size} size - Renderer size
+   * @param {RendererOptions} options - renderer options
    * @param {string | undefined} cursor - Cursor style for the renderer.
    */
   constructor(elementID: string, size: Size,
+              options: RendererOptions,
               cursor?: string) {
 
     let container = $(elementID);
@@ -54,7 +59,13 @@ export class Renderer {
 
     let backDiv = $('<div class="renderer__back"></div>');
 
-    backDiv
+    this.options = extend(RendererOptionsDefaults.Instance, options);
+
+    let borderStyle = this.options.borderStyle!
+    let backgroundStyle = this.options.backgroundColor!
+
+    backDiv.css('background-color', backgroundStyle)
+      .css('border', borderStyle)
       .css('width', size.width)
       .css('height', size.height);
 
