@@ -1,8 +1,12 @@
-.#{$rootElementName} {
-  .#{$rootElementName}__renderer {
-    position: relative;
-    .#{$rootElementName}__stage {
-      position: absolute;
-    }
+.angular-charts__renderer {
+  position: relative;
+  cursor: pointer;
+  .renderer__back{
+    background-color: #111111;
+    border: 1px solid #000000;
+    position: absolute;
+  }
+  .renderer__stage {
+    position: absolute;
   }
 }

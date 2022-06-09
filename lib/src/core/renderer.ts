@@ -1,21 +1,11 @@
 import {Size, ACEventTarget, EventType} from "../model";
 import {RenderableItem} from "./renderable-item";
 import {EventUtils, UagentUtils, JqueryHelper} from "../services";
-import {
-  AxisOptionsDefaults,
-  ChartOptions,
-  ChartOptionsDefaults,
-  RendererOptions,
-  RendererOptionsDefaults
-} from "../options";
 import Konva from "konva";
 import {Cursor} from "../common";
 import extend from "lodash-es/extend";
 
 export class Renderer {
-
-  private options: RendererOptions;
-  private cursor: string;
 
   private readonly stage: Konva.Stage;
   private handle: number;
@@ -44,10 +34,9 @@ export class Renderer {
    * Creates new instance of renderer.
    * @param {string} elementID - ID of HTML element where to create renderer.
    * @param {Size} size - Renderer size
-   * @param {RendererOptions} options - renderer options
    * @param {string | undefined} cursor - Cursor style for the renderer.
    */
-  constructor(elementID: string, size: Size, options: RendererOptions,
+  constructor(elementID: string, size: Size,
               cursor?: string) {
 
     let container = $(elementID);
@@ -57,23 +46,15 @@ export class Renderer {
     }
 
     this.container = container;
+    container.addClass('angular-charts__renderer')
 
     this.size = size;
 
     this.eventTarget = new ACEventTarget();
 
-    this.options = extend(RendererOptionsDefaults.Instance, options);
+    let backDiv = $('<div class="renderer__back"></div>');
 
-    let backDiv = $('<div></div>');
-
-    let borderStyle = this.options.borderStyle!
-    let backgroundStyle = this.options.backgroundColor!
-
-    this.cursor = cursor ?? ChartOptionsDefaults.Instance.rendererCursor;
-
-    backDiv.css('background-color', backgroundStyle)
-      .css('border', borderStyle)
-      .css('position', 'absolute')
+    backDiv
       .css('width', size.width)
       .css('height', size.height);
 
@@ -90,10 +71,7 @@ export class Renderer {
     this.containerMouseUpListener = Renderer.createContainerMouseUpListener(this);
     container.on('mouseup', this.containerMouseUpListener);
 
-    $(container).css('cursor', this.cursor);
-
-    this.stageElt = $('<div></div>')
-      .css('position', 'absolute')
+    this.stageElt = $('<div class="renderer__stage"></div>')
       .css('width', size.width)
       .css('height', size.height);
 
