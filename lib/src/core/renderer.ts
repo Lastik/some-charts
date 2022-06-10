@@ -51,13 +51,13 @@ export class Renderer {
     }
 
     this.container = container;
-    container.addClass('angular-charts__renderer')
+    container.addClass('fac-renderer')
 
     this.size = size;
 
     this.eventTarget = new ACEventTarget();
 
-    let backDiv = $('<div class="renderer__back"></div>');
+    let backDiv = $('<div class="fac-renderer__back"></div>');
 
     this.options = extend(RendererOptionsDefaults.Instance, options);
 
@@ -82,7 +82,7 @@ export class Renderer {
     this.containerMouseUpListener = Renderer.createContainerMouseUpListener(this);
     container.on('mouseup', this.containerMouseUpListener);
 
-    this.stageElt = $('<div class="renderer__stage"></div>')
+    this.stageElt = $('<div class="fac-renderer__stage"></div>')
       .css('width', size.width)
       .css('height', size.height);
 
