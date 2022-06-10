@@ -1,6 +1,10 @@
 .fac-renderer {
   position: relative;
   cursor: pointer;
+
+  &-move {
+    cursor: move;
+  }
 }
 
 .fac-renderer__back {

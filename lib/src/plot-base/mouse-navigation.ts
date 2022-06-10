@@ -55,7 +55,7 @@ export class MouseNavigation {
     } else {
       event.preventDefault();
 
-      this.container!.css('cursor', Cursor.Move);
+      this.container!.addClass('fac-renderer-move');
 
       let prevPoint = new NumericPoint(event.pageX, event.pageY);
       prevPoint.x -= navigationLayer.location.x;
