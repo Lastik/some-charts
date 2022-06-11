@@ -1,6 +1,5 @@
-﻿import {ChartRenderableItem, RenderableItem, Renderer} from "../core";
+﻿import {RenderableItem, Renderer} from "../core";
 import {NumericPoint, Size} from "../model";
-import Konva from "konva";
 import {Cursor} from "../common";
 
 export class MouseNavigation {
@@ -57,18 +56,13 @@ export class MouseNavigation {
 
       this.container!.addClass('fac-renderer-move');
 
-      let prevPoint = new NumericPoint(event.pageX, event.pageY);
-      prevPoint.x -= navigationLayer.location.x;
-      prevPoint.y -= navigationLayer.location.y;
+      this.prevPoint = event.pageX && event.pageY ? new NumericPoint(
+        event.pageX - this.location.x,
+        event.pageY - this.location.y) : undefined;
 
-      navigationLayer.prevPoint = prevPoint;
+      this.isMouseDown = true
 
-      navigationLayer.isMouseDown = true
-
-      let renderer = navigationLayer.getRenderer();
-
-      let container = renderer?.getContainer();
-      $(container!).focusin();
+      $(this.container!).trigger('focusin');
 
       if (_ChartNavigations7203439c19e24470a7bd6155c3a41b79 != undefined) {
         for (let i = 0; i < _ChartNavigations7203439c19e24470a7bd6155c3a41b79.length; i++) {
