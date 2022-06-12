@@ -230,14 +230,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @returns {Array<string>} Axis dependant layers.
    */
   override getDependantLayers(): Array<string> {
-    return [LayerName.VisibleObjects];
+    return [LayerName.Chart];
   }
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
 
     if (chart) {
-      let visibleObjectsLayer = chart!.getLayer(LayerName.VisibleObjects);
+      let visibleObjectsLayer = chart!.getLayer(LayerName.Chart);
       visibleObjectsLayer.add(this.borderShape);
       visibleObjectsLayer.add(this.ticksShape);
       this.update(this.location, this.range, this.initialWidth, this.initialHeight);

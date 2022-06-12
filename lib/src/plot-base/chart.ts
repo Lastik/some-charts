@@ -17,8 +17,10 @@ import {
   AxisOrientation} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
+import {RenderableItem} from "../core";
+import {LayerName} from "./layer-name";
 
-export class Chart {
+export class Chart extends RenderableItem{
   private location: NumericPoint;
   private size: Size;
   private dataRect: DataRect;
@@ -38,6 +40,7 @@ export class Chart {
    * @param {ChartOptions} options - Chart options.
    * */
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
+    super();
     this.location = location;
     this.size = size;
     this.dataRect = dataRect;
@@ -62,6 +65,7 @@ export class Chart {
     }
 
     this.chartGrid = new Grid(location, size, this.options.grid);
+
 
     this._plots = [];
 
@@ -155,4 +159,7 @@ export class Chart {
     throw new Error("Method not implemented.");
   }
 
+  getDependantLayers(): Array<string> {
+    return [LayerName.Chart];
+  }
 }

@@ -15,12 +15,36 @@ export class MouseNavigation {
   private renderer?: Renderer = undefined;
   private container: JQuery | undefined;
 
+  private readonly onMouseDownTouchStartHandler: (event: JQuery.Event) => void;
+  private readonly onMouseUpTouchEndHandler: (event: JQuery.Event) => void;
+  private readonly onMouseOutHandler: (event: JQuery.Event) => void;
+  private readonly onMouseMoveHandler: (event: JQuery.Event) => void;
+
   constructor(location: NumericPoint, size: Size) {
 
     this.location = location;
     this.size = size;
     this.isMouseDown = false;
     this.eventTarget = new EventTarget();
+
+    let self = this;
+
+    this.onMouseDownTouchStartHandler = (event: JQuery.Event) => {
+      self.onMouseDownTouchStart.call(this, event);
+    }
+
+    this.onMouseUpTouchEndHandler = (event: JQuery.Event) => {
+      self.onMouseUpTouchEnd.call(this, event);
+    }
+
+    this.onMouseOutHandler = (event: JQuery.Event) => {
+      self.onMouseOut.call(this, event);
+    }
+
+    this.onMouseMoveHandler = (event: JQuery.Event) => {
+      self.onMouseOut.call(this, event);
+    }
+
   }
 
   /**
@@ -30,10 +54,11 @@ export class MouseNavigation {
   attach(renderer: Renderer) {
     this.renderer = renderer;
     this.container = $(this.renderer.getContainer());
-    this.container.on('mousedown touchstart', this.onMouseDownTouchStart);
-    this.container.on("mouseup touchend", this.onMouseUpTouchEnd);
-    this.container.on("mouseout", this.onMouseOut);
-    this.container.on("mousemove", this.onMouseMove);
+
+    this.container.on('mousedown touchstart', this.onMouseDownTouchStartHandler);
+    this.container.on("mouseup touchend", this.onMouseUpTouchEndHandler);
+    this.container.on("mouseout", this.onMouseOutHandler);
+    this.container.on("mousemove", this.onMouseMoveHandler);
   }
 
   onMouseDownTouchStart(event: JQuery.Event) {
@@ -201,10 +226,10 @@ export class MouseNavigation {
    */
   detach() {
     if(this.renderer && this.container) {
-      this.container.off('mousedown touchstart', this.onMouseDownTouchStart);
-      this.container.off("mouseup touchend", this.onMouseUpTouchEnd);
-      this.container.off("mouseout", this.onMouseOut);
-      this.container.off("mousemove", this.onMouseMove);
+      this.container.off('mousedown touchstart', this.onMouseDownTouchStartHandler);
+      this.container.off("mouseup touchend", this.onMouseUpTouchEndHandler);
+      this.container.off("mouseout", this.onMouseOutHandler);
+      this.container.off("mousemove", this.onMouseMoveHandler);
       this.renderer = undefined;
       this.container = undefined;
     }

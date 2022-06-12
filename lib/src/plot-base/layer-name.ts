@@ -1,4 +1,4 @@
 export enum LayerName {
-  VisibleObjects = "visibleObjects",
-  Labels = "labelsLayer"
+  Chart = "chart",
+  Labels = "labels"
 }
