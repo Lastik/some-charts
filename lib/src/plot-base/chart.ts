@@ -20,10 +20,25 @@ import {Grid} from "./grid";
 import {RenderableItem} from "../core";
 import {LayerName} from "./layer-name";
 
-export class Chart extends RenderableItem{
-  private location: NumericPoint;
-  private size: Size;
-  private dataRect: DataRect;
+export class Chart extends RenderableItem {
+
+  public static readonly MinZoomLevel: number = 1e-8;
+
+  private readonly _location: NumericPoint;
+  private readonly _size: Size;
+  private readonly _dataRect: DataRect;
+
+  public get location(): NumericPoint{
+    return this._location;
+  }
+
+  public get size(): Size {
+    return this._size;
+  }
+
+  public get dataRect(): DataRect {
+    return this._dataRect;
+  }
 
   private options: ChartOptions;
 
@@ -41,9 +56,9 @@ export class Chart extends RenderableItem{
    * */
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
     super();
-    this.location = location;
-    this.size = size;
-    this.dataRect = dataRect;
+    this._location = location;
+    this._size = size;
+    this._dataRect = dataRect;
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
@@ -161,5 +176,9 @@ export class Chart extends RenderableItem{
 
   getDependantLayers(): Array<string> {
     return [LayerName.Chart];
+  }
+
+  update(location, size, dataRect) {
+
   }
 }

@@ -1,8 +1,8 @@
-import {EventUtils} from "../../services";
 import {Chart} from "../chart";
 import {IDisposable} from "../../common";
 import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
+import {DataRect, NumericRange} from "../../model";
 
 export class KeyboardNavigation implements IDisposable{
   private _id: number;
@@ -76,93 +76,70 @@ export class KeyboardNavigation implements IDisposable{
     }
   }
 
-  dest
+  onKeyDown(e: JQuery.Event) {
+    if(this.chart && this.host && this.isHostFocused){
 
-  p._host = null;
-  p._chart = null;
-  p._isHostFocused = false;
+      let horizontalRange = this.chart!.dataRect.getHorizontalRange();
+      let verticalRange = this.chart!.dataRect.getVerticalRange();
 
-  p.onKeyDown = function (e) {
-    var keynum;
-    var keychar;
-    var numcheck;
+      let horizontalDelta = horizontalRange.max - horizontalRange.min;
+      let verticalDelta = verticalRange.max - verticalRange.min;
 
-    for (var i = 0; i < _ChartNavigations7203439c19e24470a7bd6155c3a41b79.length; i++) {
-      var keyNavigation = _ChartNavigations7203439c19e24470a7bd6155c3a41b79[i];
+      let horizontalStep = horizontalDelta * 0.01;
+      let verticalStep = verticalDelta * 0.01;
 
-      if (keyNavigation._isHostFocused) {
+      switch (e.key) {
+        case 'Down': // IE/Edge specific value
+        case 'ArrowDown':
+          verticalRange = verticalRange.withShift(-verticalStep);
+          break;
+        case 'Up': // IE/Edge specific value
+        case 'ArrowUp':
+          verticalRange = verticalRange.withShift(verticalStep);
+          break;
+        case 'Left': // IE/Edge specific value
+        case 'ArrowLeft':
+          horizontalRange = horizontalRange.withShift(-horizontalStep);
+          break;
+        case 'Right': // IE/Edge specific value
+        case 'ArrowRight':
+          horizontalRange = horizontalRange.withShift(horizontalStep);
+          break;
+        case '+':
+          horizontalRange = new NumericRange(
+            horizontalRange.min + horizontalStep,
+            horizontalRange.max - horizontalStep);
 
-        if (window.event) // IE
-        {
-          keynum = e.originalEvent.keyCode;
-        }
-        else if (e.which) // Netscape/Firefox/Opera
-        {
-          keynum = e.which;
-        }
+          verticalRange = new NumericRange(
+            verticalRange.min + verticalStep,
+            verticalRange.max - verticalStep);
+          break;
+        case '-':
+          horizontalRange = new NumericRange(
+            horizontalRange.min - horizontalStep,
+            horizontalRange.max + horizontalStep);
 
-        var chart = keyNavigation._chart;
-
-        var horRange = chart._dataRect.getHorizontalRange();
-        var verRange = chart._dataRect.getVerticalRange();
-        var horDiff = horRange.max - horRange.min;
-        var verDiff = verRange.max - verRange.min;
-
-        var offsetHor = horDiff * 0.01;
-        var offsetVer = verDiff * 0.01;
-        if (keynum == Keys.LeftArrow) {
-          horRange.min -= offsetHor;
-          horRange.max -= offsetHor;
-        }
-
-        else if (keynum == Keys.RightArrow) {
-          horRange.min += offsetHor;
-          horRange.max += offsetHor;
-        }
-
-        else if (keynum == Keys.DownArrow) {
-          verRange.min -= offsetVer;
-          verRange.max -= offsetVer;
-        }
-
-        else if (keynum == Keys.UpArrow) {
-          verRange.min += offsetVer;
-          verRange.max += offsetVer;
-        }
-
-        else if (keynum == Keys.Plus) {
-          horRange.min += offsetHor;
-          horRange.max -= offsetHor;
-
-          verRange.min += offsetVer;
-          verRange.max -= offsetVer;
-        }
-
-        else if (keynum == Keys.Minus) {
-          horRange.min -= offsetHor;
-          horRange.max += offsetHor;
-
-          verRange.min -= offsetVer;
-          verRange.max += offsetVer;
-        }
-
-        if (horRange.max - horRange.min >= Chart.minZoomLevel && verRange.max - verRange.min >= Chart.minZoomLevel) {
-          var rect = new DataRect(horRange.min, verRange.min, horRange.max - horRange.min, verRange.max - verRange.min);
-
-          chart.update(chart._location, chart._size, rect);
-        }
-
-        EventUtils.stopDefault(e);
-        EventUtils.stopEvent(e);
+          verticalRange = new NumericRange(
+            verticalRange.min - verticalStep,
+            verticalRange.max + verticalStep);
+          break;
       }
+
+      if (horizontalRange.max - horizontalRange.min >= Chart.MinZoomLevel && verticalRange.max - verticalRange.min >= Chart.MinZoomLevel) {
+        let newChartDataRect = new DataRect(horizontalRange.min, verticalRange.min, horizontalRange.max - horizontalRange.min, verticalRange.max - verticalRange.min);
+        this.chart.update(this.chart.location, this.chart.size, newChartDataRect);
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
-  onFocusIn(e){
+  onFocusIn(e: JQuery.Event){
     this.isHostFocused = true;
   }
 
-  onFocusOut(e){
-
+  onFocusOut(e: JQuery.Event){
+    this.isHostFocused = false;
   }
 }

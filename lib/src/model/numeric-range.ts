@@ -8,4 +8,8 @@ export class NumericRange extends Range<number> {
   public getLength() {
     return this.max - this.min;
   }
+
+  public withShift(offset: number): NumericRange {
+    return new NumericRange(this.min + offset, this.max + offset)
+  }
 }
