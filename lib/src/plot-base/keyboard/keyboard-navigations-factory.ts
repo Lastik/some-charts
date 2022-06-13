@@ -24,6 +24,10 @@ export class KeyboardNavigationsFactory {
     this.navigationsById.delete(id);
   }
 
+  public getAllNavigations(): IterableIterator<KeyboardNavigation>{
+    return this.navigationsById.values();
+  }
+
   private getNextId(): number {
     return this.currentId++;
   }

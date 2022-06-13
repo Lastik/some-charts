@@ -1,19 +1,17 @@
 import {Chart} from "../chart";
-import {IDisposable} from "../../common";
 import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
 import {DataRect, NumericRange} from "../../model";
+import {ChartContent} from "../../core";
+import {IDisposable} from "../../common";
 
-export class KeyboardNavigation implements IDisposable{
-  private _id: number;
+export class KeyboardNavigation extends ChartContent(Object) implements IDisposable {
+  private readonly _id: number;
 
   private isHostFocused: boolean;
 
   private host: HTMLDivElement | undefined;
-  private chart: Chart | undefined;
 
-  private readonly onFocusInHandler: (event: JQuery.Event) => void;
-  private readonly onFocusOutHandler: (event: JQuery.Event) => void;
   private readonly onKeyDownHandler: (event: JQuery.Event) => void;
 
   public get id(){
@@ -21,18 +19,11 @@ export class KeyboardNavigation implements IDisposable{
   }
 
   public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
+    super();
     this._id = id;
     this.isHostFocused = false;
 
     let self = this;
-
-    this.onFocusInHandler = (event: JQuery.Event) => {
-      self.onFocusIn.call(this, event);
-    }
-
-    this.onFocusOutHandler = (event: JQuery.Event) => {
-      self.onFocusOut.call(this, event);
-    }
 
     this.onKeyDownHandler = (event: JQuery.Event) => {
       self.onKeyDown.call(this, event);
@@ -47,36 +38,34 @@ export class KeyboardNavigation implements IDisposable{
    * Attaches keyboard navigation to chart.
    * @param {Chart} chart - Target chart.
    * */
-  attach(chart: Chart) {
-    let chartRenderer = chart.getRenderer();
-    if(!chartRenderer){
-      throw new Error(`Chart has no attached renderer!`);
+  override placeOnChart(chart?: Chart) {
+    super.placeOnChart(chart);
+    if(chart) {
+      let chartRenderer = chart.getRenderer();
+      if (!chartRenderer) {
+        throw new Error(`Chart has no attached renderer!`);
+      }
+      this.host = chartRenderer.getContainer();
+
+      let body = $('body');
+
+      body.on('keydown', this.onKeyDownHandler);
     }
-    this.host = chartRenderer.getContainer();
-    this.chart = chart;
-
-    let body = $('body');
-
-    body.on('keydown', this.onKeyDownHandler);
-    $(this.host).on('focusin', this.onFocusInHandler);
-    $(this.host).on('focusout', this.onFocusOutHandler);
   }
 
   /**
    * Detaches keyboard navigation from chart.
    * */
-  detach() {
-    if(this.host && this.chart) {
+  override removeFromChart() {
+    if(this.host) {
       let body = $('body');
       body.off('keydown', this.onKeyDownHandler);
-      $(this.host).off('focusin', this.onFocusInHandler);
-      $(this.host).off('focusout', this.onFocusOutHandler);
-      this.chart = undefined;
       this.host = undefined;
     }
+    super.removeFromChart();
   }
 
-  onKeyDown(e: JQuery.Event) {
+  protected onKeyDown(e: JQuery.Event) {
     if(this.chart && this.host && this.isHostFocused){
 
       let horizontalRange = this.chart!.dataRect.getHorizontalRange();
@@ -135,11 +124,11 @@ export class KeyboardNavigation implements IDisposable{
     }
   }
 
-  onFocusIn(e: JQuery.Event){
+  focusIn(){
     this.isHostFocused = true;
   }
 
-  onFocusOut(e: JQuery.Event){
+  focusOut(){
     this.isHostFocused = false;
   }
 }

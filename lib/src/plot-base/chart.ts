@@ -24,9 +24,14 @@ export class Chart extends RenderableItem {
 
   public static readonly MinZoomLevel: number = 1e-8;
 
+  private readonly _id: number;
   private readonly _location: NumericPoint;
   private readonly _size: Size;
   private readonly _dataRect: DataRect;
+
+  public get id(): number{
+    return this._id;
+  }
 
   public get location(): NumericPoint{
     return this._location;
@@ -47,6 +52,9 @@ export class Chart extends RenderableItem {
 
   private chartGrid: Grid;
 
+  private static currentChartId: number;
+
+
   /**
    * Creates new instance of chart.
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
@@ -56,6 +64,9 @@ export class Chart extends RenderableItem {
    * */
   constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
     super();
+
+    this._id = Chart.getNextId();
+
     this._location = location;
     this._size = size;
     this._dataRect = dataRect;
@@ -180,5 +191,9 @@ export class Chart extends RenderableItem {
 
   update(location, size, dataRect) {
 
+  }
+
+  private static getNextId(): number{
+    return Chart.currentChartId++;
   }
 }
