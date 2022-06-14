@@ -9,6 +9,14 @@ export class DataRect {
   readonly width: number;
   readonly height: number;
 
+  get maxX(): number {
+    return this.minX + this.width;
+  }
+
+  get maxY(): number{
+    return this.minY + this.height;
+  }
+
   /**
    * Creates data rectangle.
    * @param {number} minX - Left corner of rectangle coordinate.

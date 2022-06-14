@@ -167,7 +167,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
           let curRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
 
-          navigationLayer.eventTarget.fire(new MultitouchZoomEvent(prevRect, curRect));
+          this.handleMultitouchZooming(prevRect, curRect);
         }
 
         let touches = [];
@@ -220,48 +220,30 @@ export class MouseNavigation extends ChartContent(Object) {
     }
   }
 
-  this._navigationLayer.eventTarget.addListener("multitouchZooming", function (event, state) {
-    var prev = event.prevRect;
-    var cur = event.curRect;
+  private handleMultitouchZooming(prevPixRect: DataRect, curPixRect: DataRect) {
+    if(this.chart) {
+      let plotSize = this.chart.getPlotSize();
 
-    var chart = state;
+      let horizontalRange = this.chart.dataRect.getHorizontalRange();
+      let verticalRange = this.chart.dataRect.getVerticalRange();
 
-    var size = chart._chartGrid.getSize();
+      let propX = horizontalRange.getLength() / plotSize.width;
+      let propY = verticalRange.getLength() / plotSize.height
 
-    var width = size.width;
-    var height = size.height;
+      let leftTopDeltaX = -(curPixRect.minX - prevPixRect.minX) * propX;
+      let leftTopDeltaY = (curPixRect.minY - prevPixRect.minY) * propY;
 
-    var dataRect = chart._dataRect;
+      let rightBottomDeltaX = -(curPixRect.maxX - prevPixRect.maxX) * propX;
+      let rightBottomDeltaY = (curPixRect.maxY - prevPixRect.maxY) * propY;
 
-    var dataWidth = dataRect.getHorizontalRange().getLength();
-    var dataHeight = dataRect.getVerticalRange().getLength();
+      let dataRangeX = new NumericRange(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX);
+      let dataRangeY = new NumericRange(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY);
 
-    var horizontalRange = dataRect.getHorizontalRange();
-    var verticalRange = dataRect.getVerticalRange();
+      let dataRange = new DataRect(dataRangeX.min, dataRangeY.min, dataRangeX.getLength(), dataRangeY.getLength());
 
-    var propX = dataWidth / width;
-    var propY = dataHeight / height
-
-    var prevLeftTop = prev.getMinXMinY();
-    var prevRightBottom = prev.getMaxXMaxY();
-
-    var curLeftTop = cur.getMinXMinY();
-    var curRightBottom = cur.getMaxXMaxY();
-
-    var leftTopDeltaX = -(curLeftTop.x - prevLeftTop.x) * propX;
-    var leftTopDeltaY = (curLeftTop.y - prevLeftTop.y) * propY;
-
-    var rightBottomDeltaX = -(curRightBottom.x - prevRightBottom.x) * propX;
-    var rightBottomDeltaY = (curRightBottom.y - prevRightBottom.y) * propY;
-
-    var rangeX = new Range(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX, false);
-    var rangeY = new Range(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY, false);
-
-    var newRect = new DataRect(rangeX.min, rangeY.min, rangeX.getLength(), rangeY.getLength());
-
-    chart.update(chart._location, chart._size, newRect);
-
-  }, this);
+      this.chart.update(this.chart.location, this.chart.size, dataRange);
+    }
+  };
 
   this._navigationLayer.eventTarget.addListener("scrolling", function (event, state) {
     var chart = state;
