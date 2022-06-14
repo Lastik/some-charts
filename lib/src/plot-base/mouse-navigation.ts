@@ -1,5 +1,5 @@
 ﻿import {ChartContent, RenderableItem, Renderer} from "../core";
-import {NumericPoint, Size} from "../model";
+import {DataRect, NumericPoint, NumericRange, Size} from "../model";
 import {Cursor} from "../common";
 import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard";
@@ -133,8 +133,9 @@ export class MouseNavigation extends ChartContent(Object) {
         if(prevPoint){
           let deltaX = curPoint.x - prevPoint.x;
           let deltaY = curPoint.y - prevPoint.y;
-          navigationLayer.eventTarget.fire(new DragEvent(deltaX, deltaY));
-          navigationLayer._prevPoint = curPoint;
+
+          this.handleDragging(-deltaX, deltaY)
+          this.prevPoint = curPoint;
         }
       } else if (e.touches.length == 2) {
 
@@ -195,6 +196,78 @@ export class MouseNavigation extends ChartContent(Object) {
       }
     }
   }
+
+  private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {
+    if (this.chart) {
+      let horizontalRange = this.chart.dataRect.getHorizontalRange();
+      let verticalRange = this.chart.dataRect.getVerticalRange();
+
+      let plotSize = this.chart.getPlotSize();
+
+      let dataDeltaX = pixelDeltaX * (horizontalRange.getLength() / plotSize.width);
+      let dataDeltaY = pixelDeltaY * (verticalRange.getLength() / plotSize.height);
+
+      let newHorizontalRange = horizontalRange.withShift(dataDeltaX);
+      let newVerticalRange = verticalRange.withShift(dataDeltaY);
+
+      this.chart.update(
+        this.chart.location,
+        this.chart.size,
+        new DataRect(
+          newHorizontalRange.min, newVerticalRange.min,
+          newHorizontalRange.getLength(), newVerticalRange.getLength())
+      );
+    }
+  }
+
+  this._navigationLayer.eventTarget.addListener("multitouchZooming", function (event, state) {
+    var prev = event.prevRect;
+    var cur = event.curRect;
+
+    var chart = state;
+
+    var size = chart._chartGrid.getSize();
+
+    var width = size.width;
+    var height = size.height;
+
+    var dataRect = chart._dataRect;
+
+    var dataWidth = dataRect.getHorizontalRange().getLength();
+    var dataHeight = dataRect.getVerticalRange().getLength();
+
+    var horizontalRange = dataRect.getHorizontalRange();
+    var verticalRange = dataRect.getVerticalRange();
+
+    var propX = dataWidth / width;
+    var propY = dataHeight / height
+
+    var prevLeftTop = prev.getMinXMinY();
+    var prevRightBottom = prev.getMaxXMaxY();
+
+    var curLeftTop = cur.getMinXMinY();
+    var curRightBottom = cur.getMaxXMaxY();
+
+    var leftTopDeltaX = -(curLeftTop.x - prevLeftTop.x) * propX;
+    var leftTopDeltaY = (curLeftTop.y - prevLeftTop.y) * propY;
+
+    var rightBottomDeltaX = -(curRightBottom.x - prevRightBottom.x) * propX;
+    var rightBottomDeltaY = (curRightBottom.y - prevRightBottom.y) * propY;
+
+    var rangeX = new Range(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX, false);
+    var rangeY = new Range(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY, false);
+
+    var newRect = new DataRect(rangeX.min, rangeY.min, rangeX.getLength(), rangeY.getLength());
+
+    chart.update(chart._location, chart._size, newRect);
+
+  }, this);
+
+  this._navigationLayer.eventTarget.addListener("scrolling", function (event, state) {
+    var chart = state;
+    var delta = event.delta;
+    chart.zoom(delta);
+  }, this);
 
   /**
    * Binds mouse navigation to the chart.

@@ -1,28 +1,18 @@
-import {Size, ACEventTarget, EventType} from "../model";
+import {Size} from "../model";
 import {RenderableItem} from "./renderable-item";
-import {EventUtils, UagentUtils, JqueryHelper} from "../services";
+import {JqueryHelper} from "../services";
 import Konva from "konva";
-import {Cursor} from "../common";
+import {Cursor, IDisposable} from "../common";
 import extend from "lodash-es/extend";
 import {RendererOptions, RendererOptionsDefaults} from "../options";
 
-export class Renderer {
+export class Renderer implements IDisposable{
 
   private options: RendererOptions;
 
   private readonly stage: Konva.Stage;
   private handle: number;
   private renderableItems: RenderableItem[];
-
-  private readonly containerMouseUpListener: (e: JQuery.MouseUpEvent) => void;
-
-  private lastRenderTime: Date | null = null;
-
-  private static readonly IdleTimeout = 300;
-
-  private idleFired: boolean = false;
-
-  protected eventTarget: ACEventTarget;
 
   private size: Size;
 
@@ -55,8 +45,6 @@ export class Renderer {
 
     this.size = size;
 
-    this.eventTarget = new ACEventTarget();
-
     let backDiv = $('<div class="fac-renderer__back"></div>');
 
     this.options = extend(RendererOptionsDefaults.Instance, options);
@@ -78,9 +66,6 @@ export class Renderer {
     let offsetTop = (size.height - backDivOuterHeight) / 2;
 
     backDiv.css('margin-left', offsetLeft).css('margin-top', offsetTop);
-
-    this.containerMouseUpListener = Renderer.createContainerMouseUpListener(this);
-    container.on('mouseup', this.containerMouseUpListener);
 
     this.stageElt = $('<div class="fac-renderer__stage"></div>')
       .css('width', size.width)
@@ -106,17 +91,6 @@ export class Renderer {
     this.renderableItems = [];
   }
 
-  protected static createContainerMouseUpListener(self: Renderer): (e: JQuery.MouseUpEvent) => void {
-    return (e: JQuery.MouseUpEvent) => {
-      e.preventDefault();
-      if (UagentUtils.isIphone || UagentUtils.isIpad || UagentUtils.isIpod || UagentUtils.isAndroid) {
-        EventUtils.redirectMouseEventToElement(e.originalEvent!, self.stageElt[0], false);
-      }
-      self.eventTarget.fireEventOfType(EventType.MouseClicked);
-    };
-  };
-
-
   /**
    * Disposes the renderer
    */
@@ -125,8 +99,6 @@ export class Renderer {
     if (this.stage != null) {
       this.stage.destroy();
     }
-
-    this.container.off('mouseup', this.containerMouseUpListener);
   }
 
   /**
@@ -238,7 +210,6 @@ export class Renderer {
   })();
 
   protected static redraw(renderer: Renderer) {
-    //Determine layers, which are dirty.
     let dirtyLayersNames: Array<string> = [];
     for (let item of renderer.renderableItems) {
       if (item.hasDirtyLayers && item.hasDirtyLayers()) {
@@ -246,24 +217,8 @@ export class Renderer {
         dirtyLayersNames = dirtyLayersNames.concat(objectDirtyLayers);
       }
     }
-    //Render each dirty layer.
     for (let layerName of dirtyLayersNames) {
       renderer.stage.findOne(layerName).draw();
-    }
-
-    if (dirtyLayersNames.length > 0) {
-      for (let item of renderer.renderableItems) {
-        item.markDirty();
-      }
-      renderer.lastRenderTime = new Date();
-      renderer.idleFired = false;
-    } else if (!renderer.idleFired && renderer.lastRenderTime != null) {
-      let now = new Date();
-      let diff = now.getTime() - renderer.lastRenderTime.getTime();
-      if (diff >= Renderer.IdleTimeout) {
-        renderer.eventTarget.fireEventOfType(EventType.Idle);
-        renderer.idleFired = true;
-      }
     }
 
     if (!renderer.isDisposed) {

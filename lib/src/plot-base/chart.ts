@@ -96,88 +96,7 @@ export class Chart extends RenderableItem {
     this._plots = [];
 
     if (enableNavigation) {
-      this._navigationLayer = new NavigationLayer(location, size);
 
-      this._navigationLayer.eventTarget.addListener("dragging", function (event, state) {
-        var deltaX = -event.deltaX;
-        var deltaY = event.deltaY;
-
-        var chart = state;
-
-        var rect = chart._dataRect;
-        var horizontalRange = rect.getHorizontalRange();
-        var verticalRange = rect.getVerticalRange();
-
-        var size = chart._chartGrid.getSize();
-
-        var width = size.width;
-        var height = size.height;
-
-        var dataWidth = horizontalRange.getLength();
-        var dataHeight = verticalRange.getLength();
-
-        var propX = dataWidth / width;
-        var propY = dataHeight / height
-
-        deltaX = deltaX * propX;
-        deltaY = deltaY * propY;
-
-        var rangeX = new Range(horizontalRange.min + deltaX, horizontalRange.max + deltaX, false);
-        var rangeY = new Range(verticalRange.min + deltaY, verticalRange.max + deltaY, false);
-
-        var rect = new DataRect(rangeX.min, rangeY.min, rangeX.getLength(), rangeY.getLength());
-
-        chart.update(chart._location, chart._size, rect);
-      }, this);
-
-      this._navigationLayer.eventTarget.addListener("multitouchZooming", function (event, state) {
-        var prev = event.prevRect;
-        var cur = event.curRect;
-
-        var chart = state;
-
-        var size = chart._chartGrid.getSize();
-
-        var width = size.width;
-        var height = size.height;
-
-        var dataRect = chart._dataRect;
-
-        var dataWidth = dataRect.getHorizontalRange().getLength();
-        var dataHeight = dataRect.getVerticalRange().getLength();
-
-        var horizontalRange = dataRect.getHorizontalRange();
-        var verticalRange = dataRect.getVerticalRange();
-
-        var propX = dataWidth / width;
-        var propY = dataHeight / height
-
-        var prevLeftTop = prev.getMinXMinY();
-        var prevRightBottom = prev.getMaxXMaxY();
-
-        var curLeftTop = cur.getMinXMinY();
-        var curRightBottom = cur.getMaxXMaxY();
-
-        var leftTopDeltaX = -(curLeftTop.x - prevLeftTop.x) * propX;
-        var leftTopDeltaY = (curLeftTop.y - prevLeftTop.y) * propY;
-
-        var rightBottomDeltaX = -(curRightBottom.x - prevRightBottom.x) * propX;
-        var rightBottomDeltaY = (curRightBottom.y - prevRightBottom.y) * propY;
-
-        var rangeX = new Range(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX, false);
-        var rangeY = new Range(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY, false);
-
-        var newRect = new DataRect(rangeX.min, rangeY.min, rangeX.getLength(), rangeY.getLength());
-
-        chart.update(chart._location, chart._size, newRect);
-
-      }, this);
-
-      this._navigationLayer.eventTarget.addListener("scrolling", function (event, state) {
-        var chart = state;
-        var delta = event.delta;
-        chart.zoom(delta);
-      }, this);
     }
   }
 
@@ -195,5 +114,9 @@ export class Chart extends RenderableItem {
 
   private static getNextId(): number{
     return Chart.currentChartId++;
+  }
+
+  getPlotSize(): Size {
+
   }
 }
