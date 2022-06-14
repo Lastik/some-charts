@@ -19,6 +19,9 @@ import extend from "lodash-es/extend";
 import {Grid} from "./grid";
 import {RenderableItem} from "../core";
 import {LayerName} from "./layer-name";
+import {inject} from "tsyringe";
+import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
+import {MouseNavigation} from "./mouse-navigation";
 
 export class Chart extends RenderableItem {
 
@@ -28,6 +31,8 @@ export class Chart extends RenderableItem {
   private readonly _location: NumericPoint;
   private readonly _size: Size;
   private readonly _dataRect: DataRect;
+  private readonly keyboardNavigation: KeyboardNavigation | undefined;
+  private readonly mouseNavigation: MouseNavigation | undefined;
 
   public get id(): number{
     return this._id;
@@ -61,8 +66,10 @@ export class Chart extends RenderableItem {
    * @param {Size} size - Chart's size
    * @param {DataRect} dataRect - Currently visible rectangle on chart.
    * @param {ChartOptions} options - Chart options.
+   * @param keyboardNavigationsFactory
    * */
-  constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions) {
+  constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions,
+              @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
     super();
 
     this._id = Chart.getNextId();
@@ -95,8 +102,9 @@ export class Chart extends RenderableItem {
 
     this._plots = [];
 
-    if (enableNavigation) {
-
+    if (this.options.isNavigationEnabled) {
+      this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
+      this.mouseNavigation = new MouseNavigation(location, size)
     }
   }
 
@@ -117,6 +125,7 @@ export class Chart extends RenderableItem {
   }
 
   getPlotSize(): Size {
-
+    //TODO: return chart grid size?
+    return this.size;
   }
 }

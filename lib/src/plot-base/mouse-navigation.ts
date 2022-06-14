@@ -1,6 +1,5 @@
-﻿import {ChartContent, RenderableItem, Renderer} from "../core";
+﻿import {ChartContent, Renderer} from "../core";
 import {DataRect, NumericPoint, NumericRange, Size} from "../model";
-import {Cursor} from "../common";
 import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard";
 import {Chart} from "./chart";
@@ -12,7 +11,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
   private eventTarget: EventTarget;
   private prevPoint: NumericPoint | undefined;
-  private prevTouchesArray: Array<any> | undefined;
+  private prevTouches: Array<any> | undefined;
   private isMouseDown: boolean;
 
   private renderer?: Renderer = undefined;
@@ -22,6 +21,7 @@ export class MouseNavigation extends ChartContent(Object) {
   private readonly onMouseUpTouchEndHandler: (event: JQuery.Event) => void;
   private readonly onMouseOutHandler: (event: JQuery.Event) => void;
   private readonly onMouseMoveHandler: (event: JQuery.Event) => void;
+  private readonly onMouseWheelHandler: (event: JQuery.Event) => void;
 
   constructor(location: NumericPoint, size: Size,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
@@ -35,19 +35,23 @@ export class MouseNavigation extends ChartContent(Object) {
     let self = this;
 
     this.onMouseDownTouchStartHandler = (event: JQuery.Event) => {
-      self.onMouseDownTouchStart.call(this, event);
+      self.onMouseDownTouchStart.call(self, event);
     }
 
     this.onMouseUpTouchEndHandler = (event: JQuery.Event) => {
-      self.onMouseUpTouchEnd.call(this, event);
+      self.onMouseUpTouchEnd.call(self, event);
     }
 
     this.onMouseOutHandler = (event: JQuery.Event) => {
-      self.onMouseOut.call(this, event);
+      self.onMouseOut.call(self, event);
     }
 
     this.onMouseMoveHandler = (event: JQuery.Event) => {
-      self.onMouseOut.call(this, event);
+      self.onMouseMove.call(self, event);
+    }
+
+    this.onMouseWheelHandler = (event: JQuery.Event)=>{
+      self.onMouseWheel.call(self, event)
     }
 
   }
@@ -66,7 +70,7 @@ export class MouseNavigation extends ChartContent(Object) {
             let touch = event.touches[i];
             touchArray.push(new NumericPoint(touch.pageX, touch.pageY));
           }
-          this.prevTouchesArray = touchArray;
+          this.prevTouches = touchArray;
         }
       } else {
         event.preventDefault();
@@ -102,7 +106,7 @@ export class MouseNavigation extends ChartContent(Object) {
       if (e.touches.length == 0) {
         this.isMouseDown = false;
         this.prevPoint = undefined;
-        this.prevTouchesArray = undefined;
+        this.prevTouches = undefined;
       } else if (e.touches.length == 1 && e.targetTouches) {
         let touch = e.targetTouches[0];
         this.prevPoint = new NumericPoint(
@@ -138,18 +142,15 @@ export class MouseNavigation extends ChartContent(Object) {
           this.prevPoint = curPoint;
         }
       } else if (e.touches.length == 2) {
-
-        let navigationLayer = this.navigationLayer;
-
-        if (navigationLayer._prevTouches != null) {
+        if (this.prevTouches != null) {
           let t0 = e.touches[0];
           let t1 = e.touches[1];
 
           let curTouch1 = new NumericPoint(t0.pageX, t0.pageY);
           let curTouch2 = new NumericPoint(t1.pageX, t1.pageY);
 
-          let prevTouch1 = navigationLayer._prevTouches[0];
-          let prevTouch2 = navigationLayer._prevTouches[1];
+          let prevTouch1 = this.prevTouches[0];
+          let prevTouch2 = this.prevTouches[1];
 
           let minX = Math.min(prevTouch1.x, prevTouch2.x);
           let minY = Math.min(prevTouch1.y, prevTouch2.y);
@@ -177,24 +178,19 @@ export class MouseNavigation extends ChartContent(Object) {
           touches.push(new NumericPoint(touch.pageX, touch.pageY));
         }
 
-        navigationLayer._prevTouches = touches;
+        this.prevTouches = touches;
       }
     } else {
-      if (navigationLayer._isMouseDown) {
-        let prevPoint = navigationLayer._prevPoint;
-        let curPoint = new NumericPoint(e.pageX, e.pageY);
-
-        curPoint.x -= navigationLayer.location.x;
-        curPoint.y -= navigationLayer.location.y;
-
-        let deltaX = curPoint.x - prevPoint.x;
-        let deltaY = curPoint.y - prevPoint.y;
-
-        navigationLayer.eventTarget.fire(new DragEvent(deltaX, deltaY));
-
-        navigationLayer._prevPoint = curPoint;
+      if (this.isMouseDown && this.prevPoint && e.pageX && e.pageY) {
+        let curPoint = new NumericPoint(e.pageX - this.location.x, e.pageY - this.location.y);
+        this.handleDragging(curPoint.x - this.prevPoint.x, curPoint.y - this.prevPoint.y)
+        this.prevPoint = curPoint;
       }
     }
+  }
+
+  protected onMouseWheel(e: JQuery.Event){
+    this.handleScrollEvent((<any>e).originalEvent.wheelDelta);
   }
 
   private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {
@@ -236,20 +232,38 @@ export class MouseNavigation extends ChartContent(Object) {
       let rightBottomDeltaX = -(curPixRect.maxX - prevPixRect.maxX) * propX;
       let rightBottomDeltaY = (curPixRect.maxY - prevPixRect.maxY) * propY;
 
-      let dataRangeX = new NumericRange(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX);
-      let dataRangeY = new NumericRange(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY);
+      let newHorizontalRange = new NumericRange(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX);
+      let newVerticalRange = new NumericRange(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY);
 
-      let dataRange = new DataRect(dataRangeX.min, dataRangeY.min, dataRangeX.getLength(), dataRangeY.getLength());
+      let dataRange = new DataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
 
       this.chart.update(this.chart.location, this.chart.size, dataRange);
     }
   };
 
-  this._navigationLayer.eventTarget.addListener("scrolling", function (event, state) {
-    var chart = state;
-    var delta = event.delta;
-    chart.zoom(delta);
-  }, this);
+  private handleScrollEvent(delta: number){
+    if(this.chart) {
+      let horRange = this.chart.dataRect.getHorizontalRange();
+      let verRange = this.chart.dataRect.getVerticalRange();
+
+      let zoomCoeff = 0.01;
+      let sign = delta > 0 ? 1 : -1;
+
+      let deltaX = horRange.getLength() * zoomCoeff * sign;
+      let deltaY = verRange.getLength() * zoomCoeff * sign;
+
+      let newHorRange = new NumericRange(horRange.min + deltaX, horRange.max - deltaX);
+      let newVerRange = new NumericRange(verRange.min + deltaY, verRange.max - deltaY);
+
+      if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
+        this.chart.update(
+          this.location,
+          this.size,
+          new DataRect(horRange.min, verRange.min,
+            horRange.max - horRange.min, verRange.max - verRange.min));
+      }
+    }
+  }
 
   /**
    * Binds mouse navigation to the chart.
@@ -262,9 +276,10 @@ export class MouseNavigation extends ChartContent(Object) {
       this.container = $(this.renderer!.getContainer());
 
       this.container.on('mousedown touchstart', this.onMouseDownTouchStartHandler);
-      this.container.on("mouseup touchend", this.onMouseUpTouchEndHandler);
-      this.container.on("mouseout", this.onMouseOutHandler);
-      this.container.on("mousemove", this.onMouseMoveHandler);
+      this.container.on('mouseup touchend', this.onMouseUpTouchEndHandler);
+      this.container.on('mouseout', this.onMouseOutHandler);
+      this.container.on('mousemove', this.onMouseMoveHandler);
+      this.container.on('mousewheel', this.onMouseWheel)
     }
   }
 
@@ -275,119 +290,12 @@ export class MouseNavigation extends ChartContent(Object) {
     super.removeFromChart();
     if(this.container) {
       this.container.off('mousedown touchstart', this.onMouseDownTouchStartHandler);
-      this.container.off("mouseup touchend", this.onMouseUpTouchEndHandler);
-      this.container.off("mouseout", this.onMouseOutHandler);
-      this.container.off("mousemove", this.onMouseMoveHandler);
+      this.container.off('mouseup touchend', this.onMouseUpTouchEndHandler);
+      this.container.off('mouseout', this.onMouseOutHandler);
+      this.container.off('mousemove', this.onMouseMoveHandler);
+      this.container.off('mousewheel', this.onMouseWheel)
     }
     this.renderer = undefined;
     this.container = undefined;
   }
 }
-
-
-    MouseNavigation.prototype = new RenderableItem();
-
-    let p = MouseNavigation.prototype;
-
-    //Inner shape, which catches events.
-    p._shape = null;
-
-    p.size = null;
-    p.location = null;
-
-    p._isDirty = false;
-
-    p.eventTarget = null;
-
-    /****Navigation state***/
-    p._prevPoint = null;
-    p._prevTouches = null;
-    p._isMouseDown = false;
-    /***********************/
-
-    p.onMove = null;
-    p.onMultitouchZoom = null;
-
-    p.update = function (location, size) {
-        /// <summary>Updates navigation layer's location and size.</summary>
-        /// <param name="location" type="Point">Location on renderer.</param>
-        /// <param name="size" type="Size">Size on renderer.</param>
-        this.location = location;
-        this.size = size;
-
-        this._isDirty = true;
-    }
-
-    p._mouseOutFromShape = function () {
-        let navigationLayer = this.navigationLayer9c2ee650704442b3a93db55ac24f0c5d;
-        navigationLayer._isMouseDown = false;
-        navigationLayer._prevPoint = null;
-        $(navigationLayer.getRenderer().getStage().getLayer('navigationLayer').canvas).css('cursor', 'auto');
-    }
-
-    p.attachBase = p.attach;
-
-    p.attach = function (renderer) {
-        this.attachBase(renderer);
-        let stage = renderer.getStage();
-        let layer = stage.getLayer('navigationLayer');
-        layer.add(this._shape);
-
-        let container = stage.getContainer();
-        container.navigationLayer9c2ee650704442b3a93db55ac24f0c5d = this;
-
-        //Using mouse wheel jquery plugin for handling mouse wheel.
-        $(container).mousewheel(function (objEvent, delta) {
-            let container = this.navigationLayer9c2ee650704442b3a93db55ac24f0c5d;
-            container.eventTarget.fire(new ScrollEvent(delta));
-          EventUtils.stopDefault(objEvent);
-            EventUtils.stopEvent(objEvent);
-        });
-
-        $(document).mousedown(container, this._onDocumentMouseDown);
-
-        stage.on("mouseout", this._mouseOutFromShape, false);
-    }
-
-    p._onDocumentMouseDown = function (o) {
-        $(o.data).focusout();
-    }
-
-    p.detachBase = p.detach;
-    p.detach = function (renderer) {
-        this.detachBase(renderer);
-        let stage = renderer.getStage();
-        let layer = stage.getLayer('navigationLayer');
-        layer.remove(this._shape);
-
-        stage.off("mouseout", this._mouseOutFromShape);
-
-        let container = stage.getContainer();
-        $(container).unmousewheel();
-        $(container).unbind('focusout', this._onDocumentMouseDown);
-        container.navigationLayer9c2ee650704442b3a93db55ac24f0c5d = null;
-
-        $(document).unbind('mousedown');
-    }
-
-    p.hasDirtyLayers = function () {
-        return this._isDirty;
-    }
-
-    p.markDirty = function () {
-        this._isDirty = false;
-    }
-
-    p.getDirtyLayers = function () {
-        if (this._isDirty)
-            return new Array("navigationLayer");
-        else
-            return null;
-    }
-
-    p.getDependantLayers = function () {
-        return new Array("navigationLayer");
-    }
-
-    window.NavigationLayer = MouseNavigation;
-}(window));

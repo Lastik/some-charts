@@ -26,7 +26,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
     let self = this;
 
     this.onKeyDownHandler = (event: JQuery.Event) => {
-      self.onKeyDown.call(this, event);
+      self.onKeyDown.call(self, event);
     }
   }
 

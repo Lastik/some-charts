@@ -11,9 +11,11 @@ export class KeyboardNavigationsFactory {
     this.navigationsById = new Map<number, KeyboardNavigation>();
   }
 
-  public create(navigation: KeyboardNavigation) {
+  public create(): KeyboardNavigation {
     let id = this.getNextId();
+    let newNavigation = new KeyboardNavigation(id);
     this.navigationsById.set(id, new KeyboardNavigation(id));
+    return newNavigation;
   }
 
   public removeReference(navigation: KeyboardNavigation) {
