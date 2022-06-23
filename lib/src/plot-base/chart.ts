@@ -15,9 +15,11 @@ export class Chart extends RenderableItem {
   public static readonly MinZoomLevel: number = 1e-8;
 
   private readonly _id: number;
-  private readonly _location: NumericPoint;
-  private readonly _size: Size;
-  private readonly _dataRect: DataRect;
+
+  private _location: NumericPoint;
+  private _size: Size;
+  private _dataRect: DataRect;
+
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
   private readonly mouseNavigation: MouseNavigation | undefined;
 
@@ -91,39 +93,38 @@ export class Chart extends RenderableItem {
   }
 
   /**
-   * Updates chart's  new instance of chart.
+   * Updates chart's new instance of chart.
+   * @param {NumericPoint} location - new chart location
+   * @param {Size} size - new chart size
+   * @param {DataRect} dataRect - new visible rectangle for chart
    * */
-  update(location, size, dataRect) {
-    /// <summary>Updates chart's state</summary>
-    /// <param name="location" type="Point">Chart's location relative to left up corner of canvas.</param>
-    /// <param name="size" type="Size">Chart's size.</param>
-    /// <param name="dataRect" type="DataRect">Current visible rectangle of chart.</param>
+  update(location: NumericPoint, size: Size, dataRect: DataRect) {
     this._location = location;
     this._size = size;
     this._dataRect = dataRect;
 
-    var labelOffsetY = 0;
-    var labelYtopMargin = 0;
+    let labelOffsetY = 0;
+    let labelYtopMargin = 0;
 
     if (this._headerLabel != null) {
-      var labelActualHeight = this._headerLabel.getActualHeight();
+      let labelActualHeight = this._headerLabel.getActualHeight();
       labelOffsetY += this._labelVerticalMargin * 2 + labelActualHeight;
     }
 
-    var horizontalRange = this._dataRect.getHorizontalRange();
-    var verticalRange = this._dataRect.getVerticalRange();
+    let horizontalRange = this._dataRect.getHorizontalRange();
+    let verticalRange = this._dataRect.getVerticalRange();
 
-    var horizontalAxisHeight = 0;
+    let horizontalAxisHeight = 0;
     if (this._horizontalAxisType != AxisTypes.None) {
       horizontalAxisHeight = this._horizontalAxis.getActualHeight();
     }
 
-    var locationWithOffset = new NumericPoint(this._location.x, this._location.y + labelOffsetY);
+    let locationWithOffset = new NumericPoint(this._location.x, this._location.y + labelOffsetY);
 
     this._verticalAxis.update(locationWithOffset, verticalRange, new Size(null, this._size.height - horizontalAxisHeight - labelOffsetY));
 
-    var verticalAxisWidth = this._verticalAxis.getActualWidth();
-    var verticalAxisHeight = this._verticalAxis.getActualHeight();
+    let verticalAxisWidth = this._verticalAxis.getActualWidth();
+    let verticalAxisHeight = this._verticalAxis.getActualHeight();
 
     if (this._horizontalAxisType != AxisTypes.None) {
       this._horizontalAxis.update(
@@ -133,13 +134,13 @@ export class Chart extends RenderableItem {
         new Size(this._size.width - verticalAxisWidth, null));
     }
 
-    var horizontalAxisWidth = 0;
-    var horizontalAxisWidth = this._size.width - verticalAxisWidth
+    let horizontalAxisWidth = 0;
+    let horizontalAxisWidth = this._size.width - verticalAxisWidth
 
-    var gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
+    let gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
 
 
-    var horizontalAxisTicks = null;
+    let horizontalAxisTicks = null;
     if (this._horizontalAxisType != AxisTypes.None) {
       horizontalAxisTicks = this._horizontalAxis.getScreenTicks();
     }
@@ -155,8 +156,8 @@ export class Chart extends RenderableItem {
         new Size(horizontalAxisWidth, verticalAxisHeight));
     }
 
-    for (var i = 0; i < this._plots.length; i++) {
-      var plot = this._plots[i];
+    for (let i = 0; i < this._plots.length; i++) {
+      let plot = this._plots[i];
 
       plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, horizontalAxisWidth, verticalAxisHeight));
       plot.setVisible(this._dataRect);
