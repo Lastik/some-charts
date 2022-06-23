@@ -1,10 +1,9 @@
 import {GridOptions, GridOptionsDefaults} from "./grid-options";
 import {HeaderOptions, HeaderOptionsDefaults} from "./header-options";
 import {LegendOptions, LegendOptionsDefaults} from "./legend-options";
-import {PlotOptions, PlotOptionsDefaults} from "./plot-options";
 import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
-import {Margin} from "../model";
 import {AxesOptions, AxesOptionsDefaults} from "./axes";
+import {PlotOptions} from "./plot";
 
 export interface ChartOptions {
 
@@ -30,9 +29,9 @@ export interface ChartOptions {
    */
   legend?: LegendOptions;
   /**
-   *  Chart plot options
+   *  Chart's plots options
    */
-  plotOptions: PlotOptions;
+  plotsOptions: Array<PlotOptions>;
   /**
    *  Chart renderer options
    */
@@ -49,7 +48,7 @@ export class ChartOptionsDefaults
     grid: GridOptionsDefaults.Instance,
     header: HeaderOptionsDefaults.Instance,
     legend: LegendOptionsDefaults.Instance,
-    plotOptions: PlotOptionsDefaults.Instance
+    plotsOptions: []
   }
 
   public static get Instance()

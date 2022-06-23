@@ -19,13 +19,18 @@
 import {RenderableItem} from "../core";
 
 export class Label extends RenderableItem {
-  constructor(text: string, ) {
+  constructor(options: LabelOptions ) {
     super();
+  }
+
+  getDependantLayers(): Array<string> {
+    return undefined;
   }
 }
 
 
 import {TextMeasureUtils} from "../services/text-measure-utils";
+import {LabelOptions} from "../options";
 
 var HorizontalAlignment = { "Left": 0, "Center": 1};
 

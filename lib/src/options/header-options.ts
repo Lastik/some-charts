@@ -1,39 +1,14 @@
-import {FontInUnits, FontUnits} from "../model";
+import {LabelOptions, LabelOptionsDefaults} from "./plot";
 
 /**
  * Chart header options
  */
-export interface HeaderOptions {
-  /**
-   * Header text
-   */
-  headerText: string;
-  /**
-   * Header font
-   */
-  headerFont: FontInUnits;
-  /**
-   * Header foreground color
-   */
-  headerForegroundColor: string;
-  /**
-   * Header vertical margin.
-   */
-  headerVerticalMargin: number;
+export interface HeaderOptions extends LabelOptions {
 }
 
 export class HeaderOptionsDefaults
 {
-  private static _instance: HeaderOptions = {
-    headerText: '',
-    headerFont: {
-      size: 16,
-      units: FontUnits.Points,
-      family: 'Calibri'
-    },
-    headerForegroundColor: 'white',
-    headerVerticalMargin: 6
-  }
+  private static _instance: HeaderOptions = LabelOptionsDefaults.Instance;
 
   public static get Instance()
   {
