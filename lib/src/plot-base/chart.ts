@@ -1,20 +1,7 @@
 import Konva from "konva";
-import {
-  NumericPoint, Size,
-  DataRect, DataTransformation,
-  CoordinateTransformationStatic
-} from "../model";
-import {
-  ChartOptions,
-  ChartOptionsDefaults,
-  NumericAxisOptions,
-  LabeledAxisOptions} from "../options";
-import {
-  AxisBase,
-  NumericAxis,
-  LabeledAxis,
-  AxisTypes,
-  AxisOrientation} from "./axis";
+import {CoordinateTransformationStatic, DataRect, DataTransformation, NumericPoint, Size} from "../model";
+import {AxisOptions, ChartOptions, ChartOptionsDefaults, LabeledAxisOptions, NumericAxisOptions} from "../options";
+import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
 import {RenderableItem} from "../core";
@@ -80,25 +67,12 @@ export class Chart extends RenderableItem {
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    let horizontalAxisOptions = this.options?.axes.horizontal;
-    let verticalAxisOptions = this.options?.axes.vertical;
-
     let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes));
 
-    if (horizontalAxisOptions.axisType == AxisTypes.NumericAxis) {
-      this.horizontalAxis = new NumericAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, horizontalAxisOptions as NumericAxisOptions, size.width, undefined);
-    } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
-      this.horizontalAxis = new LabeledAxis(new NumericPoint(location.x, location.y + size.height), AxisOrientation.Horizontal, dataRect.getHorizontalRange(), dataTransformation, horizontalAxisOptions as LabeledAxisOptions, size.width, undefined);
-    }
-
-    if (verticalAxisOptions.axisType == AxisTypes.NumericAxis) {
-      this.verticalAxis = new NumericAxis(location, AxisOrientation.Vertical, dataRect.getVerticalRange(), dataTransformation, verticalAxisOptions as NumericAxisOptions, undefined, size.height);
-    } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
-      this.verticalAxis = new LabeledAxis(location, AxisOrientation.Vertical, dataRect.getVerticalRange(), dataTransformation, verticalAxisOptions as LabeledAxisOptions, undefined, size.height);
-    }
+    this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes.horizontal);
+    this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes.vertical);
 
     this.chartGrid = new Grid(location, size, this.options.grid);
-
 
     this._plots = [];
 
@@ -116,8 +90,77 @@ export class Chart extends RenderableItem {
     return [LayerName.Chart];
   }
 
+  /**
+   * Updates chart's  new instance of chart.
+   * */
   update(location, size, dataRect) {
+    /// <summary>Updates chart's state</summary>
+    /// <param name="location" type="Point">Chart's location relative to left up corner of canvas.</param>
+    /// <param name="size" type="Size">Chart's size.</param>
+    /// <param name="dataRect" type="DataRect">Current visible rectangle of chart.</param>
+    this._location = location;
+    this._size = size;
+    this._dataRect = dataRect;
 
+    var labelOffsetY = 0;
+    var labelYtopMargin = 0;
+
+    if (this._headerLabel != null) {
+      var labelActualHeight = this._headerLabel.getActualHeight();
+      labelOffsetY += this._labelVerticalMargin * 2 + labelActualHeight;
+    }
+
+    var horizontalRange = this._dataRect.getHorizontalRange();
+    var verticalRange = this._dataRect.getVerticalRange();
+
+    var horizontalAxisHeight = 0;
+    if (this._horizontalAxisType != AxisTypes.None) {
+      horizontalAxisHeight = this._horizontalAxis.getActualHeight();
+    }
+
+    var locationWithOffset = new NumericPoint(this._location.x, this._location.y + labelOffsetY);
+
+    this._verticalAxis.update(locationWithOffset, verticalRange, new Size(null, this._size.height - horizontalAxisHeight - labelOffsetY));
+
+    var verticalAxisWidth = this._verticalAxis.getActualWidth();
+    var verticalAxisHeight = this._verticalAxis.getActualHeight();
+
+    if (this._horizontalAxisType != AxisTypes.None) {
+      this._horizontalAxis.update(
+        new NumericPoint(this._location.x + verticalAxisWidth,
+          this._location.y + verticalAxisHeight + labelOffsetY - labelYtopMargin),
+        horizontalRange,
+        new Size(this._size.width - verticalAxisWidth, null));
+    }
+
+    var horizontalAxisWidth = 0;
+    var horizontalAxisWidth = this._size.width - verticalAxisWidth
+
+    var gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
+
+
+    var horizontalAxisTicks = null;
+    if (this._horizontalAxisType != AxisTypes.None) {
+      horizontalAxisTicks = this._horizontalAxis.getScreenTicks();
+    }
+
+    this._chartGrid.update(
+      gridLocation,
+      new Size(horizontalAxisWidth, verticalAxisHeight),
+      this._verticalAxis.getScreenTicks(), horizontalAxisTicks);
+
+    if (this._navigationLayer != null) {
+      this._navigationLayer.update(
+        gridLocation,
+        new Size(horizontalAxisWidth, verticalAxisHeight));
+    }
+
+    for (var i = 0; i < this._plots.length; i++) {
+      var plot = this._plots[i];
+
+      plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, horizontalAxisWidth, verticalAxisHeight));
+      plot.setVisible(this._dataRect);
+    }
   }
 
   private static getNextId(): number{
@@ -127,5 +170,24 @@ export class Chart extends RenderableItem {
   getPlotSize(): Size {
     //TODO: return chart grid size?
     return this.size;
+  }
+
+  private createAxis(dataTransformation: DataTransformation,
+                     orientation: AxisOrientation,
+                     options: AxisOptions): AxisBase<any, any>{
+    let axisWidth = orientation === AxisOrientation.Vertical ? undefined : this.size.width;
+    let axisHeight = orientation === AxisOrientation.Horizontal ? this.size.height : undefined;
+
+    let axisLocation = orientation === AxisOrientation.Vertical ? this.location:
+      new NumericPoint(this.location.x, this.location.y + this.size.height);
+
+    let axisRange = orientation === AxisOrientation.Vertical ? this.dataRect.getVerticalRange(): this.dataRect.getHorizontalRange();
+
+    if (options.axisType == AxisTypes.NumericAxis) {
+      return new NumericAxis(axisLocation, orientation, axisRange, dataTransformation, options as NumericAxisOptions, axisWidth, axisHeight);
+    } else if (options.axisType == AxisTypes.LabeledAxis) {
+      return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as LabeledAxisOptions, axisWidth, axisHeight);
+    }
+    else throw new Error("Specified axis type is not supported");
   }
 }
