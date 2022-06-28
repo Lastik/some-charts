@@ -1,5 +1,6 @@
 import {TextOptions} from "../common";
 import {FontUnits} from "../../model";
+import {HorizontalAlignment} from "../../model/alignment/horizontal-alignment";
 
 /**
  * Label options
@@ -13,6 +14,10 @@ export interface LabelOptions extends TextOptions {
    * Label vertical padding.
    */
   verticalPadding: number;
+  /**
+   * Label text alignment.
+   */
+  textAlignment: HorizontalAlignment
 }
 
 export class LabelOptionsDefaults
@@ -25,7 +30,8 @@ export class LabelOptionsDefaults
       family: 'Calibri'
     },
     foregroundColor: 'white',
-    verticalPadding: 6
+    verticalPadding: 6,
+    textAlignment: HorizontalAlignment.Center
   }
 
   public static get Instance()

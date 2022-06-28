@@ -11,6 +11,7 @@ import extend from "lodash-es/extend";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
 import {LayerName} from "../layer-name";
+import {inject} from "tsyringe";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
   /**
@@ -53,7 +54,8 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
                         dataTransformation: DataTransformation,
                         options: AxisOptionsType,
                         width?: number,
-                        height?: number) {
+                        height?: number,
+                        @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
     super();
 
     this.location = location;
@@ -333,7 +335,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @returns {Size} Label's size.
    */
   protected measureLabelSize(label: string): Size {
-    let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options?.font!), label);
+    let width = this.textMeasureUtils!.measureTextWidth(FontHelper.fontToString(this.options?.font!), label);
     let height = this.options?.font?.size!;
     return new Size(width, height);
   }
@@ -407,7 +409,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     }
 
     if (this.initialHeight === undefined && this.orientation == AxisOrientation.Horizontal) {
-      renderHeight = TextMeasureUtils.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
+      renderHeight = this.textMeasureUtils!.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
     }
 
     this.size = new Size(renderWidth!, renderHeight!);

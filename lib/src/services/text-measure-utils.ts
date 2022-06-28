@@ -1,33 +1,20 @@
-﻿/**
- * Provides text measuring utilities methods.
- */
-import Konva from "konva";
+﻿import Konva from "konva";
 import Util = Konva.Util;
-import {FontInUnits, FontInPx} from "../model";
+import {FontInUnits, FontInPx, Size} from "../model";
 import {FontHelper} from "./font-helper";
+import {singleton} from "tsyringe";
 
+@singleton()
 export class TextMeasureUtils {
 
-  static dummyContext: CanvasRenderingContext2D;
-
-  private static getDummyContext(): CanvasRenderingContext2D {
-    if (TextMeasureUtils.dummyContext) {
-      return TextMeasureUtils.dummyContext;
-    }
-    let CONTEXT_2D = '2d';
-    TextMeasureUtils.dummyContext = <CanvasRenderingContext2D>Util.createCanvasElement().getContext(CONTEXT_2D)!;
-    return TextMeasureUtils.dummyContext;
-  }
+  private readonly dummyContext: CanvasRenderingContext2D;
 
   /**
-   * Measures vertical offset for the text for specified font.
-   * @param {String} font - text font.
-   * @returns {number}
+   * Provides text measuring utilities methods.
    */
-  public static measureTextVerticalOffsetHeight(font: string) {
-    let context = TextMeasureUtils.getDummyContext();
-    context.font = font;
-    return context.measureText("m").width * 0.225;
+  constructor() {
+    let CONTEXT_2D = '2d';
+    this.dummyContext = <CanvasRenderingContext2D>Util.createCanvasElement().getContext(CONTEXT_2D)!;
   }
 
   /**
@@ -35,8 +22,8 @@ export class TextMeasureUtils {
    * @param {String} font - text font.
    * @returns {number}
    */
-  public static measureTextHeight(font: string) {
-    let context = TextMeasureUtils.getDummyContext();
+  public measureTextHeight(font: string) {
+    let context = this.dummyContext;
     context.font = font;
     return context.measureText("m").width * 1.05;
   }
@@ -46,8 +33,8 @@ export class TextMeasureUtils {
    * @param {FontInUnits | FontInPx} font - text font.
    * @returns {number}
    */
-  public static measureFontHeight(font: FontInUnits | FontInPx) {
-    return TextMeasureUtils.measureTextHeight(FontHelper.fontToString(font));
+  public measureFontHeight(font: FontInUnits | FontInPx) {
+    return this.measureTextHeight(FontHelper.fontToString(font));
   }
 
   /**
@@ -56,9 +43,24 @@ export class TextMeasureUtils {
    * @param {String} text - text to measure
    * @returns {number}
    */
-  public static measureTextWidth(font: string, text: string) {
-    let context = TextMeasureUtils.getDummyContext();
+  public measureTextWidth(font: string, text: string) {
+    let context = this.dummyContext;
     context.font = font;
     return context.measureText(text).width;
+  }
+
+  /**
+   * Measures text size for specified font.
+   * @param {FontInUnits | FontInPx} font - text font.
+   * @param {String} text - text to measure
+   * @returns {Size}
+   */
+  public measureTextSize(font: FontInUnits | FontInPx, text: string) {
+
+    let fontStr = FontHelper.fontToString(font);
+
+    return new Size(
+      this.measureTextWidth(fontStr, text),
+      this.measureTextHeight(fontStr))
   }
 }
