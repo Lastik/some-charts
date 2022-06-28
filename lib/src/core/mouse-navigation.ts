@@ -56,6 +56,11 @@ export class MouseNavigation extends ChartContent(Object) {
 
   }
 
+  public update(location: NumericPoint, size: Size){
+    this.location = location;
+    this.size = size;
+  }
+
   protected onMouseDownTouchStart(event: JQuery.Event) {
     if(this.chart) {
       if (event.touches && event.targetTouches) {

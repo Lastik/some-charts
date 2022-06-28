@@ -1,4 +1,4 @@
-import {Chart} from "../plot-base";
+import {Chart} from "./chart";
 
 export function ChartContent<TBase extends abstract new (...args: any[]) => any>(Base: TBase) {
   abstract class Mixin extends Base {

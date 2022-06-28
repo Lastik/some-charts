@@ -220,6 +220,13 @@ export class Renderer implements IDisposable{
     Renderer.redraw(this);
   }
 
+  /**
+   * Returns layer by its name
+   * */
+  public getLayer(layerName: string) {
+    return this.stage.findOne(layerName);
+  }
+
   protected static requestAnimFrame: (callback: FrameRequestCallback) => number = (function () {
     return window.requestAnimationFrame ||
       function (callback) {
@@ -236,7 +243,7 @@ export class Renderer implements IDisposable{
       }
     }
     for (let layerName of dirtyLayersNames) {
-      renderer.stage.findOne(layerName).draw();
+      renderer.getLayer(layerName).draw();
     }
 
     if (!renderer.isDisposed) {

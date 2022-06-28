@@ -29,7 +29,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   private dataTransformation: DataTransformation;
 
-  protected size: Size;
+  protected _size: Size;
+
+  public get size(): Size{
+    return this._size;
+  }
 
   private borderShape: Konva.Shape;
   private ticksShape: Konva.Shape;
@@ -69,7 +73,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.validateAxisInitialWidth();
     this.validateAxisInitialHeight();
 
-    this.size = new Size(width ?? 0, height ?? 0);
+    this._size = new Size(width ?? 0, height ?? 0);
 
     this.markDirty();
 
@@ -96,7 +100,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       strokeWidth: 1,
       sceneFunc: function (context, shape) {
         let location = self.location;
-        let size = self.size;
+        let size = self._size;
 
         let roundedX = MathHelper.optimizeValue(location.x);
         let roundedY = MathHelper.optimizeValue(location.y);
@@ -126,8 +130,8 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         let axisRenderOriginX = MathHelper.optimizeValue(self.location.x);
         let axisRenderOriginY = MathHelper.optimizeValue(self.location.y);
 
-        let axisRenderWidth = MathHelper.optimizeValue(self.size.width);
-        let axisRenderHeight = MathHelper.optimizeValue(self.size.height);
+        let axisRenderWidth = MathHelper.optimizeValue(self._size.width);
+        let axisRenderHeight = MathHelper.optimizeValue(self._size.height);
 
         context.save();
         context.beginPath();
@@ -182,13 +186,13 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
             let labelSize = self.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
-              self.location.x + self.size.width - labelSize.width - (tick.length + 2),
+              self.location.x + self._size.width - labelSize.width - (tick.length + 2),
               self.location.y + tickScreenXCoord - labelSize.height / labelVerticalDelimiter);
 
-            let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
+            let xVal = MathHelper.optimizeValue(self.location.x + self._size.width - tick.length);
             let yVal = MathHelper.optimizeValue(self.location.y + tickScreenXCoord);
             context.moveTo(xVal, yVal);
-            xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
+            xVal = MathHelper.optimizeValue(self.location.x + self._size.width);
             context.lineTo(xVal, yVal);
           }
 
@@ -198,10 +202,10 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
               let tick = minorTicks[i];
               let tickSceenXCoord = minorTicksScreenXCoords[i];
 
-              let xVal = MathHelper.optimizeValue(self.location.x + self.size.width - tick.length);
+              let xVal = MathHelper.optimizeValue(self.location.x + self._size.width - tick.length);
               let yVal = MathHelper.optimizeValue(self.location.y + tickSceenXCoord);
               context.moveTo(xVal, yVal);
-              xVal = MathHelper.optimizeValue(self.location.x + self.size.width);
+              xVal = MathHelper.optimizeValue(self.location.x + self._size.width);
               context.lineTo(xVal, yVal);
             }
           }
@@ -239,10 +243,12 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     super.placeOnChart(chart);
 
     if (chart) {
-      let visibleObjectsLayer = chart!.getLayer(LayerName.Chart);
-      visibleObjectsLayer.add(this.borderShape);
-      visibleObjectsLayer.add(this.ticksShape);
-      this.update(this.range);
+      let chartLayer = chart!.getLayer(LayerName.Chart);
+      if(chartLayer) {
+        chartLayer.add(this.borderShape);
+        chartLayer.add(this.ticksShape);
+        this.update(this.location, this.range, this.initialWidth, this.initialHeight);
+      }
     }
   }
 
@@ -251,9 +257,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @returns {Size} axis size.
    */
   getSize() {
-    /// <summary>Returns axis actual width.</summary>
-    /// <returns type="Number" />
-    return this.size;
+    return this._size;
   }
 
   /**
@@ -342,13 +346,26 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   /**
    * Updates axis state.
+   * @param {Point} location - axis location on chart.
    * @param {Range} range - axis data range.
+   * @param {number} width - axis width. May be undefined (for vertical axis only)
+   * @param {number} height - axis height. May be undefined (for horizontal axis only)
    */
-  public update(range: Range<TickType>){
+  public update(location: NumericPoint,
+                range: Range<TickType>,
+                width?: number,
+                height?: number){
 
+    this.location = location;
     this.range = range;
 
-    this.updateTicksData(this.location, this.range, this.size);
+    this.initialWidth = width;
+    this.initialHeight = height;
+
+    this.validateAxisInitialWidth();
+    this.validateAxisInitialHeight();
+
+    this.updateTicksData(this.location, this.range, this._size);
     this.updateAxisSize();
     this.markDirty();
   }
@@ -399,7 +416,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       renderHeight = this.textMeasureUtils!.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
     }
 
-    this.size = new Size(renderWidth!, renderHeight!);
+    this._size = new Size(renderWidth!, renderHeight!);
   }
 
   /**
@@ -439,7 +456,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
           prevState = state;
 
-          state = this.checkLabelsArrangement(this.size, labelsSizes, ticks, range);
+          state = this.checkLabelsArrangement(this._size, labelsSizes, ticks, range);
 
           if (prevState == TicksCountChange.Decrease && state == TicksCountChange.Increase) {
             state = TicksCountChange.OK;
@@ -499,5 +516,13 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       }
     }
     return res;
+  }
+
+  /**
+   * Returns major ticks screen coordinates
+   * @returns {number} Major ticks screen coordinates
+   * */
+  public getMajorTicksScreenCoords(){
+    return this.majorTicksScreenCoords;
   }
 }

@@ -1,14 +1,21 @@
 import Konva from "konva";
-import {CoordinateTransformationStatic, DataRect, DataTransformation, NumericPoint, Size} from "../model";
+import {
+  CoordinateTransformationStatic,
+  DataRect,
+  DataTransformation,
+  NumericPoint,
+  Size
+} from "../model";
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, LabeledAxisOptions, NumericAxisOptions} from "../options";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {Plot, RenderableItem, Renderer} from "../core";
+import {ChartRenderableItem, Plot, RenderableItem, Renderer} from "../core";
 import {LayerName} from "./layer-name";
 import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
 import {MouseNavigation} from "./mouse-navigation";
+import {Label} from "../plots";
 
 export class Chart extends RenderableItem {
 
@@ -18,12 +25,15 @@ export class Chart extends RenderableItem {
 
   private readonly _location: NumericPoint;
   private readonly _size: Size;
+
+  private readonly contentItems: ChartRenderableItem[];
   private readonly plots: Plot[];
 
   private _dataRect: DataRect;
 
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
   private readonly mouseNavigation: MouseNavigation | undefined;
+  private readonly headerLabel: Label | undefined;
 
   public get id(): number{
     return this._id;
@@ -73,10 +83,25 @@ export class Chart extends RenderableItem {
 
     let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes));
 
+    this.contentItems = [];
+
     this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes.horizontal);
+    if(this.horizontalAxis) {
+      this.contentItems.push(this.horizontalAxis);
+    }
+
     this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes.vertical);
+    if(this.verticalAxis) {
+      this.contentItems.push(this.verticalAxis);
+    }
 
     this.chartGrid = new Grid(location, size, this.options.grid);
+    this.contentItems.push(this.chartGrid);
+
+    if (this.options.header) {
+      this.headerLabel = new Label(location, size.width, this.options.header);
+      this.contentItems.push(this.headerLabel);
+    }
 
     this.plots = [];
 
@@ -86,8 +111,9 @@ export class Chart extends RenderableItem {
     }
   }
 
-  getLayer(layerName: string): Konva.Layer {
-    throw new Error("Method not implemented.");
+  getLayer(layerName: string): Konva.Layer | undefined {
+    let renderer = this.getRenderer();
+    return renderer ? <Konva.Layer>renderer.getLayer(layerName): undefined;
   }
 
   getDependantLayers(): Array<string> {
@@ -99,45 +125,37 @@ export class Chart extends RenderableItem {
 
     Chart.createLayers(renderer);
 
-    if(this.verticalAxis) {
-      renderer.add(this.verticalAxis);
+    for(let contentItem of this.contentItems){
+      renderer.add(contentItem);
+      contentItem.markDirty();
     }
+  }
 
-    if(this.horizontalAxis){
-      renderer.add(this.horizontalAxis);
+  public addContentItem(contentItem: ChartRenderableItem){
+    this.contentItems.push(contentItem);
+  }
+
+  public removeContentItem(contentItem: ChartRenderableItem){
+    let indexOfContent = this.contentItems.indexOf(contentItem);
+    if(indexOfContent >= 0) {
+      this.contentItems.splice(indexOfContent, 1);
     }
+  }
 
-    renderer.add(this.chartGrid);
-
-    for (let plot of this.plots) {
-      renderer.add(plot);
-    }
-
-    if (this.options.header) {
-      let labelLocation = this._location;
-
-      this.headerLabel = new RenderedLabel(header, headerFont, labelLocation, this._size.width, HorizontalAlignment.Center);
-      var foregroundColor = container.getAttribute('data-header-foreground-color');
-      if (foregroundColor != undefined) {
-        this._headerLabel.foregroundColor = foregroundColor;
-      }
-      renderer.add(this._headerLabel);
-
-    }
-    else {
-      this._headerLabel = null;
-    }
-
-    this.update(this._location, this._size, this._dataRect);
-
-    this.renderer = renderer;
+  public addPlot(plot: Plot){
+    this.addContentItem(plot);
   }
 
   override detach() {
     let renderer = this.getRenderer();
     if (renderer) {
       Chart.destroyLayers(renderer);
+
+      for(let contentItem of this.contentItems){
+        renderer.remove(contentItem);
+      }
     }
+
     super.detach();
   }
 
@@ -148,63 +166,64 @@ export class Chart extends RenderableItem {
   update(dataRect: DataRect) {
     this._dataRect = dataRect;
 
-    let labelOffsetY = 0;
-    let labelYtopMargin = 0;
+    let offsetYAfterHeader = 0;
 
-    if (this._headerLabel != null) {
-      let labelActualHeight = this._headerLabel.getActualHeight();
-      labelOffsetY += this._labelVerticalMargin * 2 + labelActualHeight;
+    if (this.headerLabel) {
+      offsetYAfterHeader += this.headerLabel.height;
     }
 
     let horizontalRange = this._dataRect.getHorizontalRange();
     let verticalRange = this._dataRect.getVerticalRange();
 
     let horizontalAxisHeight = 0;
-    if (this._horizontalAxisType != AxisTypes.None) {
-      horizontalAxisHeight = this._horizontalAxis.getActualHeight();
+    if (this.options.axes.horizontal.axisType != AxisTypes.None) {
+      horizontalAxisHeight = this.horizontalAxis!.size.height;
     }
 
-    let locationWithOffset = new NumericPoint(this._location.x, this._location.y + labelOffsetY);
+    let locationWithOffset = new NumericPoint(this._location.x, this._location.y + offsetYAfterHeader);
 
-    this._verticalAxis.update(locationWithOffset, verticalRange, new Size(null, this._size.height - horizontalAxisHeight - labelOffsetY));
+    if(this.verticalAxis) {
+      this.verticalAxis.update(locationWithOffset, verticalRange, undefined, this._size.height - horizontalAxisHeight - offsetYAfterHeader);
+    }
 
-    let verticalAxisWidth = this._verticalAxis.getActualWidth();
-    let verticalAxisHeight = this._verticalAxis.getActualHeight();
+    let verticalAxisSize = this.verticalAxis?.size;
 
-    if (this._horizontalAxisType != AxisTypes.None) {
-      this._horizontalAxis.update(
-        new NumericPoint(this._location.x + verticalAxisWidth,
-          this._location.y + verticalAxisHeight + labelOffsetY - labelYtopMargin),
+    if (this.horizontalAxis) {
+      this.horizontalAxis.update(
+        new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0),
+          this._location.y + (verticalAxisSize?.height ?? 0) + offsetYAfterHeader - (this.options.header?.verticalPadding ?? 0)),
         horizontalRange,
-        new Size(this._size.width - verticalAxisWidth, null));
+        this._size.width - (verticalAxisSize?.width ?? 0), undefined);
     }
 
-    let horizontalAxisWidth = 0;
-    let horizontalAxisWidth = this._size.width - verticalAxisWidth
+    let horizontalAxisSize = this.horizontalAxis?.size;
 
-    let gridLocation = new NumericPoint(this._location.x + verticalAxisWidth, this._location.y + labelOffsetY);
+    let gridLocation = new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0), this._location.y + offsetYAfterHeader);
+    let gridSize = new Size(horizontalAxisSize?.width ?? this.size.width, verticalAxisSize?.height ?? (this.size.height - offsetYAfterHeader));
 
+    let horizontalAxisTicks: Array<number> | undefined = undefined;
+    let verticalAxisTicks: Array<number> | undefined = undefined;
 
-    let horizontalAxisTicks = null;
-    if (this._horizontalAxisType != AxisTypes.None) {
-      horizontalAxisTicks = this._horizontalAxis.getScreenTicks();
+    if (this.horizontalAxis) {
+      horizontalAxisTicks = this.horizontalAxis.getMajorTicksScreenCoords();
     }
 
-    this._chartGrid.update(
+    if (this.verticalAxis) {
+      verticalAxisTicks = this.verticalAxis.getMajorTicksScreenCoords();
+    }
+
+    this.chartGrid.update(
       gridLocation,
-      new Size(horizontalAxisWidth, verticalAxisHeight),
-      this._verticalAxis.getScreenTicks(), horizontalAxisTicks);
+      gridSize);
 
-    if (this._navigationLayer != null) {
-      this._navigationLayer.update(
-        gridLocation,
-        new Size(horizontalAxisWidth, verticalAxisHeight));
+    this.chartGrid.setLinesCoords(horizontalAxisTicks ?? [], verticalAxisTicks ?? []);
+
+    if(this.mouseNavigation){
+      this.mouseNavigation.update(gridLocation, gridSize);
     }
 
-    for (let i = 0; i < this._plots.length; i++) {
-      let plot = this._plots[i];
-
-      plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, horizontalAxisWidth, verticalAxisHeight));
+    for (let plot of this.plots) {
+      plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height));
       plot.setVisible(this._dataRect);
     }
   }

@@ -118,9 +118,11 @@ export class Grid extends ChartRenderableItem {
     super.placeOnChart(chart);
 
     if (chart) {
-      let visibleObjectsLayer = chart!.getLayer(LayerName.Chart);
-      visibleObjectsLayer.add(this.borderShape);
-      visibleObjectsLayer.add(this.compositeShape);
+      let chartLayer = chart!.getLayer(LayerName.Chart);
+      if(chartLayer) {
+        chartLayer.add(this.borderShape);
+        chartLayer.add(this.compositeShape);
+      }
     }
   }
 
@@ -128,6 +130,17 @@ export class Grid extends ChartRenderableItem {
     super.removeFromChart();
     this.borderShape.remove();
     this.compositeShape.remove();
+  }
+
+  /**
+   * Uprates grid's state.
+   * @param {NumericPoint} location - Grid location on renderer.
+   * @param {Size} size - Grid size.
+   */
+  update(location: NumericPoint, size: Size) {
+    this.location = location;
+    this.size = size;
+    this.markDirty();
   }
 
   /**

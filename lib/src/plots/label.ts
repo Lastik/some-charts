@@ -2,14 +2,13 @@
 import {LabelOptions, LabelOptionsDefaults} from "../options";
 import extend from "lodash-es/extend";
 import Konva from "konva";
-import {ChartRenderableItem} from "../core";
-import {HorizontalAlignment, NumericPoint, Range, Size} from "../model";
+import {ChartRenderableItem, LayerName} from "../core";
+import {HorizontalAlignment, NumericPoint, Size} from "../model";
 import {inject} from "tsyringe";
-import {LayerName} from "../plot-base";
 
 export class Label extends ChartRenderableItem {
   private location: NumericPoint;
-  private size: Size;
+  private width: number;
   private options: LabelOptions;
 
   private textSize: Size;
@@ -17,11 +16,15 @@ export class Label extends ChartRenderableItem {
 
   private shape: Konva.Shape;
 
-  constructor(location: NumericPoint, size: Size, options: LabelOptions,
+  public get height(){
+    return this.textSize.height + this.textTopOffset + this.options.verticalPadding;
+  }
+
+  constructor(location: NumericPoint, width: number, options: LabelOptions,
               @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
     super();
     this.location = location;
-    this.size = size;
+    this.width = width;
     this.options = extend(LabelOptionsDefaults.Instance, options);
 
     let self = this;
@@ -43,7 +46,7 @@ export class Label extends ChartRenderableItem {
         let y = self.location.y;
 
         if (self.options.textAlignment == HorizontalAlignment.Center) {
-          x += self.size.width / 2 - self.textSize.width / 2;
+          x += self.width / 2 - self.textSize.width / 2;
         }
 
         y += self.textSize.height / 2 + self.textTopOffset;
