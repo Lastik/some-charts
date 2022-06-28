@@ -12,8 +12,8 @@ export class Grid extends ChartRenderableItem {
   private location: NumericPoint;
   private size: Size;
 
-  private horizontalLinesCoords: number[];
-  private verticalLinesCoords: number[];
+  protected horizontalLinesCoords: number[];
+  protected verticalLinesCoords: number[];
 
   private compositeShape: Konva.Shape;
   private borderShape: Konva.Shape;
@@ -128,17 +128,6 @@ export class Grid extends ChartRenderableItem {
     super.removeFromChart();
     this.borderShape.remove();
     this.compositeShape.remove();
-  }
-
-  /**
-   * Uprates grid's state.
-   * @param {NumericPoint} location - Grid location on renderer.
-   * @param {Size} size - Grid size.
-   */
-  update(location: NumericPoint, size: Size) {
-    this.location = location;
-    this.size = size;
-    this.markDirty();
   }
 
   /**

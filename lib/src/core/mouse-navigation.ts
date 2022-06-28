@@ -207,8 +207,6 @@ export class MouseNavigation extends ChartContent(Object) {
       let newVerticalRange = verticalRange.withShift(dataDeltaY);
 
       this.chart.update(
-        this.chart.location,
-        this.chart.size,
         new DataRect(
           newHorizontalRange.min, newVerticalRange.min,
           newHorizontalRange.getLength(), newVerticalRange.getLength())
@@ -237,7 +235,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
       let dataRange = new DataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
 
-      this.chart.update(this.chart.location, this.chart.size, dataRange);
+      this.chart.update(dataRange);
     }
   };
 
@@ -257,8 +255,6 @@ export class MouseNavigation extends ChartContent(Object) {
 
       if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
         this.chart.update(
-          this.location,
-          this.size,
           new DataRect(horRange.min, verRange.min,
             horRange.max - horRange.min, verRange.max - verRange.min));
       }

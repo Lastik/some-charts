@@ -23,7 +23,7 @@ export interface ChartOptions {
   /**
    *  Chart header options
    */
-  header: HeaderOptions;
+  header?: HeaderOptions;
   /**
    *  Chart legend options
    */
@@ -46,7 +46,6 @@ export class ChartOptionsDefaults
     renderer: RendererOptionsDefaults.Instance,
     axes: AxesOptionsDefaults.Instance,
     grid: GridOptionsDefaults.Instance,
-    header: HeaderOptionsDefaults.Instance,
     legend: LegendOptionsDefaults.Instance,
     plotsOptions: []
   }

@@ -116,7 +116,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
 
       if (horizontalRange.max - horizontalRange.min >= Chart.MinZoomLevel && verticalRange.max - verticalRange.min >= Chart.MinZoomLevel) {
         let newChartDataRect = new DataRect(horizontalRange.min, verticalRange.min, horizontalRange.max - horizontalRange.min, verticalRange.max - verticalRange.min);
-        this.chart.update(this.chart.location, this.chart.size, newChartDataRect);
+        this.chart.update(newChartDataRect);
       }
 
       e.preventDefault();

@@ -4,7 +4,7 @@ import {AxisOptions, ChartOptions, ChartOptionsDefaults, LabeledAxisOptions, Num
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {RenderableItem} from "../core";
+import {Plot, RenderableItem, Renderer} from "../core";
 import {LayerName} from "./layer-name";
 import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
@@ -16,8 +16,10 @@ export class Chart extends RenderableItem {
 
   private readonly _id: number;
 
-  private _location: NumericPoint;
-  private _size: Size;
+  private readonly _location: NumericPoint;
+  private readonly _size: Size;
+  private readonly plots: Plot[];
+
   private _dataRect: DataRect;
 
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
@@ -76,7 +78,7 @@ export class Chart extends RenderableItem {
 
     this.chartGrid = new Grid(location, size, this.options.grid);
 
-    this._plots = [];
+    this.plots = [];
 
     if (this.options.isNavigationEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
@@ -89,18 +91,61 @@ export class Chart extends RenderableItem {
   }
 
   getDependantLayers(): Array<string> {
-    return [LayerName.Chart];
+    return [LayerName.Chart, LayerName.Labels];
+  }
+
+  override attach(renderer: Renderer) {
+    super.attach(renderer);
+
+    Chart.createLayers(renderer);
+
+    if(this.verticalAxis) {
+      renderer.add(this.verticalAxis);
+    }
+
+    if(this.horizontalAxis){
+      renderer.add(this.horizontalAxis);
+    }
+
+    renderer.add(this.chartGrid);
+
+    for (let plot of this.plots) {
+      renderer.add(plot);
+    }
+
+    if (this.options.header) {
+      let labelLocation = this._location;
+
+      this.headerLabel = new RenderedLabel(header, headerFont, labelLocation, this._size.width, HorizontalAlignment.Center);
+      var foregroundColor = container.getAttribute('data-header-foreground-color');
+      if (foregroundColor != undefined) {
+        this._headerLabel.foregroundColor = foregroundColor;
+      }
+      renderer.add(this._headerLabel);
+
+    }
+    else {
+      this._headerLabel = null;
+    }
+
+    this.update(this._location, this._size, this._dataRect);
+
+    this.renderer = renderer;
+  }
+
+  override detach() {
+    let renderer = this.getRenderer();
+    if (renderer) {
+      Chart.destroyLayers(renderer);
+    }
+    super.detach();
   }
 
   /**
    * Updates chart's new instance of chart.
-   * @param {NumericPoint} location - new chart location
-   * @param {Size} size - new chart size
    * @param {DataRect} dataRect - new visible rectangle for chart
    * */
-  update(location: NumericPoint, size: Size, dataRect: DataRect) {
-    this._location = location;
-    this._size = size;
+  update(dataRect: DataRect) {
     this._dataRect = dataRect;
 
     let labelOffsetY = 0;
@@ -175,20 +220,29 @@ export class Chart extends RenderableItem {
 
   private createAxis(dataTransformation: DataTransformation,
                      orientation: AxisOrientation,
-                     options: AxisOptions): AxisBase<any, any>{
+                     options: AxisOptions): AxisBase<any, any> | undefined {
     let axisWidth = orientation === AxisOrientation.Vertical ? undefined : this.size.width;
     let axisHeight = orientation === AxisOrientation.Horizontal ? this.size.height : undefined;
 
-    let axisLocation = orientation === AxisOrientation.Vertical ? this.location:
+    let axisLocation = orientation === AxisOrientation.Vertical ? this.location :
       new NumericPoint(this.location.x, this.location.y + this.size.height);
 
-    let axisRange = orientation === AxisOrientation.Vertical ? this.dataRect.getVerticalRange(): this.dataRect.getHorizontalRange();
+    let axisRange = orientation === AxisOrientation.Vertical ? this.dataRect.getVerticalRange() : this.dataRect.getHorizontalRange();
 
     if (options.axisType == AxisTypes.NumericAxis) {
       return new NumericAxis(axisLocation, orientation, axisRange, dataTransformation, options as NumericAxisOptions, axisWidth, axisHeight);
     } else if (options.axisType == AxisTypes.LabeledAxis) {
       return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as LabeledAxisOptions, axisWidth, axisHeight);
-    }
-    else throw new Error("Specified axis type is not supported");
+    } else if (options.axisType == AxisTypes.None) {
+      return undefined;
+    } else throw new Error("Specified axis type is not supported");
+  }
+
+  private static createLayers(renderer: Renderer) {
+    renderer.createLayers(Object.values(LayerName));
+  }
+
+  private static destroyLayers(renderer: Renderer) {
+    renderer.destroyLayers(Object.values(LayerName));
   }
 }

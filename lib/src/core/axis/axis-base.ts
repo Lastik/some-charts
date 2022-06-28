@@ -242,7 +242,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       let visibleObjectsLayer = chart!.getLayer(LayerName.Chart);
       visibleObjectsLayer.add(this.borderShape);
       visibleObjectsLayer.add(this.ticksShape);
-      this.update(this.location, this.range, this.initialWidth, this.initialHeight);
+      this.update(this.range);
     }
   }
 
@@ -342,24 +342,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   /**
    * Updates axis state.
-   * @param {Point} location - axis location on chart.
    * @param {Range} range - axis data range.
-   * @param {number} width - axis width. May be undefined (for vertical axis only)
-   * @param {number} height - axis height. May be undefined (for horizontal axis only)
    */
-  public update(location: NumericPoint,
-                range: Range<TickType>,
-                width?: number,
-                height?: number){
+  public update(range: Range<TickType>){
 
-    this.location = location;
     this.range = range;
-
-    this.initialWidth = width;
-    this.initialHeight = height;
-
-    this.validateAxisInitialWidth();
-    this.validateAxisInitialHeight();
 
     this.updateTicksData(this.location, this.range, this.size);
     this.updateAxisSize();

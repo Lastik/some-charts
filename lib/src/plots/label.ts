@@ -3,7 +3,7 @@ import {LabelOptions, LabelOptionsDefaults} from "../options";
 import extend from "lodash-es/extend";
 import Konva from "konva";
 import {ChartRenderableItem} from "../core";
-import {HorizontalAlignment, NumericPoint, Size} from "../model";
+import {HorizontalAlignment, NumericPoint, Range, Size} from "../model";
 import {inject} from "tsyringe";
 import {LayerName} from "../plot-base";
 

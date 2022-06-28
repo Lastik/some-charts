@@ -196,6 +196,24 @@ export class Renderer implements IDisposable{
   }
 
   /**
+   * Destroys layer on renderer with specified name.
+   * @param {string} layerName - Name of the layer.
+   */
+  destroyLayer(layerName: string){
+    this.stage.findOne(layerName).destroy();
+  }
+
+  /**
+   * Destroys multiple layers on renderer with specified names.
+   * @param {Array<string>} layersNames - Array of layers names.
+   */
+  destroyLayers(layersNames: Array<string>) {
+    for (let layerName of layersNames) {
+      this.destroyLayer(layerName);
+    }
+  }
+
+  /**
    * Forces renderer to redraw the entire scene.
    */
   forceRedraw() {
