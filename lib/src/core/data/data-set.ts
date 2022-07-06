@@ -86,7 +86,26 @@ export class DataSet<TItemType,
     return this.dimensionYFunc !== undefined;
   }
 
-  public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number {
+  public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+
+    if(y && !this.dimensionYFunc || !y && this.dimensionYFunc){
+      throw new Error("Failed to get metric value. Dimensions mismatch.")
+    }
+
+    let metricValues = this.metricsValues.get(metricName);
+
+    let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
+
+    if(metricValues){
+      if (x && y) {
+        let yIdx = this.indexByYDimension && dimYValue ? this.indexByYDimension.get(dimYValue.primitiveValue) : undefined;
+
+        (<Array<Array<number>>>metricValues)[xIdx][yIdx] = metricValue;
+      } else if (xIdx) {
+        (<Array<number>>metricValues)[xIdx] = metricValue;
+      }
+    }
+
 
   }
 }
