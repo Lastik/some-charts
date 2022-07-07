@@ -4,17 +4,29 @@ export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date> {
 
-  private elements: Array<TItemType>;
+  private _elements: Array<TItemType>;
+
+  public get elements(): ReadonlyArray<TItemType> {
+    return this._elements;
+  }
 
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => YDimensionType) | undefined;
 
-  public dimensionXValues: DimensionValue<XDimensionType>[];
-  public readonly dimensionYValues?: DimensionValue<YDimensionType>[];
+  private _dimensionXValues: DimensionValue<XDimensionType>[];
+  private _dimensionYValues?: DimensionValue<YDimensionType>[];
 
-  private readonly indexByXDimension: Map<number | string, number>;
-  private readonly indexByYDimension: Map<number | string, number> | undefined;
+  public get dimensionXValues(): readonly DimensionValue<XDimensionType>[] {
+    return this._dimensionXValues;
+  }
+
+  public get dimensionYValues(): readonly DimensionValue<YDimensionType>[] | undefined {
+    return this._dimensionYValues;
+  }
+
+  private indexByXDimension: Map<number | string, number>;
+  private indexByYDimension: Map<number | string, number> | undefined;
 
   private metricsValues: Map<string, Array<number | Array<number>>>;
 
@@ -23,16 +35,21 @@ export class DataSet<TItemType,
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => YDimensionType,
   ) {
-    this.elements = [];
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
 
-    this.dimensionXValues = [];
+    this._elements = [];
+
+    this._dimensionXValues = [];
+    this._dimensionYValues = dimensionYFunc ? []: undefined;
 
     this.metricsValues = new Map<string, Array<number | Array<number>>>();
 
-    this.append(elements);
+    this.indexByXDimension = new Map<number | string, number>();
+    this.indexByYDimension = dimensionYFunc ? new Map<number | string, number>(): undefined;
+
+    this.update(elements);
   }
 
   public get is1D(): boolean {
@@ -67,14 +84,18 @@ export class DataSet<TItemType,
     return this.metricsValues.get(metricName);
   }
 
-  public append(elements: Array<TItemType>){
+  public update(elements: Array<TItemType>){
 
-    this.elements = [...this.elements, ...elements];
+    this._elements = [...this._elements, ...elements];
 
-    let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>();
-    let dimensionYValuesMap = this.dimensionYFunc ? new Map<number | string, DimensionValue<YDimensionType>>() : undefined;
+    let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>(
+      this.dimensionXValues.map(v => [v.primitiveValue, v])
+    );
+    let dimensionYValuesMap = this.dimensionYFunc ? new Map<number | string, DimensionValue<YDimensionType>>(
+      this.dimensionYValues!.map(v => [v.primitiveValue, v])
+    ) : undefined;
 
-    this.elements.forEach((element, index) => {
+    elements.forEach((element) => {
       let dimXValue = new DimensionValue(this.dimensionXFunc(element));
       let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
 
@@ -84,24 +105,28 @@ export class DataSet<TItemType,
       }
     });
 
-    this.dimensionXValues = Array.from(dimensionXValuesMap.values());
-    this.dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()) : undefined;
+    this._dimensionXValues = Array.from(dimensionXValuesMap.values());
+    this._dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()) : undefined;
 
-    this.indexByXDimension = new Map(this.dimensionXValues.map((v, i) => [v.primitiveValue, i]));
-    this.indexByYDimension = this.dimensionYValues ? new Map(this.dimensionYValues.map((v, i) => [v.primitiveValue, i])) : undefined;
+    this.indexByXDimension = new Map(this._dimensionXValues.map((v, i) => [v.primitiveValue, i]));
+    this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((v, i) => [v.primitiveValue, i])) : undefined;
 
     for (let metricName in this.metricsFuncs) {
-      let metricValues: Array<number | Array<number>> = Array(this.dimensionXValues.length);
-      if (this.dimensionYValues) {
-        for (let i = 0; i < this.dimensionXValues.length; i++) {
-          metricValues[i] = Array(this.dimensionYValues.length)
+
+      let metricValues: Array<number | Array<number>> = this.metricsValues.get(metricName) ?? Array(this._dimensionXValues.length);
+
+      if(!this.metricsValues.has(metricName)){
+        if (this._dimensionYValues) {
+          for (let i = 0; i < this._dimensionXValues.length; i++) {
+            metricValues[i] = Array(this._dimensionYValues.length)
+          }
         }
+        this.metricsValues.set(metricName, metricValues);
       }
-      this.metricsValues.set(metricName, metricValues);
 
       let metricFunc = this.metricsFuncs[metricName];
 
-      this.elements.forEach((element, index) => {
+      elements.forEach((element, index) => {
         let dimXValue = new DimensionValue(this.dimensionXFunc(element));
         let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
 
@@ -111,11 +136,28 @@ export class DataSet<TItemType,
         let metricValue = metricFunc(element);
 
         if (xIdx && yIdx && Array.isArray(metricValues[xIdx])) {
-          (<Array<Array<number>>>metricValues)[xIdx][yIdx] = metricValue;
+          let twoDMetricValues = (<Array<Array<number>>>metricValues);
+          if(!twoDMetricValues[xIdx]) {
+            twoDMetricValues[xIdx] = [];
+          }
+          twoDMetricValues[xIdx][yIdx] = metricValue;
         } else if (xIdx) {
-          (<Array<number>>metricValues)[xIdx] = metricValue;
+          let oneDMetricValues = (<Array<number>>metricValues);
+          oneDMetricValues[xIdx] = metricValue;
         }
       });
     }
+  }
+
+  public clear() {
+    this._elements = [];
+
+    this._dimensionXValues = [];
+    this._dimensionYValues = this.dimensionYFunc ? [] : undefined;
+
+    this.metricsValues = new Map<string, Array<number | Array<number>>>();
+
+    this.indexByXDimension = new Map<number | string, number>();
+    this.indexByYDimension = this.dimensionYFunc ? new Map<number | string, number>() : undefined;
   }
 }
