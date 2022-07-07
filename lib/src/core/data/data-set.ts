@@ -4,13 +4,13 @@ export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date> {
 
-  public readonly elements: Array<TItemType>;
+  private elements: Array<TItemType>;
 
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => YDimensionType) | undefined;
 
-  public readonly dimensionXValues: DimensionValue<XDimensionType>[];
+  public dimensionXValues: DimensionValue<XDimensionType>[];
   public readonly dimensionYValues?: DimensionValue<YDimensionType>[];
 
   private readonly indexByXDimension: Map<number | string, number>;
@@ -23,12 +23,53 @@ export class DataSet<TItemType,
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => YDimensionType,
   ) {
-    this.elements = elements;
+    this.elements = [];
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
 
+    this.dimensionXValues = [];
+
     this.metricsValues = new Map<string, Array<number | Array<number>>>();
+
+    this.append(elements);
+  }
+
+  public get is1D(): boolean {
+    return this.dimensionYFunc === undefined;
+  }
+
+  public get is2D(): boolean {
+    return this.dimensionYFunc !== undefined;
+  }
+
+  public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+    if (y && !this.dimensionYFunc || !y && this.dimensionYFunc) {
+      throw new Error("Failed to get metric value. Dimensions mismatch.")
+    }
+
+    let metricValues = this.metricsValues.get(metricName);
+
+    let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
+
+    if (metricValues) {
+      if (x && y) {
+        let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
+        return xIdx && yIdx ? (<Array<Array<number>>>metricValues)[xIdx][yIdx] : undefined;
+      } else {
+        return xIdx ? (<Array<number>>metricValues)[xIdx] : undefined;
+      }
+    }
+    else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
+  }
+
+  public getMetricValues(metricName: string): Array<number | Array<number>> | undefined {
+    return this.metricsValues.get(metricName);
+  }
+
+  public append(elements: Array<TItemType>){
+
+    this.elements = [...this.elements, ...elements];
 
     let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>();
     let dimensionYValuesMap = this.dimensionYFunc ? new Map<number | string, DimensionValue<YDimensionType>>() : undefined;
@@ -76,37 +117,5 @@ export class DataSet<TItemType,
         }
       });
     }
-  }
-
-  public get is1D(): boolean {
-    return this.dimensionYFunc === undefined;
-  }
-
-  public get is2D(): boolean {
-    return this.dimensionYFunc !== undefined;
-  }
-
-  public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
-    if (y && !this.dimensionYFunc || !y && this.dimensionYFunc) {
-      throw new Error("Failed to get metric value. Dimensions mismatch.")
-    }
-
-    let metricValues = this.metricsValues.get(metricName);
-
-    let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
-
-    if (metricValues) {
-      if (x && y) {
-        let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
-        return xIdx && yIdx ? (<Array<Array<number>>>metricValues)[xIdx][yIdx] : undefined;
-      } else {
-        return xIdx ? (<Array<number>>metricValues)[xIdx] : undefined;
-      }
-    }
-    else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
-  }
-
-  public getMetricValues(metricName: string): Array<number | Array<number>> | undefined {
-    return this.metricsValues.get(metricName);
   }
 }
