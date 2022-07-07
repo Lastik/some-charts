@@ -19,10 +19,10 @@ export class DataSet<TItemType,
   private metricsValues: Map<string, Array<number | Array<number>>>;
 
   constructor(elements: Array<TItemType>,
-              metricsFuncs: {[name: string]: (item: TItemType) => number},
+              metricsFuncs: { [name: string]: (item: TItemType) => number },
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => YDimensionType,
-              ) {
+  ) {
     this.elements = elements;
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
@@ -38,13 +38,13 @@ export class DataSet<TItemType,
       let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
 
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
-      if(dimYValue){
+      if (dimYValue) {
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
     });
 
     this.dimensionXValues = Array.from(dimensionXValuesMap.values());
-    this.dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()): undefined;
+    this.dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()) : undefined;
 
     this.indexByXDimension = new Map(this.dimensionXValues.map((v, i) => [v.primitiveValue, i]));
     this.indexByYDimension = this.dimensionYValues ? new Map(this.dimensionYValues.map((v, i) => [v.primitiveValue, i])) : undefined;
@@ -87,8 +87,7 @@ export class DataSet<TItemType,
   }
 
   public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
-
-    if(y && !this.dimensionYFunc || !y && this.dimensionYFunc){
+    if (y && !this.dimensionYFunc || !y && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
 
@@ -96,16 +95,18 @@ export class DataSet<TItemType,
 
     let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
 
-    if(metricValues){
+    if (metricValues) {
       if (x && y) {
-        let yIdx = this.indexByYDimension && dimYValue ? this.indexByYDimension.get(dimYValue.primitiveValue) : undefined;
-
-        (<Array<Array<number>>>metricValues)[xIdx][yIdx] = metricValue;
-      } else if (xIdx) {
-        (<Array<number>>metricValues)[xIdx] = metricValue;
+        let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
+        return xIdx && yIdx ? (<Array<Array<number>>>metricValues)[xIdx][yIdx] : undefined;
+      } else {
+        return xIdx ? (<Array<number>>metricValues)[xIdx] : undefined;
       }
     }
+    else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
+  }
 
-
+  public getMetricValues(metricName: string): Array<number | Array<number>> | undefined {
+    return this.metricsValues.get(metricName);
   }
 }
