@@ -14,6 +14,15 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
   }
 
   public static compareFunc<XDimensionType extends number | string | Date>(left: DimensionValue<XDimensionType>, right: DimensionValue<XDimensionType>){
+    let leftPrimitive = left.primitiveValue;
+    let rightPrimitive = right.primitiveValue;
 
+    if(leftPrimitive > rightPrimitive){
+      return 1;
+    }
+    else if (leftPrimitive < rightPrimitive){
+      return - 1;
+    }
+    else return 0;
   }
 }

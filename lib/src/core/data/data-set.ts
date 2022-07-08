@@ -84,9 +84,32 @@ export class DataSet<TItemType,
     return this.metricsValues.get(metricName);
   }
 
+  /**
+   * Updates elements to the specified DataSet.
+   * For numeric or Date dimensions, the update operation can only add values larger than those already in the DataSet, or
+   * override the existing values.
+   * For string dimensions, there is no such rule.
+   * */
   public update(elements: Array<TItemType>){
 
     this._elements = [...this._elements, ...elements];
+
+    let maxDimensionXPrimitiveValue: number | undefined = undefined;
+    let maxDimensionYPrimitiveValue: number | undefined = undefined;
+
+    this.dimensionXValues.forEach(dimXVal => {
+      if(typeof dimXVal.primitiveValue === 'number' && (!maxDimensionXPrimitiveValue || dimXVal.primitiveValue > maxDimensionXPrimitiveValue)){
+        maxDimensionXPrimitiveValue = dimXVal.primitiveValue;
+      }
+    });
+
+    if(this.dimensionYValues) {
+      this.dimensionYValues.forEach(dimYVal => {
+        if (typeof dimYVal.primitiveValue === 'number' && (!maxDimensionYPrimitiveValue || dimYVal.primitiveValue > maxDimensionYPrimitiveValue)) {
+          maxDimensionYPrimitiveValue = dimYVal.primitiveValue;
+        }
+      });
+    }
 
     let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>(
       this.dimensionXValues.map(v => [v.primitiveValue, v])
@@ -99,16 +122,26 @@ export class DataSet<TItemType,
       let dimXValue = new DimensionValue(this.dimensionXFunc(element));
       let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
 
+      let errorTxt = 'For numeric or Date dimensions, update operation can only add values larger than those already inside DataSet (e.g. extend time series data) or override existing data.';
+
+      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && maxDimensionXPrimitiveValue && dimXValue.primitiveValue < maxDimensionXPrimitiveValue){
+        throw new Error(errorTxt)
+      }
+
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
       if (dimYValue) {
+
+        if(maxDimensionXPrimitiveValue && dimensionYValuesMap &&
+          !dimensionYValuesMap.has(dimYValue.primitiveValue) && maxDimensionYPrimitiveValue && dimYValue.primitiveValue < maxDimensionXPrimitiveValue){
+          throw new Error(errorTxt)
+        }
+
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
     });
 
-    let dim
-
-    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).sort((dimValLeft, dimValRight) => dimValLeft.primitiveValue > dimValRight.primitiveValue);
-    this._dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()) : undefined;
+    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).sort(DimensionValue.compareFunc);
+    this._dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()).sort(DimensionValue.compareFunc) : undefined;
 
     this.indexByXDimension = new Map(this._dimensionXValues.map((v, i) => [v.primitiveValue, i]));
     this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((v, i) => [v.primitiveValue, i])) : undefined;
