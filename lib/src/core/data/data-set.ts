@@ -105,7 +105,9 @@ export class DataSet<TItemType,
       }
     });
 
-    this._dimensionXValues = Array.from(dimensionXValuesMap.values());
+    let dim
+
+    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).sort((dimValLeft, dimValRight) => dimValLeft.primitiveValue > dimValRight.primitiveValue);
     this._dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()) : undefined;
 
     this.indexByXDimension = new Map(this._dimensionXValues.map((v, i) => [v.primitiveValue, i]));

@@ -12,4 +12,8 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
       return value.getTime();
     } else return value;
   }
+
+  public static compareFunc<XDimensionType extends number | string | Date>(left: DimensionValue<XDimensionType>, right: DimensionValue<XDimensionType>){
+
+  }
 }
