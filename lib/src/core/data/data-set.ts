@@ -1,10 +1,14 @@
 import {DimensionValue} from "./dimension-value";
+import {ACEventTarget} from "../../model";
+import {DataSetChangedEvent, DataSetEventType} from "./event";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date> {
 
   private _elements: Array<TItemType>;
+
+  public readonly eventTarget: ACEventTarget<DataSetEventType>;
 
   public get elements(): ReadonlyArray<TItemType> {
     return this._elements;
@@ -35,6 +39,9 @@ export class DataSet<TItemType,
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => YDimensionType,
   ) {
+
+    this.eventTarget = new ACEventTarget<DataSetEventType>();
+
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
@@ -182,9 +189,26 @@ export class DataSet<TItemType,
         }
       });
     }
+
+    this.eventTarget.fireEvent(new DataSetChangedEvent());
   }
 
+  /**
+   * Clears this DataSet.
+   * */
   public clear() {
+    this.clearInternal(true);
+  }
+
+  /**
+   * Replaces elements to the specified DataSet with specified array of elements.
+   * */
+  public replace(elements: Array<TItemType>){
+    this.clearInternal(false);
+    this.update(elements);
+  }
+
+  private clearInternal(triggerChange: boolean){
     this._elements = [];
 
     this._dimensionXValues = [];
@@ -194,5 +218,8 @@ export class DataSet<TItemType,
 
     this.indexByXDimension = new Map<number | string, number>();
     this.indexByYDimension = this.dimensionYFunc ? new Map<number | string, number>() : undefined;
+    if(triggerChange){
+      this.eventTarget.fireEvent(new DataSetChangedEvent());
+    }
   }
 }

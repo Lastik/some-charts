@@ -1,11 +1,6 @@
-import {EventType} from "./event-type";
+import {DataSetEventType} from "../../core/data";
+import {EventBase} from "./event-base";
 
-export abstract class EventListener {
-  action: (eventType: EventType, options?: any) => void;
-  self: any;
-
-  protected constructor(action: (eventType: EventType, options?: any) => void, self: any){
-    this.action = action;
-    this.self = self ?? null;
-  }
+export interface EventListener<EventType extends DataSetEventType> {
+  eventCallback(event: EventBase<EventType>, options?: any): void;
 }

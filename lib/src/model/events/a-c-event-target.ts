@@ -1,16 +1,16 @@
 ﻿import {EventListener} from "./event-listener";
 import {EventBase} from "./event-base";
-import {EventType} from "./event-type";
+import {DataSetEventType} from "../../core/data";
 
-export class ACEventTarget {
+export class ACEventTarget<EventType extends DataSetEventType> {
 
-  private readonly listeners: { [EventType: string]: Array<EventListener> };
+  private readonly listeners: { [EventType: string]: Array<EventListener<EventType>> };
 
   constructor() {
     this.listeners = {};
   }
 
-  addListener(type: EventType, listener: EventListener) {
+  addListener(type: EventType, listener: EventListener<EventType>) {
     if (this.listeners[type] == undefined) {
       this.listeners[type] = [];
     }
@@ -18,7 +18,7 @@ export class ACEventTarget {
     this.listeners[type].push(listener);
   }
 
-  removeListener(eventType: EventType, listener: EventListener) {
+  removeListener(eventType: EventType, listener: EventListener<EventType>) {
     if (this.listeners[eventType] instanceof Array) {
       let listenersOfType = this.listeners[eventType];
 
@@ -30,25 +30,16 @@ export class ACEventTarget {
   }
 
   /**
-   * Fires event of specified type.
-   * @param {EventType} eventType - Type of event to fire.
-   * @param {any} options - Event parameter.
-   */
-  fireEventOfType(eventType: EventType, options?: any) {
-    this.fireEvent({type: eventType}, options);
-  }
-
-  /**
    * Fires specified event.
    * @param {EventBase} event - Event to fire.
    * @param {any} options - Event parameter.
    */
-  fireEvent(event: EventBase, options?: any) {
+  fireEvent(event: EventBase<EventType>, options?: any) {
     if (this.listeners[event.type]) {
       let listeners = this.listeners[event.type];
 
       for (let listener of listeners) {
-        listener.action.call(listener.self, event.type, options);
+        listener.eventCallback(event, options);
       }
     }
   }

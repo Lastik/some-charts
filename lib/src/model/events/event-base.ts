@@ -1,5 +1,5 @@
-import {EventType} from "./event-type";
+import {DataSetEventType} from "../../core/data";
 
-export interface EventBase {
+export interface EventBase<EventType extends DataSetEventType> {
   readonly type: EventType;
 }
