@@ -3,7 +3,9 @@ import {
   CoordinateTransformationStatic,
   DataRect,
   DataTransformation,
-  NumericPoint,
+  EventBase,
+  EventListener,
+  NumericPoint, Point,
   Size
 } from "../model";
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions} from "../options";
@@ -16,8 +18,10 @@ import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
 import {MouseNavigation} from "./mouse-navigation";
 import {Label} from "../plots";
+import {DataSet, DataSetEventType} from "./data";
+import {IDisposable} from "../common";
 
-export class Chart extends RenderableItem {
+export class Chart extends RenderableItem implements EventListener<DataSetEventType>, IDisposable {
 
   public static readonly MinZoomLevel: number = 1e-8;
 
@@ -34,6 +38,8 @@ export class Chart extends RenderableItem {
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
   private readonly mouseNavigation: MouseNavigation | undefined;
   private readonly headerLabel: Label | undefined;
+
+  private dataSet: DataSet<any, number | string | Date, number | string | Date>;
 
   public get id(): number{
     return this._id;
@@ -69,7 +75,9 @@ export class Chart extends RenderableItem {
    * @param {ChartOptions} options - Chart options.
    * @param keyboardNavigationsFactory
    * */
-  constructor(location: NumericPoint, size: Size, dataRect: DataRect, options?: ChartOptions,
+  constructor(location: NumericPoint, size: Size, dataRect: DataRect,
+              dataSet: DataSet<any, number | string | Date, number | string | Date>,
+              options?: ChartOptions,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
     super();
 
@@ -78,6 +86,9 @@ export class Chart extends RenderableItem {
     this._location = location;
     this._size = size;
     this._dataRect = dataRect;
+
+    this.dataSet = dataSet;
+    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
@@ -250,9 +261,9 @@ export class Chart extends RenderableItem {
 
     if (options.axisType == AxisTypes.NumericAxis) {
       return new NumericAxis(axisLocation, orientation, axisRange, dataTransformation, options as NumericAxisOptions, axisWidth, axisHeight);
-    } else if (options.axisType == AxisTypes.LabeledAxis) {
+    } else if (options.axisType === AxisTypes.LabeledAxis) {
       return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as AxisOptions, axisWidth, axisHeight);
-    } else if (options.axisType == AxisTypes.None) {
+    } else if (options.axisType === AxisTypes.None) {
       return undefined;
     } else throw new Error("Specified axis type is not supported");
   }
@@ -263,5 +274,26 @@ export class Chart extends RenderableItem {
 
   private static destroyLayers(renderer: Renderer) {
     renderer.destroyLayers(Object.values(LayerName));
+  }
+
+  eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
+    if(event.type === DataSetEventType.Changed){
+      this.updateLabeledAxesLabels();
+    }
+  }
+
+  protected updateLabeledAxesLabels() {
+    if (this.options.axes.horizontal.axisType === AxisTypes.LabeledAxis) {
+      (<LabeledAxis>this.horizontalAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
+    }
+    if (this.options.axes.vertical.axisType === AxisTypes.LabeledAxis) {
+      if (this.dataSet.is2D) {
+        (<LabeledAxis>this.verticalAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
+      } else throw new Error('1D DataSet can\'t be used with horizontal labeled axis!');
+    }
+  }
+
+  dispose(): void {
+    this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
   }
 }

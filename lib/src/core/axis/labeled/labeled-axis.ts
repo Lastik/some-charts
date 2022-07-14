@@ -1,12 +1,12 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericPoint, NumericRange, Range, StringPoint, DataTransformation} from "../../../model";
+import {NumericPoint, NumericRange, Range, Point, DataTransformation} from "../../../model";
 import {AxisOptions} from "../../../options";
 import {MinorTicksGenerator, MajorTicksGenerator, LabeledMajorTicksGenerator} from "../ticks";
 import {AxisOrientation} from "../axis-orientation";
 
 export class LabeledAxis extends AxisBase<number, AxisOptions> {
 
-  private labels: Array<StringPoint>;
+  private labels: Array<Point<string>>;
 
   /**
    * Creates axis with string labels on it.
@@ -35,7 +35,7 @@ export class LabeledAxis extends AxisBase<number, AxisOptions> {
     return tickValue;
   }
 
-  public updateLabels(labels: Array<StringPoint>){
+  public updateLabels(labels: Array<Point<string>>){
     this.labels = labels;
     (<LabeledMajorTicksGenerator>this.majorTicksGenerator).setLabels(labels);
     this.markDirty();

@@ -1,14 +1,14 @@
 import {Tick} from "../tick";
-import {Range, StringPoint} from "../../../../model"
+import {Point, Range} from "../../../../model"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 import chain from "lodash-es/chain";
 import {LabeledTick} from "../labeled-tick";
 
 export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
 
-  private labels: Array<StringPoint>;
+  private labels: Array<Point<string>>;
 
-  constructor(majorTickHeight: number, labels: Array<StringPoint>) {
+  constructor(majorTickHeight: number, labels: Array<Point<string>>) {
     super(majorTickHeight);
     this.labels = labels;
   }
@@ -33,7 +33,7 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
     return ticksCount;
   }
 
-  setLabels(labels: Array<StringPoint>) {
+  setLabels(labels: Array<Point<string>>) {
     this.labels = labels;
   }
 }
