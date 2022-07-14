@@ -6,7 +6,7 @@ import {
   NumericPoint,
   Size
 } from "../model";
-import {AxisOptions, ChartOptions, ChartOptionsDefaults, LabeledAxisOptions, NumericAxisOptions} from "../options";
+import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions} from "../options";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
@@ -251,7 +251,7 @@ export class Chart extends RenderableItem {
     if (options.axisType == AxisTypes.NumericAxis) {
       return new NumericAxis(axisLocation, orientation, axisRange, dataTransformation, options as NumericAxisOptions, axisWidth, axisHeight);
     } else if (options.axisType == AxisTypes.LabeledAxis) {
-      return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as LabeledAxisOptions, axisWidth, axisHeight);
+      return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as AxisOptions, axisWidth, axisHeight);
     } else if (options.axisType == AxisTypes.None) {
       return undefined;
     } else throw new Error("Specified axis type is not supported");

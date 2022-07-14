@@ -2,7 +2,7 @@
  * Chart renderer options
  */
 import {FontInPx} from "../../model";
-import {AxisTypes} from "../../plot-base/axis";
+import {AxisTypes} from "../../core";
 
 export interface AxisOptions {
   /**

@@ -32,4 +32,8 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
   suggestIncreasedTicksCount(ticksCount: number): number {
     return ticksCount;
   }
+
+  setLabels(labels: Array<StringPoint>) {
+    this.labels = labels;
+  }
 }

@@ -1,10 +1,10 @@
 ﻿import {AxisBase} from "../axis-base";
 import {NumericPoint, NumericRange, Range, StringPoint, DataTransformation} from "../../../model";
-import {AxisOptions, LabeledAxisOptions} from "../../../options";
+import {AxisOptions} from "../../../options";
 import {MinorTicksGenerator, MajorTicksGenerator, LabeledMajorTicksGenerator} from "../ticks";
 import {AxisOrientation} from "../axis-orientation";
 
-export class LabeledAxis extends AxisBase<number, LabeledAxisOptions> {
+export class LabeledAxis extends AxisBase<number, AxisOptions> {
 
   private labels: Array<StringPoint>;
 
@@ -18,9 +18,9 @@ export class LabeledAxis extends AxisBase<number, LabeledAxisOptions> {
    * @param {AxisOrientation} orientation - Axis orientation.
    * @param {AxisOptions} options
    */
-  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, options: LabeledAxisOptions, width?: number, height?: number) {
+  constructor(location: NumericPoint, orientation: AxisOrientation, range: NumericRange, dataTransformation: DataTransformation, options: AxisOptions, width?: number, height?: number) {
     super(location, orientation, range, dataTransformation, options, width, height);
-    this.labels = options?.labels ?? [];
+    this.labels = [];
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<number> {
@@ -33,5 +33,11 @@ export class LabeledAxis extends AxisBase<number, LabeledAxisOptions> {
 
   axisValueToNumber(tickValue: number): number {
     return tickValue;
+  }
+
+  public updateLabels(labels: Array<StringPoint>){
+    this.labels = labels;
+    (<LabeledMajorTicksGenerator>this.majorTicksGenerator).setLabels(labels);
+    this.markDirty();
   }
 }

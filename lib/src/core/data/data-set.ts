@@ -1,5 +1,5 @@
 import {DimensionValue} from "./dimension-value";
-import {ACEventTarget} from "../../model";
+import {ACEventTarget, Sorting} from "../../model";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
 
 export class DataSet<TItemType,
@@ -17,6 +17,7 @@ export class DataSet<TItemType,
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => YDimensionType) | undefined;
+  private readonly dimensionXSorting: Sorting;
 
   private _dimensionXValues: DimensionValue<XDimensionType>[];
   private _dimensionYValues?: DimensionValue<YDimensionType>[];
@@ -38,6 +39,7 @@ export class DataSet<TItemType,
               metricsFuncs: { [name: string]: (item: TItemType) => number },
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => YDimensionType,
+              dimensionXSorting: Sorting = Sorting.Asc
   ) {
 
     this.eventTarget = new ACEventTarget<DataSetEventType>();
@@ -45,6 +47,7 @@ export class DataSet<TItemType,
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
+    this.dimensionXSorting = dimensionXSorting;
 
     this._elements = [];
 
@@ -147,11 +150,17 @@ export class DataSet<TItemType,
       }
     });
 
-    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).sort(DimensionValue.compareFunc);
-    this._dimensionYValues = dimensionYValuesMap ? Array.from(dimensionYValuesMap.values()).sort(DimensionValue.compareFunc) : undefined;
+    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).
+      sort(DimensionValue.getCompareFunc(this.dimensionXSorting)).
+      map((dv, i) => dv.withIndex(i));
+    this._dimensionYValues = dimensionYValuesMap ?
+      Array.from(dimensionYValuesMap.values()).
+        sort(DimensionValue.getCompareFunc()).
+        map((dv, i) => dv.withIndex(i)) :
+      undefined;
 
-    this.indexByXDimension = new Map(this._dimensionXValues.map((v, i) => [v.primitiveValue, i]));
-    this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((v, i) => [v.primitiveValue, i])) : undefined;
+    this.indexByXDimension = new Map(this._dimensionXValues.map((dv) => [dv.primitiveValue, dv.index]));
+    this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((dv) => [dv.primitiveValue, dv.index])) : undefined;
 
     for (let metricName in this.metricsFuncs) {
 
