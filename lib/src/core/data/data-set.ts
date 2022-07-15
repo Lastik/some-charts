@@ -1,6 +1,7 @@
 import {DimensionValue} from "./dimension-value";
 import {ACEventTarget, Sorting} from "../../model";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
+import {DimensionType} from "./dimension-type";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
@@ -28,6 +29,17 @@ export class DataSet<TItemType,
 
   public get dimensionYValues(): readonly DimensionValue<YDimensionType>[] | undefined {
     return this._dimensionYValues;
+  }
+
+  private _dimensionXType: DimensionType | undefined;
+  private _dimensionYType: DimensionType | undefined;
+
+  public get dimensionXType(){
+    return this._dimensionXType;
+  }
+
+  public get dimensionYType(){
+    return this._dimensionYType;
   }
 
   private indexByXDimension: Map<number | string, number>;
@@ -199,6 +211,12 @@ export class DataSet<TItemType,
       });
     }
 
+    let firstDimXValue = this.dimensionXValues.length ? this.dimensionXValues[0].value : undefined;
+    this._dimensionXType = this.getDimensionType(firstDimXValue);
+
+    let secondDimXValue = this.dimensionYValues && this.dimensionYValues.length ? this.dimensionYValues[0].value : undefined;
+    this._dimensionYType = this.getDimensionType(secondDimXValue)
+
     this.eventTarget.fireEvent(new DataSetChangedEvent());
   }
 
@@ -230,5 +248,18 @@ export class DataSet<TItemType,
     if(triggerChange){
       this.eventTarget.fireEvent(new DataSetChangedEvent());
     }
+  }
+
+  protected getDimensionType(firstDimValue: number | string | Date | undefined): DimensionType | undefined {
+    if(firstDimValue) {
+      if (typeof firstDimValue === 'string') {
+        return DimensionType.String;
+      } else if (typeof firstDimValue === 'number') {
+        return DimensionType.Number;
+      } else {
+        return DimensionType.Date;
+      }
+    }
+    else return undefined;
   }
 }

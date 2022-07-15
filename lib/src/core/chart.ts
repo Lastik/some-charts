@@ -18,7 +18,7 @@ import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
 import {MouseNavigation} from "./mouse-navigation";
 import {Label} from "../plots";
-import {DataSet, DataSetEventType} from "./data";
+import {DataSet, DataSetEventType, DimensionType} from "./data";
 import {IDisposable} from "../common";
 
 export class Chart extends RenderableItem implements EventListener<DataSetEventType>, IDisposable {
@@ -72,6 +72,7 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
    * @param {Size} size - Chart's size
    * @param {DataRect} dataRect - Currently visible rectangle on chart.
+   * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
    * @param keyboardNavigationsFactory
    * */
@@ -120,6 +121,8 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(location, size)
     }
+
+    this.updateLabeledAxesLabels();
   }
 
   getLayer(layerName: string): Konva.Layer | undefined {
@@ -284,11 +287,15 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
 
   protected updateLabeledAxesLabels() {
     if (this.options.axes.horizontal.axisType === AxisTypes.LabeledAxis) {
-      (<LabeledAxis>this.horizontalAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
+      if (this.dataSet.dimensionXType === DimensionType.String) {
+        (<LabeledAxis>this.horizontalAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
+      } else throw new Error('DataSet with labeled axis must have the corresponding dimension of string type!')
     }
     if (this.options.axes.vertical.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.is2D) {
-        (<LabeledAxis>this.verticalAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
+        if (this.dataSet.dimensionXType === DimensionType.String) {
+          (<LabeledAxis>this.verticalAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
+        } else throw new Error('DataSet with labeled axis must have the corresponding dimension of string type!')
       } else throw new Error('1D DataSet can\'t be used with horizontal labeled axis!');
     }
   }
