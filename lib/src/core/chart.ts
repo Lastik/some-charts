@@ -21,7 +21,10 @@ import {Label} from "../plots";
 import {DataSet, DataSetEventType, DimensionType} from "./data";
 import {IDisposable} from "../common";
 
-export class Chart extends RenderableItem implements EventListener<DataSetEventType>, IDisposable {
+export class Chart<TItemType,
+  XDimensionType extends number | string | Date,
+  YDimensionType extends number | string | Date | undefined = undefined>
+    extends RenderableItem implements EventListener<DataSetEventType>, IDisposable {
 
   public static readonly MinZoomLevel: number = 1e-8;
 
@@ -31,7 +34,7 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
   private readonly _size: Size;
 
   private readonly contentItems: ChartRenderableItem[];
-  private readonly plots: Plot[];
+  private readonly plots: Plot<TItemType, XDimensionType, YDimensionType>[];
 
   private _dataRect: DataRect;
 
@@ -39,7 +42,7 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
   private readonly mouseNavigation: MouseNavigation | undefined;
   private readonly headerLabel: Label | undefined;
 
-  private dataSet: DataSet<any, number | string | Date, number | string | Date>;
+  private dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
 
   public get id(): number{
     return this._id;
@@ -66,7 +69,6 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
 
   private static currentChartId: number;
 
-
   /**
    * Creates new instance of chart.
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
@@ -77,7 +79,7 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
    * @param keyboardNavigationsFactory
    * */
   constructor(location: NumericPoint, size: Size, dataRect: DataRect,
-              dataSet: DataSet<any, number | string | Date, number | string | Date>,
+              dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
     super();
@@ -156,7 +158,7 @@ export class Chart extends RenderableItem implements EventListener<DataSetEventT
     }
   }
 
-  public addPlot(plot: Plot){
+  public addPlot(plot: Plot<TItemType, XDimensionType, YDimensionType>){
     this.addContentItem(plot);
   }
 

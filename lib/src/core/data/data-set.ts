@@ -5,7 +5,7 @@ import {DimensionType} from "./dimension-type";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
-  YDimensionType extends number | string | Date> {
+  YDimensionType extends number | string | Date | undefined = undefined> {
 
   private _elements: Array<TItemType>;
 
@@ -17,17 +17,17 @@ export class DataSet<TItemType,
 
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
-  private readonly dimensionYFunc: ((item: TItemType) => YDimensionType) | undefined;
+  private readonly dimensionYFunc: ((item: TItemType) => Exclude<YDimensionType, undefined>) | undefined;
   private readonly dimensionXSorting: Sorting;
 
   private _dimensionXValues: DimensionValue<XDimensionType>[];
-  private _dimensionYValues?: DimensionValue<YDimensionType>[];
+  private _dimensionYValues?: DimensionValue<Exclude<YDimensionType, undefined>>[];
 
   public get dimensionXValues(): readonly DimensionValue<XDimensionType>[] {
     return this._dimensionXValues;
   }
 
-  public get dimensionYValues(): readonly DimensionValue<YDimensionType>[] | undefined {
+  public get dimensionYValues(): readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined {
     return this._dimensionYValues;
   }
 
@@ -50,7 +50,7 @@ export class DataSet<TItemType,
   constructor(elements: Array<TItemType>,
               metricsFuncs: { [name: string]: (item: TItemType) => number },
               dimensionXFunc: (item: TItemType) => XDimensionType,
-              dimensionYFunc?: (item: TItemType) => YDimensionType,
+              dimensionYFunc?: (item: TItemType) => Exclude<YDimensionType, undefined>,
               dimensionXSorting: Sorting = Sorting.Asc
   ) {
 
@@ -136,7 +136,7 @@ export class DataSet<TItemType,
     let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>(
       this.dimensionXValues.map(v => [v.primitiveValue, v])
     );
-    let dimensionYValuesMap = this.dimensionYFunc ? new Map<number | string, DimensionValue<YDimensionType>>(
+    let dimensionYValuesMap = this.dimensionYFunc ? new Map<number | string, DimensionValue<Exclude<YDimensionType, undefined>>>(
       this.dimensionYValues!.map(v => [v.primitiveValue, v])
     ) : undefined;
 
