@@ -17,7 +17,7 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
     } else return value;
   }
 
-  public withIndex(index: number): DimensionValue<XDimensionType>{
+  public withIndex(index: number): DimensionValue<XDimensionType> {
     return new DimensionValue<XDimensionType>(this.value, index);
   }
 
@@ -38,7 +38,17 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
     }
   }
 
-  public toPoint(): Point<number | string>{
+  public toPoint(): Point<number | string> {
     return new Point<number | string>(this.primitiveValue, this.index)
+  }
+
+  /**
+   * Converts dimension value to its numeric representation.
+   * @returns {number} - For numbers, it returns the number. Otherwise, it will return index.
+   */
+  public toNumericValue(): number {
+    if (typeof this.primitiveValue === 'string') {
+      return this.index;
+    } else return this.primitiveValue
   }
 }

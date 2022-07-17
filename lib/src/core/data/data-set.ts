@@ -47,6 +47,8 @@ export class DataSet<TItemType,
 
   private metricsValues: Map<string, Array<number | Array<number>>>;
 
+  public readonly metricsNames: ReadonlyArray<string>;
+
   constructor(elements: Array<TItemType>,
               metricsFuncs: { [name: string]: (item: TItemType) => number },
               dimensionXFunc: (item: TItemType) => XDimensionType,
@@ -60,6 +62,8 @@ export class DataSet<TItemType,
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
     this.dimensionXSorting = dimensionXSorting;
+
+    this.metricsNames = Object.keys(metricsFuncs);
 
     this._elements = [];
 
@@ -264,42 +268,50 @@ export class DataSet<TItemType,
   }
 
   /**
-   * Calculates bounding rectangle of data inside this DataSet.
+   * Calculates bounding rectangle of the data inside this DataSet.
    * @returns {DataRect}
    */
-  getBoundingRectangle() {
-    let result = null;
+  getBoundingRectangle(): DataRect | undefined {
+    let boundingRect: DataRect | undefined = undefined;
 
-    let firstSeries = Enumerable.From(this._dataSeriesCollection).FirstOrDefault(null);
-    if (firstSeries == null) {
-      //There are no series on the plot.
-      //Return null.
-      throw 'Unexpected exception';
-    }
-    else {
-      for (let i = 0; i < this._dataSeriesCollection.length; i++) {
-        let dataSeries = this._dataSeriesCollection[i];
-        let dataSource = dataSeries.data;
-        let firstValue = Enumerable.From(dataSource).FirstOrDefault(null);
-        if (firstValue == null) {
-          continue;
-        }
-        else if (firstValue instanceof Point) {
-          for (let j = 0; j < dataSource.length; j++) {
-            let value = dataSource[j];
-            if (result == null) {
-              result = new DataRect(value.x, value.y, 0, 0);
-            }
-            else {
-              result = result.merge(new DataRect(value.x, value.y, 0, 0));
-            }
+    for (let metricName in this.metricsNames) {
+
+      let curMetricBoundingRect: DataRect | undefined = undefined;
+
+      if (this.dimensionXValues.length) {
+        let minX = this.dimensionXValues[0];
+        let maxX = this.dimensionXValues[this.dimensionXValues.length - 1];
+
+        if (this.is1D) {
+          let minY = this.getMetricValue(metricName, minX.value);
+          let maxY = this.getMetricValue(metricName, maxX.value);
+
+          if (minY && maxY) {
+            curMetricBoundingRect = new DataRect(minX.toNumericValue(), minY, maxX.toNumericValue() - minX.toNumericValue(), maxY - minY);
+          }
+        } else {
+          if (this.dimensionYValues && this.dimensionYValues.length) {
+            let minY = this.dimensionYValues[0];
+            let maxY = this.dimensionYValues[this.dimensionYValues.length - 1];
+
+            curMetricBoundingRect = new DataRect(
+              minX.toNumericValue(),
+              minY.toNumericValue(),
+              maxX.toNumericValue() - minX.toNumericValue(),
+              maxY.toNumericValue() - minY.toNumericValue());
           }
         }
-        else {
-          throw 'Not implemented.';
+      }
+
+      if (curMetricBoundingRect) {
+        if (boundingRect) {
+          boundingRect = boundingRect.merge(curMetricBoundingRect);
+        } else {
+          boundingRect = curMetricBoundingRect;
         }
       }
-      return result;
     }
+
+    return boundingRect;
   }
 }
