@@ -1,5 +1,5 @@
 import {DimensionValue} from "./dimension-value";
-import {ACEventTarget, Sorting} from "../../model";
+import {ACEventTarget, DataRect, Sorting} from "../../model";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
 import {DimensionType} from "./dimension-type";
 
@@ -261,5 +261,45 @@ export class DataSet<TItemType,
       }
     }
     else return undefined;
+  }
+
+  /**
+   * Calculates bounding rectangle of data inside this DataSet.
+   * @returns {DataRect}
+   */
+  getBoundingRectangle() {
+    let result = null;
+
+    let firstSeries = Enumerable.From(this._dataSeriesCollection).FirstOrDefault(null);
+    if (firstSeries == null) {
+      //There are no series on the plot.
+      //Return null.
+      throw 'Unexpected exception';
+    }
+    else {
+      for (let i = 0; i < this._dataSeriesCollection.length; i++) {
+        let dataSeries = this._dataSeriesCollection[i];
+        let dataSource = dataSeries.data;
+        let firstValue = Enumerable.From(dataSource).FirstOrDefault(null);
+        if (firstValue == null) {
+          continue;
+        }
+        else if (firstValue instanceof Point) {
+          for (let j = 0; j < dataSource.length; j++) {
+            let value = dataSource[j];
+            if (result == null) {
+              result = new DataRect(value.x, value.y, 0, 0);
+            }
+            else {
+              result = result.merge(new DataRect(value.x, value.y, 0, 0));
+            }
+          }
+        }
+        else {
+          throw 'Not implemented.';
+        }
+      }
+      return result;
+    }
   }
 }

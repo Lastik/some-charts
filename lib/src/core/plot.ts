@@ -49,42 +49,4 @@ export abstract class Plot<TItemType,
     this.screen = screen;
     this.markDirty();
   }
-
-  p.getBoundingRectangle = function () {
-    /// <summary>Calculates bounding rectangle of specified plot.</summary>
-    /// <returns type="DataRect" />
-    var result = null;
-
-    var firstSeries = Enumerable.From(this._dataSeriesCollection).FirstOrDefault(null);
-    if (firstSeries == null) {
-      //There are no series on the plot.
-      //Return null.
-      throw 'Unexpected exception';
-    }
-    else {
-      for (var i = 0; i < this._dataSeriesCollection.length; i++) {
-        var dataSeries = this._dataSeriesCollection[i];
-        var dataSource = dataSeries.data;
-        var firstValue = Enumerable.From(dataSource).FirstOrDefault(null);
-        if (firstValue == null) {
-          continue;
-        }
-        else if (firstValue instanceof Point) {
-          for (var j = 0; j < dataSource.length; j++) {
-            var value = dataSource[j];
-            if (result == null) {
-              result = new DataRect(value.x, value.y, 0, 0);
-            }
-            else {
-              result = result.merge(new DataRect(value.x, value.y, 0, 0));
-            }
-          }
-        }
-        else {
-          throw 'Not implemented.';
-        }
-      }
-      return result;
-    }
-  }
 }
