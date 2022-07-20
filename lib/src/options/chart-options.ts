@@ -31,7 +31,7 @@ export interface ChartOptions {
   /**
    *  Chart's plots options
    */
-  plotsOptions: Array<PlotOptions>;
+  plots: Array<PlotOptions>;
   /**
    *  Chart renderer options
    */
@@ -47,7 +47,7 @@ export class ChartOptionsDefaults
     axes: AxesOptionsDefaults.Instance,
     grid: GridOptionsDefaults.Instance,
     legend: LegendOptionsDefaults.Instance,
-    plotsOptions: []
+    plots: []
   }
 
   public static get Instance()

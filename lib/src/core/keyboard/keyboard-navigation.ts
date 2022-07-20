@@ -38,7 +38,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
    * Attaches keyboard navigation to chart.
    * @param {Chart} chart - Target chart.
    * */
-  override placeOnChart(chart?: Chart) {
+  override placeOnChart(chart?: Chart<any, any, any>) {
     super.placeOnChart(chart);
     if(chart) {
       let chartRenderer = chart.getRenderer();

@@ -4,7 +4,7 @@ import {
   DataRect,
   DataTransformation,
   EventBase,
-  EventListener,
+  EventListener, LegendItem,
   NumericPoint, Point,
   Size
 } from "../model";
@@ -12,7 +12,7 @@ import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions} fro
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {ChartRenderableItem, Plot, RenderableItem, Renderer} from "../core";
+import {ChartRenderableItem, Legend, Plot, RenderableItem, Renderer} from "../core";
 import {LayerName} from "./layer-name";
 import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
@@ -24,11 +24,15 @@ import {IDisposable} from "../common";
 export class Chart<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-    extends RenderableItem implements EventListener<DataSetEventType>, IDisposable {
+    implements EventListener<DataSetEventType>, IDisposable {
 
   public static readonly MinZoomLevel: number = 1e-8;
 
+  private elementId: string;
+
   private readonly _id: number;
+
+  private _renderer: Renderer;
 
   private readonly _location: NumericPoint;
   private readonly _size: Size;
@@ -43,6 +47,8 @@ export class Chart<TItemType,
   private readonly headerLabel: Label | undefined;
 
   private dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
+
+  private legend: Legend | undefined;
 
   public get id(): number{
     return this._id;
@@ -71,6 +77,7 @@ export class Chart<TItemType,
 
   /**
    * Creates new instance of chart.
+   * @param {string} elementId - element,
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
    * @param {Size} size - Chart's size
    * @param {DataRect} dataRect - Currently visible rectangle on chart.
@@ -78,13 +85,21 @@ export class Chart<TItemType,
    * @param {ChartOptions} options - Chart options.
    * @param keyboardNavigationsFactory
    * */
-  constructor(location: NumericPoint, size: Size, dataRect: DataRect,
+  constructor(elementId: string,
+              location: NumericPoint, size: Size, dataRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
-    super();
+
+    this.elementId = elementId;
 
     this._id = Chart.getNextId();
+
+    this.options = extend(ChartOptionsDefaults.Instance, options);
+
+    this._renderer = new Renderer(elementId, size, this.options!.renderer)
+
+    Chart.createLayers(this._renderer);
 
     this._location = location;
     this._size = size;
@@ -92,8 +107,6 @@ export class Chart<TItemType,
 
     this.dataSet = dataSet;
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
-
-    this.options = extend(ChartOptionsDefaults.Instance, options);
 
     let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes));
 
@@ -117,14 +130,25 @@ export class Chart<TItemType,
       this.contentItems.push(this.headerLabel);
     }
 
-    this.plots = [];
-
     if (this.options.isNavigationEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(location, size)
     }
 
+    this.plots = [];
+
+    for(let contentItem of this.contentItems){
+      this._renderer.add(contentItem);
+      contentItem.markDirty();
+    }
+
     this.updateLabeledAxesLabels();
+
+    this.buildLegend();
+  }
+
+  getRenderer(): Renderer{
+    return this._renderer;
   }
 
   getLayer(layerName: string): Konva.Layer | undefined {
@@ -134,17 +158,6 @@ export class Chart<TItemType,
 
   getDependantLayers(): Array<string> {
     return [LayerName.Chart, LayerName.Labels];
-  }
-
-  override attach(renderer: Renderer) {
-    super.attach(renderer);
-
-    Chart.createLayers(renderer);
-
-    for(let contentItem of this.contentItems){
-      renderer.add(contentItem);
-      contentItem.markDirty();
-    }
   }
 
   public addContentItem(contentItem: ChartRenderableItem){
@@ -160,19 +173,6 @@ export class Chart<TItemType,
 
   public addPlot(plot: Plot<TItemType, XDimensionType, YDimensionType>){
     this.addContentItem(plot);
-  }
-
-  override detach() {
-    let renderer = this.getRenderer();
-    if (renderer) {
-      Chart.destroyLayers(renderer);
-
-      for(let contentItem of this.contentItems){
-        renderer.remove(contentItem);
-      }
-    }
-
-    super.detach();
   }
 
   /**
@@ -300,6 +300,18 @@ export class Chart<TItemType,
         } else throw new Error('DataSet with labeled axis must have the corresponding dimension of string type!')
       } else throw new Error('1D DataSet can\'t be used with horizontal labeled axis!');
     }
+  }
+
+  private buildLegend() {
+
+    this.legend = new Legend(this.elementId, this.size, this.options.legend);
+
+    this.legend.updateContent(this.options.plots.map(po=>{
+      return {
+        name: po.name,
+        color: po.color
+      }
+    }));
   }
 
   dispose(): void {

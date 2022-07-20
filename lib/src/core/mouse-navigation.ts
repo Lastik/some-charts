@@ -270,7 +270,7 @@ export class MouseNavigation extends ChartContent(Object) {
    * Binds mouse navigation to the chart.
    * @param {Chart} chart - Chart, this navigation is bound to.
    */
-  override placeOnChart(chart?: Chart) {
+  override placeOnChart(chart?: Chart<any, any, any>) {
     super.placeOnChart(chart);
     if(chart) {
       this.renderer = chart.getRenderer();

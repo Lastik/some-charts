@@ -13,10 +13,10 @@ export class Legend {
   /**
    * Creates new instance of Legend.
    * @param {string} elementID - ID of HTML element where to create renderer.
-   * @param {Size} size - Legend element size.
+   * @param {Size} containerSize - Legend containing element size.
    * @param {LegendOptions | undefined} options - Legend element display options.
    */
-  constructor(elementID: string, size: Size, options?: LegendOptions) {
+  constructor(elementID: string, containerSize: Size, options?: LegendOptions) {
 
     let container = $(elementID);
 
@@ -28,8 +28,8 @@ export class Legend {
 
     this.uiElt = $('<div></div>');
     this.uiElt
-      .width(size.width)
-      .height(size.height)
+      .width(containerSize.width)
+      .height(containerSize.height)
       .css('position', 'absolute');
 
     container.append(this.uiElt);

@@ -28,11 +28,9 @@ export class Renderer implements IDisposable{
    * @param {string} elementID - ID of HTML element where to create renderer.
    * @param {Size} size - Renderer size
    * @param {RendererOptions} options - renderer options
-   * @param {string | undefined} cursor - Cursor style for the renderer.
    */
   constructor(elementID: string, size: Size,
-              options: RendererOptions,
-              cursor?: string) {
+              options: RendererOptions) {
 
     let container = $(elementID);
 

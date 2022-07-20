@@ -7,7 +7,7 @@ import {Chart} from "./chart";
  */
 export abstract class ChartRenderableItem extends ChartContent(RenderableItem) {
 
-  override placeOnChart(chart?: Chart) {
+  override placeOnChart(chart?: Chart<any, any, any>) {
     super.placeOnChart(chart);
     chart?.addContentItem(this);
   }
