@@ -1,10 +1,12 @@
 import {TextOptions} from "../common";
 import {FontUnits} from "../../model";
+import {PlotOptions} from "./plot-options";
+import {PlotKind} from "./plot-kind";
 
 /**
  * Bars plot options
  */
-export interface BarsPlotOptions extends TextOptions {
+export interface BarsPlotOptions extends PlotOptions, TextOptions {
   /**
    * True, if labels must be drawn on bars. Otherwise, false.
    */
@@ -22,6 +24,9 @@ export interface BarsPlotOptions extends TextOptions {
 export class BarsPlotOptionsDefaults
 {
   private static _instance: BarsPlotOptions = {
+    name: "",
+    color: "",
+    kind: PlotKind.Bars,
     drawLabelsOnBars: true,
     labelsPrecision: 2,
     useDarkerBorder: false,
