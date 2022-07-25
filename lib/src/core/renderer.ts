@@ -117,6 +117,15 @@ export class Renderer implements IDisposable{
   }
 
   /**
+   * Returns true if the renderer contains this renderable item.
+   * @param {RenderableItem} item - renderable item;
+   * @returns {boolean}
+   */
+  contains(item: RenderableItem): boolean {
+    return this.renderableItems.map(ri => ri.id).indexOf(item.id) >= 0;
+  }
+
+  /**
    * Returns renderer's element size.
    * @returns {Size}
    */
@@ -148,7 +157,7 @@ export class Renderer implements IDisposable{
    * @param {RenderableItem} item - Item to remove.
    */
   remove(item: RenderableItem) {
-    var ind = this.renderableItems.indexOf(item);
+    let ind = this.renderableItems.map(ri => ri.id).indexOf(item.id);
     this.renderableItems.splice(ind, 1);
 
     item.detach();

@@ -4,20 +4,20 @@ import {
   DataRect,
   DataTransformation,
   EventBase,
-  EventListener, LegendItem,
+  EventListener,
   NumericPoint, Point,
   Size
 } from "../model";
-import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions} from "../options";
+import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../options";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {ChartRenderableItem, Legend, Plot, RenderableItem, Renderer} from "../core";
+import {ChartRenderableItem, Legend, Plot, Renderer} from "../core";
 import {LayerName} from "./layer-name";
 import {inject} from "tsyringe";
 import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
 import {MouseNavigation} from "./mouse-navigation";
-import {Label} from "../plots";
+import {Label, PlotFactory} from "../plots";
 import {DataSet, DataSetEventType, DimensionType} from "./data";
 import {IDisposable} from "../common";
 
@@ -38,7 +38,7 @@ export class Chart<TItemType,
   private readonly _size: Size;
 
   private readonly contentItems: ChartRenderableItem[];
-  private readonly plots: Plot<any, TItemType, XDimensionType, YDimensionType>[];
+  private readonly plots: Plot<PlotOptions, TItemType, XDimensionType, YDimensionType>[];
 
   private _dataRect: DataRect;
 
@@ -83,12 +83,14 @@ export class Chart<TItemType,
    * @param {DataRect} dataRect - Currently visible rectangle on chart.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
-   * @param keyboardNavigationsFactory
+   * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
+   * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
   constructor(elementId: string,
               location: NumericPoint, size: Size, dataRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
+              @inject("PlotFactory") private plotFactory?: PlotFactory,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
 
     this.elementId = elementId;
@@ -137,9 +139,16 @@ export class Chart<TItemType,
 
     this.plots = [];
 
+    for(let plotOptions of this.options.plots) {
+      let plot = this.plotFactory?.createPlot(dataSet, plotOptions);
+      if (plot) {
+        this.plots.push(plot);
+        plot.attach(this._renderer);
+      }
+    }
+
     for(let contentItem of this.contentItems){
-      this._renderer.add(contentItem);
-      contentItem.markDirty();
+      contentItem.attach(this._renderer);
     }
 
     this.updateLabeledAxesLabels();
@@ -171,7 +180,7 @@ export class Chart<TItemType,
     }
   }
 
-  public addPlot(plot: Plot<any, TItemType, XDimensionType, YDimensionType>){
+  public addPlot(plot: Plot<PlotOptions, TItemType, XDimensionType, YDimensionType>){
     this.addContentItem(plot);
   }
 
@@ -306,7 +315,7 @@ export class Chart<TItemType,
 
     this.legend = new Legend(this.elementId, this.size, this.options.legend);
 
-    this.legend.updateContent(this.options.plots.map(po=>{
+    this.legend.updateContent(this.options.plots.map(po => {
       return {
         name: po.name,
         color: po.color

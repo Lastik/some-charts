@@ -5,6 +5,14 @@
  */
 export abstract class RenderableItem {
 
+  public readonly id: number;
+
+  private static currentPlotID: number = 1;
+
+  constructor() {
+    this.id = RenderableItem.currentPlotID++;
+  }
+
   private isDirty: boolean = true;
   private renderer?: Renderer = undefined;
 
@@ -14,12 +22,18 @@ export abstract class RenderableItem {
    */
   attach(renderer: Renderer) {
     this.renderer = renderer;
+    if(!this.renderer.contains(this)) {
+      this.renderer.add(this);
+    }
   }
 
   /**
    * Detaches item the to renderer.
    */
   detach() {
+    if(this.renderer && this.renderer.contains(this)) {
+      this.renderer.remove(this);
+    }
     this.renderer = undefined;
   }
 

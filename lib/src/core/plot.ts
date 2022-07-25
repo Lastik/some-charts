@@ -10,17 +10,14 @@ export abstract class Plot<
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem {
 
-  private readonly id: number;
   private readonly layerName: string;
   private plotShape: Konva.Shape;
 
-  private static currentPlotID: number = 1;
+  protected visible: DataRect | undefined;
+  protected screen: DataRect | undefined;
 
-  private visible: DataRect | undefined;
-  private screen: DataRect | undefined;
-
-  private dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
-  private plotOptions: PlotOptionsType;
+  protected dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
+  protected plotOptions: PlotOptionsType;
 
   protected constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>, plotOptions: PlotOptionsType) {
     super();
@@ -28,7 +25,6 @@ export abstract class Plot<
     this.dataSet = dataSet;
     this.plotOptions = plotOptions;
 
-    this.id = Plot.currentPlotID++;
     this.layerName = `plot-layer-${this.id}`;
     this.plotShape = new Konva.Shape({
       sceneFunc: this.drawFunc
