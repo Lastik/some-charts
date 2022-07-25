@@ -2,8 +2,11 @@ import {ChartRenderableItem} from "./chart-renderable-item";
 import Konva from "konva";
 import {DataSet} from "./data";
 import {DataRect} from "../model";
+import {PlotOptions} from "../options";
 
-export abstract class Plot<TItemType,
+export abstract class Plot<
+  PlotOptionsType extends PlotOptions,
+  TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem {
 
@@ -16,8 +19,14 @@ export abstract class Plot<TItemType,
   private visible: DataRect | undefined;
   private screen: DataRect | undefined;
 
-  protected constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>) {
+  private dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
+  private plotOptions: PlotOptionsType;
+
+  protected constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>, plotOptions: PlotOptionsType) {
     super();
+
+    this.dataSet = dataSet;
+    this.plotOptions = plotOptions;
 
     this.id = Plot.currentPlotID++;
     this.layerName = `plot-layer-${this.id}`;

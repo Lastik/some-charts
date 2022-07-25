@@ -38,7 +38,7 @@ export class Chart<TItemType,
   private readonly _size: Size;
 
   private readonly contentItems: ChartRenderableItem[];
-  private readonly plots: Plot<TItemType, XDimensionType, YDimensionType>[];
+  private readonly plots: Plot<any, TItemType, XDimensionType, YDimensionType>[];
 
   private _dataRect: DataRect;
 
@@ -171,7 +171,7 @@ export class Chart<TItemType,
     }
   }
 
-  public addPlot(plot: Plot<TItemType, XDimensionType, YDimensionType>){
+  public addPlot(plot: Plot<any, TItemType, XDimensionType, YDimensionType>){
     this.addContentItem(plot);
   }
 
