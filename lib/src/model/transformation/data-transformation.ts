@@ -3,6 +3,7 @@ import {DataRect} from '../data-rect';
 import {NumericPoint} from '../point';
 import {NumericRange} from "../numeric-range";
 import {CoordinateTransformation} from "./coordinate-transformation";
+import {Size} from "../size";
 
 export class DataTransformation {
   public coordinateTransformation?: CoordinateTransformation;
@@ -112,10 +113,10 @@ export class DataTransformation {
    * Transforms point from data XY coordinates to screen XY coordinates.
    * @param {NumericPoint} value - Point in data coordinates.
    * @param {DataRect} visible - Visible data rectangle.
-   * @param {DataRect} screenSize - Screen size.
+   * @param {Size} screenSize - Screen size.
    * @returns {NumericPoint}
    */
-  public dataToScreenXY(value: NumericPoint, visible: DataRect, screenSize: DataRect): NumericPoint {
+  public dataToScreenXY(value: NumericPoint, visible: DataRect, screenSize: Size): NumericPoint {
     const x = value.x;
     const y = value.y;
 
