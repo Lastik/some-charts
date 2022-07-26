@@ -9,6 +9,6 @@
   }
 
   public isPoint() {
-    return this.max == this.min;
+    return this.max === this.min;
   }
 }

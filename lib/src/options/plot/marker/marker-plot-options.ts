@@ -1,7 +1,9 @@
-import {TextOptions} from "../common";
-import {FontUnits} from "../../model";
-import {PlotOptions} from "./plot-options";
-import {PlotKind} from "./plot-kind";
+import {TextOptions} from "../../common";
+import {FontUnits} from "../../../model";
+import {PlotOptions} from "../plot-options";
+import {PlotKind} from "../plot-kind";
+import * as Color from "color";
+import {Range} from "../../../model";
 
 /**
  * Marker plot options
@@ -10,18 +12,18 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
   /**
    * Marker size.
    */
-  markerFill: string;
+  markerFill: Color | Range<Color>;
   /**
    * Marker fill.
    */
-  markerSize: number;
+  markerSize: number | Range<number>;
 }
 
 export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
     metric: "",
-    markerFill: "blue",
+    markerFill: new Color("blue"),
     markerSize: 5,
     caption: "",
     color: "",
