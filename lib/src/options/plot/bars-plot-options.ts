@@ -24,7 +24,8 @@ export interface BarsPlotOptions extends PlotOptions, TextOptions {
 export class BarsPlotOptionsDefaults
 {
   private static _instance: BarsPlotOptions = {
-    name: "",
+    metric: "",
+    caption: "",
     color: "",
     kind: PlotKind.Bars,
     drawLabelsOnBars: true,

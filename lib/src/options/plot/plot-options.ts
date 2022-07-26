@@ -4,7 +4,8 @@
 import {PlotKind} from "./plot-kind";
 
 export interface PlotOptions {
-  name: string;
+  metric: string;
+  caption: string;
   color: string;
   kind: PlotKind
 }

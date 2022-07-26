@@ -20,9 +20,10 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
 export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
+    metric: "",
     markerFill: "blue",
     markerSize: 5,
-    name: "",
+    caption: "",
     color: "",
     kind: PlotKind.Bars,
     font: {

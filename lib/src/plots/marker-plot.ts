@@ -27,6 +27,18 @@ export class MarkerPlot<TItemType,
       context.rect(screenLocaton.x + 0.5, screenLocaton.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
       context.clip();
 
+      let xDimension = this.dataSet.dimensionXValues;
+      let yDimension = this.dataSet.dimensionYValues;
+
+      let is2D = this.dataSet.is2D;
+
+      this.dataSet.getMetricValues(this.plotOptions.metric);
+
+      xDimension.forEach((xDimVal, xIdx)=>{
+        if()
+      });
+      for(let xDimensionValue, xDimensionIdx in xDimension)
+
       for (let i = 0; i < dataSource.length; i++) {
         let point = dataSource[i];
         let pointLocation = CoordinateTransform.dataToScreenXY(point, self._visible, screenSize);

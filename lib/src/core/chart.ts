@@ -317,7 +317,7 @@ export class Chart<TItemType,
 
     this.legend.updateContent(this.options.plots.map(po => {
       return {
-        name: po.name,
+        name: po.caption,
         color: po.color
       }
     }));
