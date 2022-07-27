@@ -1,9 +1,10 @@
 import {singleton} from "tsyringe";
-import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../options";
-import {DataSet} from "./data";
 import {Plot} from "./plot";
-import {BarsPlot, MarkerPlot} from "./plots";
-import {DataTransformation} from "../model";
+import {DataSet} from "../data";
+import {DataTransformation} from "../../model";
+import {BarsPlot} from "./bars-plot";
+import {MarkerPlot} from "./marker-plot";
+import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../../options";
 
 @singleton()
 export class PlotFactory {

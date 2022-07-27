@@ -1,5 +1,5 @@
-import {Size, LegendItem} from "../model";
-import {LegendOptions, LegendOptionsDefaults} from "../options";
+import {LegendOptions, LegendOptionsDefaults} from "../../options";
+import {LegendItem, Size} from "../../model";
 
 export class Legend {
 

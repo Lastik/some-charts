@@ -2,8 +2,8 @@ import Konva from "konva";
 import extend from "lodash-es/extend";
 import {DataTransformation} from "../../model";
 import {BarsPlotOptions, BarsPlotOptionsDefaults} from "../../options";
-import {Plot} from "../plot";
 import {DataSet, DimensionValue} from "../data";
+import {Plot} from "./plot";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,

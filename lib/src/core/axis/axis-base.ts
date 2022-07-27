@@ -1,7 +1,7 @@
 ﻿import {AxisOptions, AxisOptionsDefaults} from "../../options";
 import Konva from "konva";
 import {FontHelper, MathHelper, TextMeasureUtils} from "../../services";
-import {ChartRenderableItem} from "../../core";
+import {ChartRenderableItem} from "../chart";
 import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
 import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../model';

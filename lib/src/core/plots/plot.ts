@@ -1,8 +1,8 @@
-import {ChartRenderableItem} from "./chart-renderable-item";
 import Konva from "konva";
-import {DataSet, DimensionValue} from "./data";
-import {DataRect, DataTransformation} from "../model";
-import {PlotOptions} from "../options";
+import {PlotOptions} from "../../options";
+import {ChartRenderableItem} from "../chart";
+import {DataRect, DataTransformation} from "../../model";
+import {DataSet, DimensionValue} from "../data";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,

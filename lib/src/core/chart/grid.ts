@@ -1,11 +1,11 @@
-﻿import {NumericPoint, Size} from "../model";
-import {ChartRenderableItem} from "../core";
-import {AxisOptionsDefaults, GridOptions, GridOptionsDefaults} from "../options";
-import {LayerName} from "./layer-name";
-import {Chart} from "./chart";
+﻿import {Chart} from "./chart";
 import Konva from "konva";
-import {MathHelper} from "../services";
 import extend from "lodash-es/extend";
+import {ChartRenderableItem} from "./chart-renderable-item";
+import {NumericPoint, Size} from "../../model";
+import {GridOptions, GridOptionsDefaults} from "../../options";
+import {MathHelper} from "../../services";
+import {LayerName} from "../layer-name";
 
 export class Grid extends ChartRenderableItem {
 

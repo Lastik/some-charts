@@ -1,28 +1,31 @@
 import Konva from "konva";
-import {
-  CoordinateTransformationStatic,
-  DataRect,
-  DataTransformation,
-  EventBase,
-  EventListener,
-  NumericPoint, Point,
-  Size
-} from "../model";
-import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../options";
-import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {ChartRenderableItem, Legend, Plot, Renderer} from "../core";
-import {LayerName} from "./layer-name";
 import {inject} from "tsyringe";
-import {KeyboardNavigation, KeyboardNavigationsFactory} from "./keyboard";
-import {MouseNavigation} from "./mouse-navigation";
-import {Label, PlotFactory} from "../plots";
-import {DataSet, DataSetEventType, DimensionType} from "./data";
+import {Label, Plot, PlotFactory} from "../plots";
 import {IDisposable} from "../common";
+import {DataSet, DataSetEventType, DimensionType} from "../data";
+import {Renderer} from "../renderer";
+import {ChartRenderableItem} from "./chart-renderable-item";
+import {KeyboardNavigation, KeyboardNavigationsFactory} from "../navigation/keyboard";
+import {MouseNavigation} from "../navigation/mouse-navigation";
+import {
+  NumericPoint,
+  Size,
+  DataRect,
+  DataTransformation,
+  CoordinateTransformationStatic,
+  EventBase,
+  Point,
+  EventListener
+} from "../../model";
+import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../../options";
+import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
+import {LayerName} from "../layer-name";
+import {Legend} from "./legend";
 
-export class Chart<TItemType,
-  XDimensionType extends number | string | Date,
+export class Chart<TItemType = any,
+  XDimensionType extends number | string | Date = number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
     implements EventListener<DataSetEventType>, IDisposable {
 
@@ -140,7 +143,7 @@ export class Chart<TItemType,
     this.plots = [];
 
     for(let plotOptions of this.options.plots) {
-      let plot = this.plotFactory?.createPlot(dataSet, plotOptions);
+      let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
         plot.attach(this._renderer);

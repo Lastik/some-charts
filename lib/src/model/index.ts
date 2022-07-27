@@ -3,7 +3,6 @@ export * from './font';
 export * from './point';
 export * from './transformation';
 export * from './data-rect';
-export * from './data-series';
 export * from './legend-item';
 export * from './margin';
 export * from './numeric-range';

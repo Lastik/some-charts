@@ -1,8 +1,8 @@
-﻿import {ChartContent, Renderer} from "../core";
-import {DataRect, NumericPoint, NumericRange, Size} from "../model";
-import {inject} from "tsyringe";
+﻿import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard";
-import {Chart} from "./chart";
+import {Chart, ChartContent} from "../chart";
+import {DataRect, NumericPoint, NumericRange, Size} from "../../model";
+import {Renderer} from "../renderer";
 
 export class MouseNavigation extends ChartContent(Object) {
 
