@@ -1,9 +1,9 @@
 import {TextOptions} from "../../common";
-import {FontUnits} from "../../../model";
+import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {Range} from "../../../model";
+import {Range} from "../../../index";
 
 /**
  * Marker plot options

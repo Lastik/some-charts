@@ -4,7 +4,7 @@ import {DataSet} from "../data";
 import {DataTransformation} from "../../model";
 import {BarsPlot} from "./bars-plot";
 import {MarkerPlot} from "./marker-plot";
-import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../../options";
+import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../../model";
 
 @singleton()
 export class PlotFactory {

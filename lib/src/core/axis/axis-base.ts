@@ -1,4 +1,4 @@
-﻿import {AxisOptions, AxisOptionsDefaults} from "../../options";
+﻿import {AxisOptions, AxisOptionsDefaults} from "../../model";
 import Konva from "konva";
 import {FontHelper, MathHelper, TextMeasureUtils} from "../../services";
 import {ChartRenderableItem} from "../chart";

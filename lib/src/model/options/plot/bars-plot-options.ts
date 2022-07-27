@@ -1,5 +1,5 @@
 import {TextOptions} from "../common";
-import {FontUnits} from "../../model";
+import {FontUnits} from "../../index";
 import {PlotOptions} from "./plot-options";
 import {PlotKind} from "./plot-kind";
 

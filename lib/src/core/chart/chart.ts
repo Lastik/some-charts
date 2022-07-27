@@ -19,7 +19,7 @@ import {
   Point,
   EventListener
 } from "../../model";
-import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../../options";
+import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../../model";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
 import {LayerName} from "../layer-name";
 import {Legend} from "./legend";

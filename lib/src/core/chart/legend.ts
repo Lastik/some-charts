@@ -1,4 +1,4 @@
-import {LegendOptions, LegendOptionsDefaults} from "../../options";
+import {LegendOptions, LegendOptionsDefaults} from "../../model";
 import {LegendItem, Size} from "../../model";
 
 export class Legend {

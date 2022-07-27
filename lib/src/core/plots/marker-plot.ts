@@ -1,7 +1,7 @@
 import extend from "lodash-es/extend";
 import {Context} from "konva/lib/Context";
 import {Shape, ShapeConfig} from "konva/lib/Shape";
-import {MarkerPlotOptions, MarkerPlotOptionsDefaults} from "../../options";
+import {MarkerPlotOptions, MarkerPlotOptionsDefaults} from "../../model";
 import {DataSet, DimensionValue} from "../data";
 import {DataTransformation, NumericPoint} from "../../model";
 import {Plot} from "./plot";

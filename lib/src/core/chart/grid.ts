@@ -3,7 +3,7 @@ import Konva from "konva";
 import extend from "lodash-es/extend";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {NumericPoint, Size} from "../../model";
-import {GridOptions, GridOptionsDefaults} from "../../options";
+import {GridOptions, GridOptionsDefaults} from "../../model";
 import {MathHelper} from "../../services";
 import {LayerName} from "../layer-name";
 

@@ -10,3 +10,4 @@ export * from './range';
 export * from './size';
 export * from './alignment';
 export * from './sorting';
+export * from './options';

@@ -6,7 +6,7 @@ import {
   NumericMajorLogarithmicTicksGenerator,
   MinorTicksGenerator} from "../ticks";
 import {DataTransformation, NumericRange, Range, NumericPoint} from "../../../model";
-import {AxisOptions, NumericAxisOptions, NumericAxisScaleType, NumericAxisLogarithmicScale} from "../../../options";
+import {AxisOptions, NumericAxisOptions, NumericAxisScaleType, NumericAxisLogarithmicScale} from "../../../model";
 import {AxisOrientation} from "../axis-orientation";
 
 export class NumericAxis extends AxisBase<number, NumericAxisOptions> {

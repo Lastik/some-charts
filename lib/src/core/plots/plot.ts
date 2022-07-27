@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {PlotOptions} from "../../options";
+import {PlotOptions} from "../../model";
 import {ChartRenderableItem} from "../chart";
 import {DataRect, DataTransformation} from "../../model";
 import {DataSet, DimensionValue} from "../data";

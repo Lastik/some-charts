@@ -1,4 +1,4 @@
-import {Font, FontInUnits} from "../../model";
+import {Font, FontInUnits} from "../../index";
 
 export interface TextOptions {
   /**

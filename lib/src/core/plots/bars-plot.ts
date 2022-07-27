@@ -1,7 +1,7 @@
 import Konva from "konva";
 import extend from "lodash-es/extend";
 import {DataTransformation} from "../../model";
-import {BarsPlotOptions, BarsPlotOptionsDefaults} from "../../options";
+import {BarsPlotOptions, BarsPlotOptionsDefaults} from "../../model";
 import {DataSet, DimensionValue} from "../data";
 import {Plot} from "./plot";
 
