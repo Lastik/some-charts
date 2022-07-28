@@ -4,6 +4,7 @@ import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
 import {Range} from "../../../index";
+import {Transition} from "../../../interpolation/transition";
 
 /**
  * Marker plot options
@@ -12,11 +13,11 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
   /**
    * Marker size.
    */
-  markerFill: Color | Range<Color>;
+  markerFill: Color | Transition<Color>;
   /**
    * Marker fill.
    */
-  markerSize: number | Range<number>;
+  markerSize: number | Transition<number>;
 }
 
 export class MarkerPlotOptionsDefaults
