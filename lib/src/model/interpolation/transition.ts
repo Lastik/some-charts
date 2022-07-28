@@ -5,7 +5,8 @@ export class Transition<OutputType extends Color | number> {
   to: Range<OutputType>;
   clipping: Range<OutputType>
 
-  constructor(to: Range<OutputType>, clipping: Range<OutputType> | undefined) {
+  constructor(metricName: string, to: Range<OutputType>, clipping: Range<OutputType> | undefined) {
+    this.metricName = metricName;
     this.to = to;
     this.clipping = clipping ?? to;
   }
