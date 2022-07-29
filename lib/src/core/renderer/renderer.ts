@@ -1,10 +1,9 @@
 import {RenderableItem} from "./renderable-item";
 import Konva from "konva";
 import extend from "lodash-es/extend";
-import {RendererOptions, RendererOptionsDefaults} from "../../model";
+import {Cursor, IDisposable, RendererOptions, RendererOptionsDefaults} from "../../model";
 import {Size} from "../../model";
 import {JqueryHelper} from "../../services";
-import {Cursor, IDisposable} from "../common";
 
 export class Renderer implements IDisposable{
 

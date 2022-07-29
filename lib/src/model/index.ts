@@ -11,3 +11,6 @@ export * from './size';
 export * from './alignment';
 export * from './sorting';
 export * from './options';
+export * from './constructor';
+export * from './i-disposable';
+export * from './cursor';

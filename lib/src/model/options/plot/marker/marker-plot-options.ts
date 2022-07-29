@@ -3,7 +3,6 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {Range} from "../../../index";
 import {Transition} from "../../../interpolation/transition";
 
 /**

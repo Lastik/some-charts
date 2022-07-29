@@ -1,6 +1,6 @@
 import {TextOptions} from "../common";
-import {FontUnits} from "../../index";
-import {HorizontalAlignment} from "../../alignment/horizontal-alignment";
+import {FontUnits} from "../../font";
+import {HorizontalAlignment} from "../../alignment";
 
 /**
  * Label options

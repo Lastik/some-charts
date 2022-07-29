@@ -3,7 +3,6 @@ import extend from "lodash-es/extend";
 import {Grid} from "./grid";
 import {inject} from "tsyringe";
 import {Label, Plot, PlotFactory} from "../plots";
-import {IDisposable} from "../common";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
@@ -17,7 +16,8 @@ import {
   CoordinateTransformationStatic,
   EventBase,
   Point,
-  EventListener
+  EventListener,
+  IDisposable
 } from "../../model";
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../../model";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
