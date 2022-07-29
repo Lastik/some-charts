@@ -18,8 +18,11 @@ export class Transition<OutputType extends Color | number> {
     }
   }
 
-  protected transitionToColor(from: Range<number>, value: number): Color{
+  protected transitionToColor(from: Range<number>, value: number, to: Range<Color>, clipping: Range<Color>): Color{
+    let proportion = value / (from.max - from.min);
 
+    to.min;
+    to.max.
   }
 
   protected transitionToNumber(from: Range<number>, value: number): number{
