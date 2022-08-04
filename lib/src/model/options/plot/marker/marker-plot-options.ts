@@ -3,7 +3,7 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {Transition} from "../../../transition/transition";
+import {MetricTransitionOptions} from "../metric-transition-options";
 
 /**
  * Marker plot options
@@ -12,11 +12,11 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
   /**
    * Marker size.
    */
-  markerFill: Color | Transition<Color>;
+  markerFill: Color | MetricTransitionOptions<Color>;
   /**
    * Marker fill.
    */
-  markerSize: number | Transition<number>;
+  markerSize: number | MetricTransitionOptions<number>;
 }
 
 export class MarkerPlotOptionsDefaults

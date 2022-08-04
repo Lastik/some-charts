@@ -1,5 +1,5 @@
-export class Lerp {
-  static apply(start: number, end: number, weight: number): number {
-    return start * (1 - weight) + end * weight;
-  }
+import * as Color from "color";
+
+export interface Lerp<T extends Color | number> {
+  apply(start: T, end: T, weight: number): T;
 }
