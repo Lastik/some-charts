@@ -64,7 +64,7 @@ export class MarkerPlot<TItemType,
           context.setAttr('lineWidth', 1);
           context.stroke();
         });
-      }
+      });
 
       context.stroke();
     }
