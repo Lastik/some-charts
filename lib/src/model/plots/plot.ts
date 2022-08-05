@@ -56,11 +56,11 @@ export abstract class Plot<
 
       let is2D = this.dataSet.is2D;
 
-      let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName);
 
       if (is2D) {
-        this.draw2DData(context, shape, xDimension, yDimension!, <number[][]>metricValues);
+        this.draw2DData(context, shape, xDimension, yDimension!);
       } else {
+        let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName);
         this.draw1DData(context, shape, xDimension, <number[]>metricValues);
       }
 
@@ -96,16 +96,20 @@ export abstract class Plot<
 
   protected abstract draw2DData(context: Konva.Context, shape: Konva.Shape,
                                 xDimension: readonly DimensionValue<XDimensionType>[],
-                                yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[], metricValues: number[][]): void;
+                                yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): void;
 
-  protected getColor(metricValue: number, color: Color | Palette): Color {
+  protected getColor(color: Color | Palette,
+                     xDimVal: DimensionValue<XDimensionType>,
+                     YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color {
     return color instanceof Color ?
       color :
-      new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), metricValue);
+      new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, YDimVal));
   }
 
-  protected getDependantNumericValueForMetricValue(metricValue: number, dependant: MetricDependantValue<number>): number {
-      return new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue);
+  protected getDependantNumericValueForMetricValue(dependant: MetricDependantValue<number>,
+                                                   xDimVal: DimensionValue<XDimensionType>,
+                                                   YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number {
+    return new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), this.dataSet.getMetricValueForDimensions(dependant.metricName, xDimVal, YDimVal));
   }
 }
 

@@ -143,8 +143,24 @@ export class DataSet<TItemType,
       } else {
         return xIdx ? (<Array<number>>metricValues)[xIdx] : undefined;
       }
+    } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
+  }
+
+
+  public getMetricValueForDimensions(metricName: string, xDimVal: DimensionValue<XDimensionType>, YDimVal: DimensionValue<XDimensionType> | undefined): number | undefined {
+    if (YDimVal && !this.dimensionYFunc || !YDimVal && this.dimensionYFunc) {
+      throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
-    else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
+
+    let metricValues = this.metricsValues.get(metricName);
+
+    if (metricValues) {
+      if (xDimVal && YDimVal) {
+        return (<Array<Array<number>>>metricValues)[xDimVal.index][YDimVal.index];
+      } else {
+        return (<Array<number>>metricValues)[xDimVal.index];
+      }
+    } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
 
   public getMetricValues(metricName: string): Array<number | Array<number>> | undefined {
