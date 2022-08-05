@@ -22,7 +22,7 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
 export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
-    metric: "",
+    metricName: "",
     markerFill: new Color("blue"),
     markerSize: 5,
     caption: "",

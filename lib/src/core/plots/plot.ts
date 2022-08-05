@@ -52,7 +52,7 @@ export abstract class Plot<
 
       let is2D = this.dataSet.is2D;
 
-      let metricValues = this.dataSet.getMetricValues(this.plotOptions.metric);
+      let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName);
 
       if (is2D) {
         this.draw2DData(context, shape, xDimension, yDimension!, <number[][]>metricValues);

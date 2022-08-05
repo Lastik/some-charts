@@ -1,5 +1,7 @@
 import {LegendOptions, LegendOptionsDefaults} from "../../model";
 import {LegendItem, Size} from "../../model";
+import * as Color from "color";
+import {css} from "jquery";
 
 export class Legend {
 
@@ -83,8 +85,14 @@ export class Legend {
 
       colorDiv.
         width(this.options.rectangleSize).
-        height(this.options.rectangleSize).
-        css('background-color', legendItem.color);
+        height(this.options.rectangleSize);
+
+      if(legendItem.color instanceof Color){
+        colorDiv.css('background-color', legendItem.color.toString())
+      }
+      else if (legendItem.color.metricName && legendItem.color.to){
+        colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.to.min.toString()}, ${legendItem.color.to.max.toString()}`);
+      }
 
       colorColumn.append(colorDiv);
 
