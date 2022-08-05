@@ -1,6 +1,6 @@
 ﻿import {EventListener} from "./event-listener";
 import {EventBase} from "./event-base";
-import {DataSetEventType} from "../../core/data";
+import {DataSetEventType} from "../data";
 
 export class ACEventTarget<EventType extends DataSetEventType> {
 

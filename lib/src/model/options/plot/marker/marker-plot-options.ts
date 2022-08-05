@@ -3,30 +3,32 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {MetricTransitionOptions} from "../metric-transition-options";
+import {MetricDependantValue} from "../../../plots/metric/metric-dependant-value";
+import {Palette} from "../../../plots/metric/palette";
 
 /**
  * Marker plot options
  */
 export interface MarkerPlotOptions extends PlotOptions, TextOptions {
+
+  /*
+  * Marker fill color.
+  * */
+  fill: Color | Palette;
+
   /**
    * Marker size.
    */
-  markerFill: Color | MetricTransitionOptions<Color>;
-  /**
-   * Marker fill.
-   */
-  markerSize: number | MetricTransitionOptions<number>;
+  markerSize: number | MetricDependantValue<number>;
 }
 
 export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
     metricName: "",
-    markerFill: new Color("blue"),
     markerSize: 5,
     caption: "",
-    color: "",
+    fill: new Color("blue"),
     kind: PlotKind.Bars,
     font: {
       family: 'Calibri',

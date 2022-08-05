@@ -14,3 +14,7 @@ export * from './options';
 export * from './constructor';
 export * from './i-disposable';
 export * from './cursor';
+export * from '../model/renderer';
+export * from '../model/axis';
+export * from '../model/chart';
+export * from './layer-name';
