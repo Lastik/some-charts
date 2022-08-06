@@ -5,6 +5,7 @@ import {MarkerPlotOptions, MarkerPlotOptionsDefaults} from "../index";
 import {DataSet, DimensionValue} from "../data";
 import {DataTransformation, NumericPoint} from "../index";
 import {Plot} from "./plot";
+import * as Color from "color";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -26,19 +27,15 @@ export class MarkerPlot<TItemType,
       let screenLocation = this.screen.getMinXMinY();
 
       xDimension.forEach((xDimVal) => {
-        let metricValue = metricValues[xDimVal.index];
-        let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
-        let pointLocation = this.dataTransformation.dataToScreenXY(point, this.visible!, this.screen!.getSize());
-        pointLocation.x += screenLocation.x;
-        pointLocation.y += screenLocation.y;
 
-        context.beginPath();
-        context.arc(pointLocation.x, pointLocation.y, this.getMarkerSize(xDimVal), 0, Math.PI * 2, true);
-        context.setAttr('fillStyle', this.getColor(this.plotOptions.fill, xDimVal));
-        context.fill();
-        context.setAttr('lineWidth', 1);
-        context.stroke();
+        let markerColor = this.getColor(this.plotOptions.fill, xDimVal);
+        let markerSize = this.getMarkerSize(xDimVal);
 
+        if (markerColor && markerSize) {
+          let metricValue = metricValues[xDimVal.index];
+          let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
+          this.drawMarker(context, point, markerColor, markerSize, screenLocation);
+        }
       });
 
       context.stroke();
@@ -52,17 +49,14 @@ export class MarkerPlot<TItemType,
 
       xDimension.forEach((xDimVal) => {
         yDimension.forEach((yDimVal) => {
-          let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
-          let pointLocation = this.dataTransformation.dataToScreenXY(point, this.visible!, this.screen!.getSize());
-          pointLocation.x += screenLocation.x;
-          pointLocation.y += screenLocation.y;
 
-          context.beginPath();
-          context.arc(pointLocation.x, pointLocation.y, this.getMarkerSize(xDimVal, yDimVal), 0, Math.PI * 2, true);
-          context.setAttr('fillStyle', this.getColor(this.plotOptions.fill, xDimVal, yDimVal));
-          context.fill();
-          context.setAttr('lineWidth', 1);
-          context.stroke();
+          let markerColor = this.getColor(this.plotOptions.fill, xDimVal, yDimVal);
+          let markerSize =  this.getMarkerSize(xDimVal, yDimVal);
+
+          if(markerColor && markerSize) {
+            let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
+            this.drawMarker(context, point, markerColor, markerSize, screenLocation);
+          }
         });
       });
 
@@ -70,8 +64,21 @@ export class MarkerPlot<TItemType,
     }
   }
 
+  private drawMarker(context: Context, location: NumericPoint, markerColor: Color, markerSize: number, screenLocation: NumericPoint) {
+    let markerScreenLocation = this.dataTransformation.dataToScreenXY(location, this.visible!, this.screen!.getSize());
+    markerScreenLocation.x += screenLocation.x;
+    markerScreenLocation.y += screenLocation.y;
+
+    context.beginPath();
+    context.arc(markerScreenLocation.x, markerScreenLocation.y, markerSize, 0, Math.PI * 2, true);
+    context.setAttr('fillStyle', markerColor.toString());
+    context.fill();
+    context.setAttr('lineWidth', 1);
+    context.stroke();
+  }
+
   private getMarkerSize(xDimVal: DimensionValue<XDimensionType>,
-                        yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): number {
+                        yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): number | undefined {
     return typeof this.plotOptions.markerSize === 'number' ? this.plotOptions.markerSize :
       this.getDependantNumericValueForMetricValue(this.plotOptions.markerSize, xDimVal, yDimVal)
   }

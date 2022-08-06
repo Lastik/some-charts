@@ -147,16 +147,16 @@ export class DataSet<TItemType,
   }
 
 
-  public getMetricValueForDimensions(metricName: string, xDimVal: DimensionValue<XDimensionType>, YDimVal: DimensionValue<XDimensionType> | undefined): number | undefined {
-    if (YDimVal && !this.dimensionYFunc || !YDimVal && this.dimensionYFunc) {
+  public getMetricValueForDimensions(metricName: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+    if (yDimVal && !this.dimensionYFunc || !yDimVal && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
 
     let metricValues = this.metricsValues.get(metricName);
 
     if (metricValues) {
-      if (xDimVal && YDimVal) {
-        return (<Array<Array<number>>>metricValues)[xDimVal.index][YDimVal.index];
+      if (xDimVal && yDimVal) {
+        return (<Array<Array<number>>>metricValues)[xDimVal.index][yDimVal.index];
       } else {
         return (<Array<number>>metricValues)[xDimVal.index];
       }
@@ -175,7 +175,7 @@ export class DataSet<TItemType,
    * */
   public update(elements: Array<TItemType>){
 
-    this.metricsValues.clear();
+    this.metricsRanges.clear();
 
     this._elements = [...this._elements, ...elements];
 

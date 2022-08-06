@@ -100,16 +100,26 @@ export abstract class Plot<
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
-                     YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color {
+                     yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color | undefined {
     return color instanceof Color ?
       color :
-      new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, YDimVal));
+      (() => {
+        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, yDimVal);
+        return metricValue ?
+          new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), metricValue) :
+          undefined;
+      })();
   }
 
   protected getDependantNumericValueForMetricValue(dependant: MetricDependantValue<number>,
                                                    xDimVal: DimensionValue<XDimensionType>,
-                                                   YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number {
-    return new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), this.dataSet.getMetricValueForDimensions(dependant.metricName, xDimVal, YDimVal));
+                                                   YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+
+    let metricValue = this.dataSet.getMetricValueForDimensions(dependant.metricName, xDimVal, YDimVal);
+
+    return metricValue ?
+      new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue) :
+      undefined;
   }
 }
 
