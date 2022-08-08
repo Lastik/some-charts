@@ -21,7 +21,9 @@ export class MarkerPlot<TItemType,
     this.plotOptions = extend(MarkerPlotOptionsDefaults.Instance, options);
   }
 
-  protected draw1DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[], metricValues: number[]): void {
+  protected draw1DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[]): void {
+
+    let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName) as number[];
 
     if (this.screen && this.visible) {
       let screenLocation = this.screen.getMinXMinY();

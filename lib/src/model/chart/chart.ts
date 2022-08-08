@@ -17,7 +17,7 @@ import {
   EventBase,
   Point,
   EventListener,
-  IDisposable
+  IDisposable, PlotOptionsClass
 } from "../index";
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../index";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
@@ -142,7 +142,9 @@ export class Chart<TItemType = any,
 
     this.plots = [];
 
-    for(let plotOptions of this.options.plots) {
+    let plotOptionsArr = this.options.plots.map(po => PlotOptionsClass.apply(po)).filter(po => po !== undefined) as PlotOptionsClass[];
+
+    for(let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
@@ -156,7 +158,7 @@ export class Chart<TItemType = any,
 
     this.updateLabeledAxesLabels();
 
-    this.buildLegend();
+    this.buildLegend(plotOptionsArr);
   }
 
   getRenderer(): Renderer{
@@ -305,27 +307,24 @@ export class Chart<TItemType = any,
 
     if (this.options.axes.horizontal.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.dimensionXType === DimensionType.String) {
-        (<LabeledAxis>this.horizontalAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
+        (this.horizontalAxis as LabeledAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
       } else throw new Error(dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage)
     }
     if (this.options.axes.vertical.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.is2D) {
         if (this.dataSet.dimensionXType === DimensionType.String) {
-          (<LabeledAxis>this.verticalAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
+          (this.verticalAxis as LabeledAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
         } else throw new Error(dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage)
       } else throw new Error('1D DataSet can\'t be used with horizontal labeled axis!');
     }
   }
 
-  private buildLegend() {
+  private buildLegend(plotOptionsArr: Array<PlotOptionsClass>) {
 
     this.legend = new Legend(this.elementId, this.size, this.options.legend);
 
-    this.legend.updateContent(this.options.plots.map(po => {
-      return {
-        name: po.caption,
-        color: po.color
-      }
+    this.legend.updateContent(plotOptionsArr.flatMap(po => {
+      return po.metricsOptions
     }));
   }
 

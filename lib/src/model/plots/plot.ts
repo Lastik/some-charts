@@ -63,8 +63,7 @@ export abstract class Plot<
       if (is2D) {
         this.draw2DData(context, shape, xDimension, yDimension!);
       } else {
-        let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName);
-        this.draw1DData(context, shape, xDimension, <number[]>metricValues);
+        this.draw1DData(context, shape, xDimension);
       }
 
       context.restore();
@@ -94,8 +93,7 @@ export abstract class Plot<
   }
 
   protected abstract draw1DData(context: Konva.Context, shape: Konva.Shape,
-                                xDimension: readonly DimensionValue<XDimensionType>[],
-                                metricValues: number[]): void;
+                                xDimension: readonly DimensionValue<XDimensionType>[]): void;
 
   protected abstract draw2DData(context: Konva.Context, shape: Konva.Shape,
                                 xDimension: readonly DimensionValue<XDimensionType>[],

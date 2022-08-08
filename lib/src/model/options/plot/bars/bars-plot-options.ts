@@ -2,11 +2,16 @@ import {TextOptions} from "../../common";
 import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
+import {MetricOptions} from "../metric-options";
 
 /**
  * Bars plot options
  */
 export interface BarsPlotOptions extends PlotOptions, TextOptions {
+  /**
+  * Array of metrics with their colors.
+  * */
+  metrics: Array<MetricOptions>;
   /**
    * True, if labels must be drawn on bars. Otherwise, false.
    */
@@ -24,9 +29,7 @@ export interface BarsPlotOptions extends PlotOptions, TextOptions {
 export class BarsPlotOptionsDefaults
 {
   private static _instance: BarsPlotOptions = {
-    metricName: "",
-    caption: "",
-    color: "",
+    metrics: [],
     kind: PlotKind.Bars,
     drawLabelsOnBars: true,
     labelsPrecision: 2,

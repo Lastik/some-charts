@@ -139,9 +139,9 @@ export class DataSet<TItemType,
     if (metricValues) {
       if (x && y) {
         let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
-        return xIdx && yIdx ? (<Array<Array<number>>>metricValues)[xIdx][yIdx] : undefined;
+        return xIdx && yIdx ? (metricValues as Array<Array<number>>)[xIdx][yIdx] : undefined;
       } else {
-        return xIdx ? (<Array<number>>metricValues)[xIdx] : undefined;
+        return xIdx ? (metricValues as Array<number>)[xIdx] : undefined;
       }
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
@@ -156,9 +156,9 @@ export class DataSet<TItemType,
 
     if (metricValues) {
       if (xDimVal && yDimVal) {
-        return (<Array<Array<number>>>metricValues)[xDimVal.index][yDimVal.index];
+        return (metricValues as Array<Array<number>>)[xDimVal.index][yDimVal.index];
       } else {
-        return (<Array<number>>metricValues)[xDimVal.index];
+        return (metricValues as Array<number>)[xDimVal.index];
       }
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
@@ -262,13 +262,13 @@ export class DataSet<TItemType,
         let metricValue = metricFunc(element);
 
         if (xIdx && yIdx && Array.isArray(metricValues[xIdx])) {
-          let twoDMetricValues = (<Array<Array<number>>>metricValues);
+          let twoDMetricValues = (metricValues as Array<Array<number>>);
           if(!twoDMetricValues[xIdx]) {
             twoDMetricValues[xIdx] = [];
           }
           twoDMetricValues[xIdx][yIdx] = metricValue;
         } else if (xIdx) {
-          let oneDMetricValues = (<Array<number>>metricValues);
+          let oneDMetricValues = (metricValues as Array<number>);
           oneDMetricValues[xIdx] = metricValue;
         }
       });

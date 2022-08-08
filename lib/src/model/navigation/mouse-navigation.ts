@@ -195,7 +195,7 @@ export class MouseNavigation extends ChartContent(Object) {
   }
 
   protected onMouseWheel(e: JQuery.Event){
-    this.handleScrollEvent((<any>e).originalEvent.wheelDelta);
+    this.handleScrollEvent((e as any).originalEvent.wheelDelta);
   }
 
   private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {

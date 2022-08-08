@@ -3,8 +3,8 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {MetricDependantValue} from "../../../plots/metric/metric-dependant-value";
-import {Palette} from "../../../plots/metric/palette";
+import {MetricDependantValue} from "../../../plots";
+import {MetricOptions} from "../metric-options";
 
 /**
  * Marker plot options
@@ -12,9 +12,9 @@ import {Palette} from "../../../plots/metric/palette";
 export interface MarkerPlotOptions extends PlotOptions, TextOptions {
 
   /*
-  * Marker fill color.
+  * Marker plot metric with it's color.
   * */
-  fill: Color | Palette;
+  metric: MetricOptions;
 
   /**
    * Marker size.
@@ -25,10 +25,12 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
 export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
-    metricName: "",
+    metric: {
+      name: "",
+      caption: "",
+      color: new Color("blue")
+    },
     markerSize: 5,
-    caption: "",
-    fill: new Color("blue"),
     kind: PlotKind.Bars,
     font: {
       family: 'Calibri',
