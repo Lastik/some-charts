@@ -9,7 +9,7 @@ import {MetricOptions} from "../metric-options";
  */
 export interface BarsPlotOptions extends PlotOptions, TextOptions {
   /**
-  * Array of metrics with their colors.
+  * Array of metrics options.
   * */
   metrics: Array<MetricOptions>;
   /**
