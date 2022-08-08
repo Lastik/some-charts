@@ -1,7 +1,7 @@
-import {TextOptions} from "../common";
-import {FontUnits} from "../../font";
-import {PlotOptions} from "./plot-options";
-import {PlotKind} from "./plot-kind";
+import {TextOptions} from "../../common";
+import {FontUnits} from "../../../font";
+import {PlotOptions} from "../plot-options";
+import {PlotKind} from "../plot-kind";
 
 /**
  * Bars plot options
