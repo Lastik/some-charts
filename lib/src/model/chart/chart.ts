@@ -300,16 +300,19 @@ export class Chart<TItemType = any,
   }
 
   protected updateLabeledAxesLabels() {
+
+    const dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage = 'DataSet with labeled axis must have the corresponding dimension of string type!';
+
     if (this.options.axes.horizontal.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.dimensionXType === DimensionType.String) {
         (<LabeledAxis>this.horizontalAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
-      } else throw new Error('DataSet with labeled axis must have the corresponding dimension of string type!')
+      } else throw new Error(dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage)
     }
     if (this.options.axes.vertical.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.is2D) {
         if (this.dataSet.dimensionXType === DimensionType.String) {
           (<LabeledAxis>this.verticalAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));
-        } else throw new Error('DataSet with labeled axis must have the corresponding dimension of string type!')
+        } else throw new Error(dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage)
       } else throw new Error('1D DataSet can\'t be used with horizontal labeled axis!');
     }
   }

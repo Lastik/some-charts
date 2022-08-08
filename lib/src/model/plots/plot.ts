@@ -24,6 +24,10 @@ export abstract class Plot<
   protected readonly  dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsType;
 
+  protected static readonly errors = {
+    doesntSupport2DData: "This plot doesn't support 2D Data"
+  }
+
   protected constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
     dataTransformation: DataTransformation,
@@ -55,7 +59,6 @@ export abstract class Plot<
       let yDimension = this.dataSet.dimensionYValues;
 
       let is2D = this.dataSet.is2D;
-
 
       if (is2D) {
         this.draw2DData(context, shape, xDimension, yDimension!);

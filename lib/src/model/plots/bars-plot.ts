@@ -21,7 +21,7 @@ export class BarsPlot<TItemType,
   protected draw1DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], metricValues: number[]): void {
   }
 
-  protected draw2DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[], metricValues: number[][]): void {
+  protected draw2DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
+    throw new Error(Plot.errors.doesntSupport2DData);
   }
-
 }
