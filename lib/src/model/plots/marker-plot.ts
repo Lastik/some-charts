@@ -23,14 +23,14 @@ export class MarkerPlot<TItemType,
 
   protected draw1DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[]): void {
 
-    let metricValues = this.dataSet.getMetricValues(this.plotOptions.metricName) as number[];
+    let metricValues = this.dataSet.getMetricValues(this.plotOptions.metric.name) as number[];
 
     if (this.screen && this.visible) {
       let screenLocation = this.screen.getMinXMinY();
 
       xDimension.forEach((xDimVal) => {
 
-        let markerColor = this.getColor(this.plotOptions.fill, xDimVal);
+        let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
         let markerSize = this.getMarkerSize(xDimVal);
 
         if (markerColor && markerSize) {
@@ -52,7 +52,7 @@ export class MarkerPlot<TItemType,
       xDimension.forEach((xDimVal) => {
         yDimension.forEach((yDimVal) => {
 
-          let markerColor = this.getColor(this.plotOptions.fill, xDimVal, yDimVal);
+          let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal, yDimVal);
           let markerSize =  this.getMarkerSize(xDimVal, yDimVal);
 
           if(markerColor && markerSize) {
