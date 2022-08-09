@@ -47,12 +47,12 @@ export abstract class Plot<
   private drawFunc(context: Konva.Context, shape: Konva.Shape): void {
     let screen = this.screen;
     if (screen) {
-      let screenLocaton = screen.getMinXMinY();
+      let screenLocation = screen.getMinXMinY();
       let screenSize = screen.getSize();
 
       context.save();
       context.beginPath();
-      context.rect(screenLocaton.x + 0.5, screenLocaton.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
+      context.rect(screenLocation.x + 0.5, screenLocation.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
       context.clip();
 
       let xDimension = this.dataSet.dimensionXValues;

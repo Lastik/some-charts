@@ -25,7 +25,7 @@ export class MarkerPlot<TItemType,
 
     let metricValues = this.dataSet.getMetricValues(this.plotOptions.metric.name) as number[];
 
-    if (this.screen && this.visible) {
+    if (this.screen) {
       let screenLocation = this.screen.getMinXMinY();
 
       xDimension.forEach((xDimVal) => {
