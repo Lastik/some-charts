@@ -22,44 +22,34 @@ export class BarsPlot<TItemType,
     if (this.visible && this.screen) {
       let screenLocation = this.screen.getMinXMinY();
       let screenSize = this.screen.getSize();
+      let verticalVisibleRange = this.visible.getVerticalRange();
 
       let zero = this.dataTransformation.dataToScreenRegionXY(new NumericPoint(0, 0), this.visible, this.screen);
       let zeroY = zero.y;
       let minY = zero.y;
 
-      let transformedPtsArr = [];
-      let widths = [];
+      let barsWidths = [];
 
-      for (let metric in this.plotOptions.metrics) {
+      let isSingleBar = false;
 
-      }
+      for (let metric of this.plotOptions.metrics) {
+        barsWidths.push(this.calculateBarsWidth(metric.name));
+        let screenPoints1D = this.getScreenPoints1D(metric.name);
 
-      for (let ind = 0; ind < dataSeriesCollection.length; ind++) {
-        let dataSeries = dataSeriesCollection[ind];
-        let dataSource = dataSeries.data;
-        let transformedPts = [];
-        let w = self._calculateBarsWidth(transformedPts, ind);
-        widths.push(w);
-        transformedPtsArr.push(transformedPts);
-        for (let i = 0; i < dataSource.length; i++) {
-          minY = Math.min(minY, transformedPts[i].y);
+        if(screenPoints1D?.length === 1){
+          isSingleBar = true;
+        }
+
+        if(screenPoints1D){
+          for(let point of screenPoints1D){
+            minY = Math.min(minY, point.y);
+          }
         }
       }
 
-      let singlePointSeriesCollection = true;
-      for (let i = 0; i < dataSeriesCollection.length; i++) {
-        if (dataSeriesCollection[i].data.length != 1) {
-          singlePointSeriesCollection = false;
-          break;
-        }
-      }
+      for (let metric of this.plotOptions.metrics) {
 
-      for (let ind = dataSeriesCollection.length - 1; ind >= 0; ind--) {
-        let dataSeries = dataSeriesCollection[ind];
-        let dataSource = dataSeries.data;
-
-        let verticalRange = self._visible.getVerticalRange();
-        verticalRange.y += screenLocation.y;
+        verticalVisibleRange.y += screenLocation.y;
 
         let transformedPts = transformedPtsArr[ind];
         let prevTransformedPts = null;
@@ -67,7 +57,7 @@ export class BarsPlot<TItemType,
           prevTransformedPts = transformedPtsArr[ind - 1];
         }
 
-        let w = widths[ind];
+        let w = barsWidths[ind];
 
         let barRenderWidthPlusMargin = w;
 
