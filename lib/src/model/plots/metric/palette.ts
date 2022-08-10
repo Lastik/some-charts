@@ -1,6 +1,6 @@
 import * as Color from "color";
 import {MetricDependantValue} from "./metric-dependant-value";
-import {Range} from "../../range";
+import {Range} from "../../geometry";
 
 /**
  * Represents color palette

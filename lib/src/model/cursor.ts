@@ -1,4 +1,4 @@
-export enum Cursor{
+export enum Cursor {
   Move = "move",
   Auto = "auto"
 }

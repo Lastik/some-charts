@@ -3,7 +3,7 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {MetricDependantValue} from "../../../plots";
+import {MetricDependantValue, Palette} from "../../../plots";
 import {MetricOptions} from "../metric-options";
 
 /**
@@ -14,7 +14,7 @@ export interface MarkerPlotOptions extends PlotOptions, TextOptions {
   /*
   * Marker plot metric with it's color.
   * */
-  metric: MetricOptions;
+  metric: MetricOptions<Color | Palette>;
 
   /**
    * Marker size.

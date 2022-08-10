@@ -1,4 +1,4 @@
-import {Range} from '../range';
+import {Range} from '../geometry/range';
 import * as Color from 'color';
 import {ColorLerp} from "./color-lerp";
 import {NumericLerp} from "./numeric-lerp";

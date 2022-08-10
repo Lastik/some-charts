@@ -1,14 +1,15 @@
 import {FontInUnits} from "../../../font";
-import {MetricDependantValue} from "../../../plots";
+import {MetricDependantValue, Palette} from "../../../plots";
 import {MarkerPlotOptions} from "./marker-plot-options";
 import {PlotOptionsClass} from "../plot-options-class";
 import {MetricOptions} from "../metric-options";
+import * as Color from "color";
 
 /**
  * Marker plot options class
  */
-export class MarkerPlotOptionsClass extends PlotOptionsClass implements MarkerPlotOptions{
-  metric: MetricOptions;
+export class MarkerPlotOptionsClass extends PlotOptionsClass implements MarkerPlotOptions {
+  metric: MetricOptions<Color | Palette>;
   font: FontInUnits;
   foregroundColor: string;
   markerSize: number | MetricDependantValue<number>;
@@ -21,7 +22,7 @@ export class MarkerPlotOptionsClass extends PlotOptionsClass implements MarkerPl
     this.markerSize = markerPlotOptions.markerSize;
   }
 
-  get metricsOptions(): Array<MetricOptions> {
+  get metricsOptions(): Array<MetricOptions<Color | Palette>> {
     return [this.metric];
   }
 }

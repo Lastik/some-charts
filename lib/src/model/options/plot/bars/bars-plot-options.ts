@@ -3,6 +3,7 @@ import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import {MetricOptions} from "../metric-options";
+import * as Color from "color";
 
 /**
  * Bars plot options
@@ -11,7 +12,7 @@ export interface BarsPlotOptions extends PlotOptions, TextOptions {
   /**
   * Array of metrics options.
   * */
-  metrics: Array<MetricOptions>;
+  metrics: Array<MetricOptions<Color>>;
   /**
    * True, if labels must be drawn on bars. Otherwise, false.
    */

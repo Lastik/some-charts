@@ -1,7 +1,6 @@
-import {LegendOptions, LegendOptionsDefaults} from "../index";
-import {LegendItem, Size} from "../index";
+import {LegendOptions, LegendOptionsDefaults} from "../../index";
+import {LegendItem, Size} from "../../index";
 import * as Color from "color";
-import {css} from "jquery";
 
 export class Legend {
 
@@ -90,8 +89,8 @@ export class Legend {
       if(legendItem.color instanceof Color){
         colorDiv.css('background-color', legendItem.color.toString())
       }
-      else if (legendItem.color.metricName && legendItem.color.to){
-        colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.to.min.toString()}, ${legendItem.color.to.max.toString()}`);
+      else if (legendItem.color.metricName && legendItem.color.range){
+        colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.range.min.toString()}, ${legendItem.color.range.max.toString()}`);
       }
 
       colorColumn.append(colorDiv);

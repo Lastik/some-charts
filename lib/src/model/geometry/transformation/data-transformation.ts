@@ -1,7 +1,4 @@
-﻿import {Range} from '../range';
-import {DataRect} from '../data-rect';
-import {NumericPoint} from '../point';
-import {NumericRange} from "../numeric-range";
+﻿import {Range, DataRect, NumericPoint, NumericRange} from '../index';
 import {CoordinateTransformation} from "./coordinate-transformation";
 import {Size} from "../size";
 

@@ -2,7 +2,7 @@ import {singleton} from "tsyringe";
 import {Plot} from "./plot";
 import {DataSet} from "../data";
 import {DataTransformation} from "../index";
-import {BarsPlot} from "./bars-plot";
+import {BarsPlot} from "./bars/bars-plot";
 import {MarkerPlot} from "./marker-plot";
 import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../index";
 

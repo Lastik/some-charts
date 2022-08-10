@@ -3,11 +3,11 @@ import {
   NumericAxisLogarithmicScale,
   NumericAxisOptions,
   NumericAxisScaleType
-} from "../options";
+} from "../../options";
 import {LogPointXTransformation} from "./log-point-x-transformation";
 import {LogPointYTransformation} from "./log-point-y-transformation";
 import {CompositeTransformation} from "./composite-transformation";
-import {AxisTypes} from "../../core";
+import {AxisTypes} from "../../axis";
 
 export interface CoordinateTransformation {
   applyX(x: number): number;

@@ -4,9 +4,9 @@ import {ChartRenderableItem} from "../chart";
 import {DataRect, DataTransformation} from "../index";
 import {DataSet, DimensionValue} from "../data";
 import * as Color from "color";
-import {Palette} from "./metric/palette";
-import {ColorLerp, Transition} from "../transition";
-import {MetricDependantValue} from "./metric/metric-dependant-value";
+import {Palette} from "./metric";
+import {Transition} from "../transition";
+import {MetricDependantValue} from "./metric";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,

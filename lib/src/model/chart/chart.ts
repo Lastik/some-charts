@@ -22,7 +22,7 @@ import {
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../index";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
 import {LayerName} from "../layer-name";
-import {Legend} from "./legend";
+import {Legend} from "./legend/legend";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,

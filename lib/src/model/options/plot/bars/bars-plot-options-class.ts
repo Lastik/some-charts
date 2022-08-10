@@ -2,12 +2,13 @@ import {FontInUnits} from "../../../font";
 import {PlotOptionsClass} from "../plot-options-class";
 import {BarsPlotOptions} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
+import * as Color from "color";
 
 /**
  * Bars plot options class
  */
 export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOptions {
-  metrics: Array<MetricOptions>;
+  metrics: Array<MetricOptions<Color>>;
 
   font: FontInUnits;
   drawLabelsOnBars: boolean;
@@ -25,7 +26,7 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
     this.useDarkerBorder = barsPlotOptions.useDarkerBorder;
   }
 
-  get metricsOptions(): Array<MetricOptions> {
+  get metricsOptions(): Array<MetricOptions<Color>> {
     return this.metrics;
   }
 }
