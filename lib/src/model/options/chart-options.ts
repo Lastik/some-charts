@@ -4,14 +4,14 @@ import {LegendOptions, LegendOptionsDefaults} from "./legend-options";
 import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
 import {AxesOptions, AxesOptionsDefaults} from "./axes";
 import {PlotOptions} from "./plot";
+import {NavigationOptions, NavigationOptionsDefaults} from "./navigation";
 
 export interface ChartOptions {
 
   /**
-   * Is chart navigation enabled or not.
+   * Chart navigation options.
    */
-  isNavigationEnabled: boolean;
-
+  navigation: NavigationOptions;
   /**
    *  Chart axes options
    */
@@ -42,7 +42,7 @@ export interface ChartOptions {
 export class ChartOptionsDefaults
 {
   private static _instance: ChartOptions = {
-    isNavigationEnabled: true,
+    navigation: NavigationOptionsDefaults.Instance,
     renderer: RendererOptionsDefaults.Instance,
     axes: AxesOptionsDefaults.Instance,
     grid: GridOptionsDefaults.Instance,

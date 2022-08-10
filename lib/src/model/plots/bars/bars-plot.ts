@@ -1,24 +1,31 @@
 import Konva from "konva";
 import extend from "lodash-es/extend";
-import {BarsPlotOptions, BarsPlotOptionsDefaults, DataTransformation, NumericPoint} from "../../index";
+import {
+  BarsPlotOptions,
+  BarsPlotOptionsDefaults, DataRect,
+  DataTransformation,
+  NumericPoint,
+  PlotOptionsClass
+} from "../../index";
 import {DataSet, DimensionValue} from "../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
 import {Range} from '../../geometry'
 import {MathHelper} from "../../../services";
+import {BarsPlotOptionsClass} from "../../options/plot/bars";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<BarsPlotOptions, TItemType, XDimensionType, YDimensionType> {
+  extends Plot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
               options: BarsPlotOptions) {
     super(dataSet, dataTransformation, options);
 
-    this.plotOptions = extend(BarsPlotOptionsDefaults.Instance, options);
+    this.plotOptions = PlotOptionsClass.apply(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
   }
 
   protected draw1DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[]): void {
@@ -35,7 +42,7 @@ export class BarsPlot<TItemType,
       let isSingleBar = false;
 
       for (let metric of this.plotOptions.metrics) {
-        let barAvailableWidth = this.calculateBarAvailableWidth(metric.name);
+        let barAvailableWidth = this.calculateBarMaxWidth(metric.name);
         if(barAvailableWidth) {
           barAvailableWidthsMap.set(metric.name, barAvailableWidth);
         }
@@ -188,7 +195,7 @@ export class BarsPlot<TItemType,
    * Calculates bar available width for metric name.
    * @param {string} metricName - metric name
    * */
-  private calculateBarAvailableWidth(metricName: string): number | undefined {
+  private calculateBarMaxWidth(metricName: string): number | undefined {
 
     let transformedPts = this.getScreenPoints1D(metricName);
 
@@ -249,5 +256,29 @@ export class BarsPlot<TItemType,
 
   protected draw2DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
     throw new Error(Plot.errors.doesntSupport2DData);
+  }
+
+  override getBoundingRectangle() {
+    let boundingRect = super.getBoundingRectangle();
+
+    if(boundingRect && this.visible && this.screen && this.plotOptions.metrics.length) {
+      let horizontalMargin: number | undefined = undefined;
+      for (let metric of this.plotOptions.metrics) {
+        let barAvailWidth = this.calculateBarMaxWidth(metric.name);
+        if(barAvailWidth) {
+          horizontalMargin = Math.min(horizontalMargin ?? Number.MAX_VALUE, barAvailWidth);
+        }
+      }
+
+      if(horizontalMargin) {
+
+        let visibleHorizontalRange = this.visible.getHorizontalRange();
+        let screenHorizontalMargin = this.dataTransformation.screenToDataX(horizontalMargin, visibleHorizontalRange, this.screen.getHorizontalRange().getLength()) - visibleHorizontalRange.min;
+
+        boundingRect = new DataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.minY, boundingRect.width + screenHorizontalMargin, boundingRect.height);
+        boundingRect = boundingRect.merge(new DataRect(boundingRect.minX, 0, boundingRect.width, 0));
+      }
+    }
+    return boundingRect;
   }
 }

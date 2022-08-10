@@ -327,13 +327,14 @@ export class DataSet<TItemType,
   }
 
   /**
-   * Calculates bounding rectangle of the data inside this DataSet.
+   * Calculates bounding rectangle for the specified metrics of this DataSet.
+   * @param {Array<string>} metricsNames - names of metrics to take into consideration.
    * @returns {DataRect}
    */
-  getBoundingRectangle(): DataRect | undefined {
+  getBoundingRectangle(metricsNames: Array<string>): DataRect | undefined {
     let boundingRect: DataRect | undefined = undefined;
 
-    for (let metricName in this.metricsNames) {
+    for (let metricName in metricsNames) {
 
       let curMetricBoundingRect: DataRect | undefined = undefined;
 

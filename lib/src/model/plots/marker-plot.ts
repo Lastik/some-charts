@@ -1,16 +1,17 @@
 import extend from "lodash-es/extend";
 import {Context} from "konva/lib/Context";
 import {Shape, ShapeConfig} from "konva/lib/Shape";
-import {MarkerPlotOptions, MarkerPlotOptionsDefaults} from "../index";
+import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClass} from "../index";
 import {DataSet, DimensionValue} from "../data";
 import {DataTransformation, NumericPoint} from "../index";
 import {Plot} from "./plot";
 import * as Color from "color";
+import {MarkerPlotOptionsClass} from "../options/plot/marker";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<MarkerPlotOptions, TItemType, XDimensionType, YDimensionType> {
+  extends Plot<MarkerPlotOptions, MarkerPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
   constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -18,7 +19,7 @@ export class MarkerPlot<TItemType,
     options: MarkerPlotOptions) {
     super(dataSet, dataTransformation, options);
 
-    this.plotOptions = extend(MarkerPlotOptionsDefaults.Instance, options);
+    this.plotOptions = PlotOptionsClass.apply(extend(MarkerPlotOptionsDefaults.Instance, options)) as MarkerPlotOptionsClass;
   }
 
   protected draw1DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[]): void {

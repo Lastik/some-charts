@@ -3,6 +3,7 @@ import {PlotOptionsClass} from "../plot-options-class";
 import {BarsPlotOptions} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
+import {Palette} from "../../../plots";
 
 /**
  * Bars plot options class
@@ -26,7 +27,7 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
     this.useDarkerBorder = barsPlotOptions.useDarkerBorder;
   }
 
-  get metricsOptions(): Array<MetricOptions<Color>> {
+  get metricsOptions(): Array<MetricOptions<Color | Palette>> {
     return this.metrics;
   }
 }

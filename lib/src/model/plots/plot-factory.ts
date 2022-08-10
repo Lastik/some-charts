@@ -1,8 +1,8 @@
 import {singleton} from "tsyringe";
 import {Plot} from "./plot";
 import {DataSet} from "../data";
-import {DataTransformation} from "../index";
-import {BarsPlot} from "./bars/bars-plot";
+import {DataTransformation, PlotOptionsClass} from "../index";
+import {BarsPlot} from "./bars";
 import {MarkerPlot} from "./marker-plot";
 import {BarsPlotOptions, MarkerPlotOptions, PlotKind, PlotOptions} from "../index";
 
@@ -13,7 +13,7 @@ export class PlotFactory {
     YDimensionType extends number | string | Date | undefined = undefined>(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
     dataTransformation: DataTransformation,
-    plotOptions: PlotOptions): Plot<PlotOptions, TItemType, XDimensionType, YDimensionType> | undefined {
+    plotOptions: PlotOptions): Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType> | undefined {
     if (plotOptions.kind === PlotKind.Bars) {
       return new BarsPlot(dataSet, dataTransformation, <BarsPlotOptions>plotOptions)
     } else if (plotOptions.kind === PlotKind.Marker) {

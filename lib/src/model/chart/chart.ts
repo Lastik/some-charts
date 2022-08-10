@@ -22,7 +22,7 @@ import {
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../index";
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
 import {LayerName} from "../layer-name";
-import {Legend} from "./legend/legend";
+import {Legend} from "./legend";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
@@ -41,7 +41,7 @@ export class Chart<TItemType = any,
   private readonly _size: Size;
 
   private readonly contentItems: ChartRenderableItem[];
-  private readonly plots: Plot<PlotOptions, TItemType, XDimensionType, YDimensionType>[];
+  private readonly plots: Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType>[];
 
   private _dataRect: DataRect;
 
@@ -135,7 +135,7 @@ export class Chart<TItemType = any,
       this.contentItems.push(this.headerLabel);
     }
 
-    if (this.options.isNavigationEnabled) {
+    if (this.options.navigation.isEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(location, size)
     }
@@ -185,7 +185,7 @@ export class Chart<TItemType = any,
     }
   }
 
-  public addPlot(plot: Plot<PlotOptions, TItemType, XDimensionType, YDimensionType>){
+  public addPlot(plot: Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType>){
     this.addContentItem(plot);
   }
 
@@ -255,6 +255,50 @@ export class Chart<TItemType = any,
     for (let plot of this.plots) {
       plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height));
       plot.setVisible(this._dataRect);
+    }
+  }
+
+  /**
+   * Fits all plots on chart to view them
+   * */
+  fitToView() {
+    if(this.plots.length) {
+      let firstPlot = this.plots[0];
+      let chartBoundingRect = firstPlot.getBoundingRectangle();
+      if (chartBoundingRect) {
+        for (let i = 1; i < this.plots.length; i++) {
+          let plot = this.plots[i];
+          let plotBoundingRect = plot.getBoundingRectangle();
+          if(plotBoundingRect) {
+            chartBoundingRect.merge(plotBoundingRect);
+          }
+        }
+
+        let coeff = 0.03;
+
+        let horSize = chartBoundingRect.getHorizontalRange().getLength();
+        let verSize = chartBoundingRect.getVerticalRange().getLength();
+
+        let offsetX = horSize * coeff;
+        let offsetY = verSize * coeff;
+
+        chartBoundingRect = new DataRect(
+          chartBoundingRect.minX - offsetX / 2,
+          chartBoundingRect.minY - offsetY / 2,
+          chartBoundingRect.width + offsetX,
+          chartBoundingRect.height + offsetY);
+
+        if (this.options.navigation.fixedTopBound) {
+          chartBoundingRect = chartBoundingRect.withHeight((this.options.navigation.fixedTopBound - chartBoundingRect.minY) * (1 + coeff));
+        }
+        if (chartBoundingRect.height == 0) {
+          chartBoundingRect = chartBoundingRect.withHeight(1);
+        }
+        if (chartBoundingRect.width == 0) {
+          chartBoundingRect = chartBoundingRect.withWidth(0);
+        }
+        this.update(chartBoundingRect);
+      }
     }
   }
 

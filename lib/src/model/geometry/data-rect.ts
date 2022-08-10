@@ -99,4 +99,23 @@ export class DataRect {
 
     return new DataRect(minX, minY, maxX - minX, maxY - minY);
   }
+
+
+  /**
+   * Creates new DataRect with specified height
+   * @param {number} height - new height
+   * @returns DataRect
+   * */
+  withHeight(height: number): DataRect{
+    return new DataRect(this.minX, this.minY, this.width, height);
+  }
+
+  /**
+   * Creates new DataRect with specified width
+   * @param {number} width - new width
+   * @returns DataRect
+   * */
+  withWidth(width: number): DataRect{
+    return new DataRect(this.minX, this.minY, width, this.height);
+  }
 }

@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {NumericPoint, PlotOptions} from "../index";
+import {NumericPoint, PlotOptions, PlotOptionsClass} from "../index";
 import {ChartRenderableItem} from "../chart";
 import {DataRect, DataTransformation} from "../index";
 import {DataSet, DimensionValue} from "../data";
@@ -10,6 +10,7 @@ import {MetricDependantValue} from "./metric";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
+  PlotOptionsClassType extends PlotOptionsClass,
   TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem {
@@ -22,7 +23,7 @@ export abstract class Plot<
 
   protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
   protected readonly  dataTransformation: DataTransformation;
-  protected plotOptions: PlotOptionsType;
+  protected plotOptions: PlotOptionsClassType;
 
   private screenPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
 
@@ -38,7 +39,7 @@ export abstract class Plot<
 
     this.dataSet = dataSet;
     this.dataTransformation = dataTransformation;
-    this.plotOptions = plotOptions;
+    this.plotOptions = PlotOptionsClass.apply(plotOptions) as PlotOptionsClassType;
 
     this.layerName = `plot-layer-${this.id}`;
     this.plotShape = new Konva.Shape({
@@ -141,6 +142,13 @@ export abstract class Plot<
       } else throw new Error("DataSet is not 1-Dimensional!");
     }
     return this.screenPoints1DMap.get(metricName);
+  }
+
+  /**
+   * Calculates bounding rectangle of this plot.
+   * */
+  getBoundingRectangle(): DataRect | undefined {
+    return this.dataSet.getBoundingRectangle(this.plotOptions.metricsOptions.map(o => o.name));
   }
 }
 
