@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {PlotOptions} from "../index";
+import {NumericPoint, PlotOptions} from "../index";
 import {ChartRenderableItem} from "../chart";
 import {DataRect, DataTransformation} from "../index";
 import {DataSet, DimensionValue} from "../data";
@@ -23,6 +23,8 @@ export abstract class Plot<
   protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
   protected readonly  dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsType;
+
+  private screenPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
 
   protected static readonly errors = {
     doesntSupport2DData: "This plot doesn't support 2D Data"
@@ -121,6 +123,24 @@ export abstract class Plot<
     return metricValue ?
       new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue) :
       undefined;
+  }
+
+  protected getScreenPoints1D(metricName: string): Array<NumericPoint> | undefined {
+
+    if (!this.screenPoints1DMap.has(metricName) && this.visible && this.screen) {
+      let dimensionXValues = this.dataSet.dimensionXValues;
+
+      if (this.dataSet.is1D) {
+        let metricValues = this.dataSet.getMetricValues(metricName) as number[];
+        let transformedPoints = dimensionXValues.map((dimXVal, index) => {
+          return this.dataTransformation.dataToScreenRegionXY(
+            new NumericPoint(dimXVal.toNumericValue(), metricValues[index]),
+            this.visible!, this.screen!);
+        });
+        this.screenPoints1DMap.set(metricName, transformedPoints);
+      } else throw new Error("DataSet is not 1-Dimensional!");
+    }
+    return this.screenPoints1DMap.get(metricName);
   }
 }
 

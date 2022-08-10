@@ -8,9 +8,7 @@ import {Plot} from "./plot";
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<BarsPlotOptions, TItemType, XDimensionType, YDimensionType>{
-
-  private transformedPointsMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
+  extends Plot<BarsPlotOptions, TItemType, XDimensionType, YDimensionType> {
 
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
@@ -32,7 +30,7 @@ export class BarsPlot<TItemType,
       let transformedPtsArr = [];
       let widths = [];
 
-      for(let metric in this.plotOptions.metrics){
+      for (let metric in this.plotOptions.metrics) {
 
       }
 
@@ -202,28 +200,13 @@ export class BarsPlot<TItemType,
     }
   }
 
-  private getTransformedPoints(metricName: string): Array<NumericPoint> | undefined {
-
-    if (!this.transformedPointsMap.has(metricName) && this.visible && this.screen) {
-      let metricValues = this.dataSet.getMetricValues(metricName) as number[];
-      let dimensionXValues = this.dataSet.dimensionXValues;
-      let transformedPoints = dimensionXValues.map((dimXVal, index) => {
-        return this.dataTransformation.dataToScreenRegionXY(
-          new NumericPoint(dimXVal.toNumericValue(), metricValues[index]),
-          this.visible!, this.screen!);
-      });
-      this.transformedPointsMap.set(metricName, transformedPoints);
-    }
-    return this.transformedPointsMap.get(metricName);
-  }
-
   /**
    * Calculates bars width for metric name.
    * @param {string} metricName - metric name
    * */
   private calculateBarsWidth(metricName: string): number | undefined {
 
-    let transformedPts = this.getTransformedPoints(metricName);
+    let transformedPts = this.getScreenPoints1D(metricName);
 
     if(transformedPts){
       if(transformedPts.length >= 2) {
