@@ -2,7 +2,8 @@ import Konva from "konva";
 import extend from "lodash-es/extend";
 import {
   BarsPlotOptions,
-  BarsPlotOptionsDefaults, DataRect,
+  BarsPlotOptionsDefaults,
+  DataRect,
   DataTransformation,
   NumericPoint,
   PlotOptionsClass
@@ -12,17 +13,21 @@ import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
 import {Range} from '../../geometry'
-import {MathHelper} from "../../../services";
+import {MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../options/plot/bars";
+import {inject} from "tsyringe";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
   extends Plot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
+  private labelsHeight: number | undefined;
+
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
-              options: BarsPlotOptions) {
+              options: BarsPlotOptions,
+              @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
     super(dataSet, dataTransformation, options);
 
     this.plotOptions = PlotOptionsClass.apply(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
@@ -43,141 +48,124 @@ export class BarsPlot<TItemType,
 
       for (let metric of this.plotOptions.metrics) {
         let barAvailableWidth = this.calculateBarMaxWidth(metric.name);
-        if(barAvailableWidth) {
+        if (barAvailableWidth) {
           barAvailableWidthsMap.set(metric.name, barAvailableWidth);
         }
         let screenPoints1D = this.getScreenPoints1D(metric.name);
 
-        if(screenPoints1D?.length === 1){
+        if (screenPoints1D?.length === 1) {
           isSingleBar = true;
         }
 
-        if(screenPoints1D){
-          for(let point of screenPoints1D){
+        if (screenPoints1D) {
+          for (let point of screenPoints1D) {
             minY = Math.min(minY, point.y);
           }
         }
       }
 
-      for (let idx = this.plotOptions.metrics.length - 1; idx >= 0 ; idx--) {
-        let metric = this.plotOptions.metrics[idx];
-        let prevMetric = idx !== 0 ? this.plotOptions.metrics[idx - 1] : undefined;
+      for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
+        let metric = this.plotOptions.metrics[metricIdx];
+        let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
         let transformedPts = this.getScreenPoints1D(metric.name);
+        let metricValues = this.dataSet.getMetricValues(metric.name) as Array<number>;
 
         if (transformedPts) {
 
           let prevTransformedPts: NumericPoint[] | undefined =
-            prevMetric ? this.getScreenPoints1D(metric.name) : undefined;
+            prevMetric ? this.getScreenPoints1D(prevMetric.name) : undefined;
 
-          let barWidthWithMargin: number = barAvailableWidthsMap.get(metric.name) ?? 0;
+          let barWidthWithMargin: number | undefined = barAvailableWidthsMap.get(metric.name);
 
-          if (isSingleBar) {
-            barWidthWithMargin *= 0.45;
-          } else {
-            barWidthWithMargin *= 0.7;
-          }
+          if (barWidthWithMargin) {
 
-          let barsColoring = this.getBarsColoring(metric.color);
-
-          let gradient = context.createLinearGradient(screenLocation.x, minY, screenLocation.x, zero.y);
-          gradient.addColorStop(0, barsColoring.fillGradient.min.toString());
-          gradient.addColorStop(0.4, barsColoring.fillGradient.min.toString());
-          gradient.addColorStop(1, barsColoring.fillGradient.max.toString());
-          context.setAttr('fillStyle', gradient);
-          context.setAttr('strokeStyle', barsColoring.stroke.toString());
-          context.setAttr('lineWidth', 1);
-
-          let barsRenderLeftX = null;
-
-          if (transformedPts.length > 0) {
-            let firstPt = transformedPts[0];
-            barsRenderLeftX = firstPt.x - barWidthWithMargin / 2;
-          }
-
-          self._barsRenderLeftOffset = barsRenderLeftX;
-          self._barsRenderWidth = barRenderWidthPlusMargin;
-
-          let zeroYOptimized = MathHelper.optimizeValue(zeroY);
-
-          for (let i = 0; i < dataSource.length; i++) {
-
-            let rectX = null;
-            let rectY = null;
-            let rectW = null;
-            let rectH = null;
-
-            if (ind == 0) {
-              let pointLocation = transformedPts[i];
-
-              let h = pointLocation.y - zeroY;
-
-              let xOptimized = MathHelper.optimizeValue(pointLocation.x - w / 2);
-
-              rectX = xOptimized;
-              rectY = zeroYOptimized;
-              rectW = MathHelper.optimizeValue(w);
-              rectH = MathHelper.optimizeValue(h);
+            if (isSingleBar) {
+              barWidthWithMargin *= 0.45;
             } else {
-              let pointLocation = transformedPts[i];
-              let prevPointLocation = prevTransformedPts[i];
-
-              let h = pointLocation.y - zeroY;
-
-              let y = null;
-
-              if (h < 0) {
-                y = Math.min(prevPointLocation.y + 2, zeroY);
-              } else if (h > 0) {
-                y = Math.max(prevPointLocation.y - 2, zeroY);
-              } else {
-                y = zeroY;
-              }
-
-              rectX = MathHelper.optimizeValue(pointLocation.x - w / 2);
-              rectY = MathHelper.optimizeValue(y);
-              rectW = MathHelper.optimizeValue(w);
-              rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
+              barWidthWithMargin *= 0.7;
             }
 
-            if (rectH != 0) {
-              context.beginPath();
-              context.rect(rectX, rectY, rectW, rectH);
-              context.closePath();
-              context.fill()
-              context.stroke();
+            let barsColoring = this.getBarsColoring(metric.color);
 
-              if (self._drawValueOnBars) {
-                context.save();
+            let gradient = context.createLinearGradient(screenLocation.x, minY, screenLocation.x, zero.y);
+            gradient.addColorStop(0, barsColoring.fillGradient.min.toString());
+            gradient.addColorStop(0.4, barsColoring.fillGradient.min.toString());
+            gradient.addColorStop(1, barsColoring.fillGradient.max.toString());
+            context.setAttr('fillStyle', gradient);
+            context.setAttr('strokeStyle', barsColoring.stroke.toString());
+            context.setAttr('lineWidth', 1);
 
-                context.beginPath();
-                context.rect(rectX, rectY, rectW, rectH);
-                context.clip();
+            let zeroYOptimized = MathHelper.optimizeValue(zeroY);
 
-                context.fillStyle = self._labelsForeground;
-                context.font = self._labelsFont;
+            for (let ptIdx = 0; ptIdx < transformedPts.length; ptIdx++) {
 
-                let value = parseFloat(dataSource[i].y.toFixed(self._labelsPrecision)).toString();
-                let labelText = value + self._units;
+              let rectX: number | undefined;
+              let rectY: number | undefined;
+              let rectW: number | undefined;
+              let rectH: number | undefined;
 
-                let textWidth = context.measureText(labelText).width;
+              if (metricIdx == 0) {
+                let pointLocation = transformedPts[ptIdx];
+                rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
+                rectY = zeroYOptimized;
+                rectW = MathHelper.optimizeValue(barWidthWithMargin);
+                rectH = MathHelper.optimizeValue(pointLocation.y - zeroY);
+              } else {
+                let pointLocation = transformedPts[ptIdx];
+                let prevPointLocation = prevTransformedPts![ptIdx];
 
-                let pointLocation = transformedPts[i];
+                let barHeight = pointLocation.y - zeroY;
 
-                let x = pointLocation.x - textWidth / 2;
-                let h = pointLocation.y - zeroY;
+                let barOriginY: number | undefined;
 
-                let textH = null;
-                if (self._labelsFontCalculatedTextHeightFor != self._labelsFont) {
-                  self._labelsFontCalculatedTextHeight = TextMeasureUtils.measureTextHeight(context, self._labelsFont);
-                  self._labelsFontCalculatedTextHeightFor = self._labelsFont;
+                if (barHeight < 0) {
+                  barOriginY = Math.min(prevPointLocation.y + 2, zeroY);
+                } else if (barHeight > 0) {
+                  barOriginY = Math.max(prevPointLocation.y - 2, zeroY);
+                } else {
+                  barOriginY = zeroY;
                 }
 
-                textH = self._labelsFontCalculatedTextHeight;
+                rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
+                rectY = MathHelper.optimizeValue(barOriginY);
+                rectW = MathHelper.optimizeValue(barWidthWithMargin);
+                rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
+              }
 
-                let y = zeroY + h + textH + 2;
-                context.fillText(labelText, x, y);
-                context.restore();
+              if (rectH != 0) {
+                context.beginPath();
+                context.rect(rectX, rectY, rectW, rectH);
+                context.closePath();
+                context.fill()
+                context.stroke();
+
+                if (this.plotOptions.drawLabelsOnBars) {
+                  context.save();
+
+                  context.beginPath();
+                  context.rect(rectX, rectY, rectW, rectH);
+                  context.clip();
+
+                  context.setAttr('fillStyle', this.plotOptions.foregroundColor.toString());
+                  this.setContextFont(context, this.plotOptions.font);
+
+                  let labelText: string = metricValues[ptIdx].toFixed(this.plotOptions.labelsPrecision);
+
+                  let textWidth = context.measureText(labelText).width;
+
+                  let pointLocation = transformedPts[ptIdx];
+
+                  let x = pointLocation.x - textWidth / 2;
+                  let h = pointLocation.y - zeroY;
+
+                  this.labelsHeight = this.labelsHeight ??
+                    this.textMeasureUtils!.measureFontHeight(this.plotOptions.font);
+
+                  let y = zeroY + h + this.labelsHeight + 2;
+                  context.fillText(labelText, x, y);
+                  context.restore();
+                }
               }
             }
           }
@@ -185,9 +173,7 @@ export class BarsPlot<TItemType,
           prevTransformedPts = transformedPts;
         }
       }
-      /**Clipping*/
       context.restore();
-      /***********/
     }
   }
 

@@ -40,7 +40,7 @@ export class BarsPlotOptionsDefaults
       size: 10,
       units: FontUnits.Points
     },
-    foregroundColor:''
+    foregroundColor: new Color("white")
   }
 
   public static get Instance()

@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {NumericPoint, PlotOptions, PlotOptionsClass} from "../index";
+import {FontInUnits, NumericPoint, PlotOptions, PlotOptionsClass} from "../index";
 import {ChartRenderableItem} from "../chart";
 import {DataRect, DataTransformation} from "../index";
 import {DataSet, DimensionValue} from "../data";
@@ -7,6 +7,7 @@ import * as Color from "color";
 import {Palette} from "./metric";
 import {Transition} from "../transition";
 import {MetricDependantValue} from "./metric";
+import {FontHelper} from "../../services";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -142,6 +143,10 @@ export abstract class Plot<
       } else throw new Error("DataSet is not 1-Dimensional!");
     }
     return this.screenPoints1DMap.get(metricName);
+  }
+
+  protected setContextFont(context: Konva.Context, font: FontInUnits){
+    context.setAttr('font', FontHelper.fontToString(font));
   }
 
   /**

@@ -13,7 +13,7 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
 
   font: FontInUnits;
   drawLabelsOnBars: boolean;
-  foregroundColor: string;
+  foregroundColor: Color;
   labelsPrecision: number;
   useDarkerBorder: boolean;
 

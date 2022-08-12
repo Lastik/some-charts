@@ -34,8 +34,8 @@ export class Label extends ChartRenderableItem {
     this.textTopOffset = this.textSize.height * 0.214 + this.options.verticalPadding;
 
     this.shape = new Konva.Shape({
-      stroke: this.options.foregroundColor,
-      fill: this.options.foregroundColor,
+      stroke: this.options.foregroundColor.toString(),
+      fill: this.options.foregroundColor.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.setAttr('font', FontHelper.fontToString(self.options?.font!));
