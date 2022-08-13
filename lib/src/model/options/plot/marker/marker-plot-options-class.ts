@@ -1,5 +1,5 @@
 import {FontInUnits} from "../../../font";
-import {MetricDependantValue, Palette} from "../../../plots";
+import {MetricDependantValue, Palette} from "../../../chart/plots";
 import {MarkerPlotOptions} from "./marker-plot-options";
 import {PlotOptionsClass} from "../plot-options-class";
 import {MetricOptions} from "../metric-options";

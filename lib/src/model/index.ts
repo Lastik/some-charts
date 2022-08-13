@@ -8,6 +8,6 @@ export * from './constructor';
 export * from './i-disposable';
 export * from './cursor';
 export * from './renderer';
-export * from './axis';
+export * from './chart/axis';
 export * from './chart';
 export * from './layer-name';

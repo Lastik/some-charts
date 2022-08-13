@@ -1,16 +1,16 @@
-﻿import {AxisOptions, AxisOptionsDefaults} from "../index";
+﻿import {AxisOptions, AxisOptionsDefaults} from "../../index";
 import Konva from "konva";
-import {FontHelper, MathHelper, TextMeasureUtils} from "../../services";
-import {ChartRenderableItem} from "../chart";
-import {Chart} from "../chart";
+import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
+import {ChartRenderableItem} from "../index";
+import {Chart} from "../index";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
-import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../index';
+import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../index';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 import extend from "lodash-es/extend";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
-import {LayerName} from "../layer-name";
+import {LayerName} from "../../layer-name";
 import {inject} from "tsyringe";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {

@@ -1,5 +1,5 @@
 import {Tick} from "../tick";
-import {Point, Range} from "../../../index"
+import {Point, Range} from "../../../../index"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 import chain from "lodash-es/chain";
 import {LabeledTick} from "../labeled-tick";

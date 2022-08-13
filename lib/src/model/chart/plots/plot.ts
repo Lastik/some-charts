@@ -1,13 +1,13 @@
 import Konva from "konva";
-import {FontInUnits, NumericPoint, PlotOptions, PlotOptionsClass} from "../index";
-import {ChartRenderableItem} from "../chart";
-import {DataRect, DataTransformation} from "../index";
-import {DataSet, DimensionValue} from "../data";
+import {FontInUnits, NumericPoint, PlotOptions, PlotOptionsClass} from "../../index";
+import {ChartRenderableItem} from "../index";
+import {DataRect, DataTransformation} from "../../index";
+import {DataSet, DimensionValue} from "../../data";
 import * as Color from "color";
 import {Palette} from "./metric";
-import {Transition} from "../transition";
+import {Transition} from "../../transition";
 import {MetricDependantValue} from "./metric";
-import {FontHelper} from "../../services";
+import {FontHelper} from "../../../services";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,

@@ -1,5 +1,5 @@
 import * as Color from "color";
-import {Range} from "../../geometry";
+import {Range} from "../../../geometry";
 
 export class BarsColoring {
   readonly fillGradient: Range<Color>;

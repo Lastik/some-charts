@@ -22,6 +22,7 @@ export class MouseNavigation extends ChartContent(Object) {
   private readonly onMouseOutHandler: (event: JQuery.Event) => void;
   private readonly onMouseMoveHandler: (event: JQuery.Event) => void;
   private readonly onMouseWheelHandler: (event: JQuery.Event) => void;
+  private readonly onMouseDoubleClickHandler: (event: JQuery.Event) => void;
 
   constructor(location: NumericPoint, size: Size,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
@@ -52,6 +53,10 @@ export class MouseNavigation extends ChartContent(Object) {
 
     this.onMouseWheelHandler = (event: JQuery.Event)=>{
       self.onMouseWheel.call(self, event)
+    }
+
+    this.onMouseDoubleClickHandler = (event: JQuery.Event) => {
+      self.onMouseDoubleClick.call(self, event)
     }
 
   }
@@ -198,6 +203,12 @@ export class MouseNavigation extends ChartContent(Object) {
     this.handleScrollEvent((e as any).originalEvent.wheelDelta);
   }
 
+  protected onMouseDoubleClick(e: JQuery.Event) {
+    if (this.chart) {
+      this.chart.fitToView();
+    }
+  }
+
   private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {
     if (this.chart) {
       let horizontalRange = this.chart.dataRect.getHorizontalRange();
@@ -280,7 +291,8 @@ export class MouseNavigation extends ChartContent(Object) {
       this.container.on('mouseup touchend', this.onMouseUpTouchEndHandler);
       this.container.on('mouseout', this.onMouseOutHandler);
       this.container.on('mousemove', this.onMouseMoveHandler);
-      this.container.on('mousewheel', this.onMouseWheel)
+      this.container.on('mousewheel', this.onMouseWheelHandler);
+      this.container.on('dblclick', this.onMouseDoubleClickHandler)
     }
   }
 
@@ -294,7 +306,8 @@ export class MouseNavigation extends ChartContent(Object) {
       this.container.off('mouseup touchend', this.onMouseUpTouchEndHandler);
       this.container.off('mouseout', this.onMouseOutHandler);
       this.container.off('mousemove', this.onMouseMoveHandler);
-      this.container.off('mousewheel', this.onMouseWheel)
+      this.container.off('mousewheel', this.onMouseWheelHandler)
+      this.container.off('dblclick', this.onMouseDoubleClickHandler)
     }
     this.renderer = undefined;
     this.container = undefined;

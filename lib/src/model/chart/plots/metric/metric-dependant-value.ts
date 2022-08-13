@@ -1,4 +1,4 @@
-import {Range} from "../../geometry/range";
+import {Range} from "../../../geometry/range";
 import * as Color from "color";
 
 /**

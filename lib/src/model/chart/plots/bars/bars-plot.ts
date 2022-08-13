@@ -7,14 +7,14 @@ import {
   DataTransformation,
   NumericPoint,
   PlotOptionsClass
-} from "../../index";
-import {DataSet, DimensionValue} from "../../data";
+} from "../../../index";
+import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {Range} from '../../geometry'
-import {MathHelper, TextMeasureUtils} from "../../../services";
-import {BarsPlotOptionsClass} from "../../options/plot/bars";
+import {Range} from '../../../geometry'
+import {MathHelper, TextMeasureUtils} from "../../../../services";
+import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {inject} from "tsyringe";
 
 export class BarsPlot<TItemType,

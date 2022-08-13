@@ -2,7 +2,7 @@ import Konva from "konva";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
 import {inject} from "tsyringe";
-import {Label, Plot, PlotFactory} from "../plots";
+import {Label, Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
@@ -20,7 +20,7 @@ import {
   IDisposable, PlotOptionsClass
 } from "../index";
 import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../index";
-import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "../axis";
+import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import {LayerName} from "../layer-name";
 import {Legend} from "./legend";
 

@@ -3,7 +3,7 @@ import {PlotOptions} from "./plot-options";
 import {MarkerPlotOptions, MarkerPlotOptionsClass} from "./marker";
 import {BarsPlotOptions, BarsPlotOptionsClass} from "./bars";
 import {MetricOptions} from "./metric-options";
-import {Palette} from "../../plots";
+import {Palette} from "../../chart/plots";
 import * as Color from "color";
 
 export abstract class PlotOptionsClass implements PlotOptions {

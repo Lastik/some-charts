@@ -1,5 +1,5 @@
 import {Tick} from "../tick";
-import {Range} from "../../../index"
+import {Range} from "../../../../index"
 import {MinorTicksGenerator} from "../minor-ticks-generator";
 
 export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {

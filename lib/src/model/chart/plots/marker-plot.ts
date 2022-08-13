@@ -1,12 +1,12 @@
 import extend from "lodash-es/extend";
 import {Context} from "konva/lib/Context";
 import {Shape, ShapeConfig} from "konva/lib/Shape";
-import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClass} from "../index";
-import {DataSet, DimensionValue} from "../data";
-import {DataTransformation, NumericPoint} from "../index";
+import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClass} from "../../index";
+import {DataSet, DimensionValue} from "../../data";
+import {DataTransformation, NumericPoint} from "../../index";
 import {Plot} from "./plot";
 import * as Color from "color";
-import {MarkerPlotOptionsClass} from "../options/plot/marker";
+import {MarkerPlotOptionsClass} from "../../options/plot/marker";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,

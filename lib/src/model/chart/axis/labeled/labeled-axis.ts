@@ -1,6 +1,6 @@
 ﻿import {AxisBase} from "../axis-base";
-import {NumericPoint, NumericRange, Range, Point, DataTransformation} from "../../index";
-import {AxisOptions} from "../../index";
+import {NumericPoint, NumericRange, Range, Point, DataTransformation} from "../../../index";
+import {AxisOptions} from "../../../index";
 import {MinorTicksGenerator, MajorTicksGenerator, LabeledMajorTicksGenerator} from "../ticks";
 import {AxisOrientation} from "../axis-orientation";
 

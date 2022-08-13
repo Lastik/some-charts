@@ -7,7 +7,7 @@ import {
 import {LogPointXTransformation} from "./log-point-x-transformation";
 import {LogPointYTransformation} from "./log-point-y-transformation";
 import {CompositeTransformation} from "./composite-transformation";
-import {AxisTypes} from "../../axis";
+import {AxisTypes} from "../../chart/axis";
 
 export interface CoordinateTransformation {
   applyX(x: number): number;

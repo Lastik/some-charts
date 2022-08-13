@@ -1,7 +1,7 @@
 ﻿import extend from "lodash-es/extend";
 import Konva from "konva";
 import {inject} from "tsyringe";
-import {ChartRenderableItem} from "../chart";
+import {ChartRenderableItem} from "./index";
 import {HorizontalAlignment, NumericPoint, Size} from "../index";
 import {LabelOptions, LabelOptionsDefaults} from "../index";
 import {FontHelper, TextMeasureUtils} from "../../services";
