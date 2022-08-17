@@ -1,8 +1,8 @@
 /**
  * Chart renderer options
  */
-import {FontInPx} from "../../index";
-import {AxisTypes} from "../../../core";
+import {FontInPx} from "../../font";
+import {AxisTypes} from "../../chart/axis";
 
 export interface AxisOptions {
   /**

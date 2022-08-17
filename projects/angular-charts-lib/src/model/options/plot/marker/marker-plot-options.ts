@@ -1,5 +1,3 @@
-import {TextOptions} from "../../common";
-import {FontUnits} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
@@ -9,7 +7,7 @@ import {MetricOptions} from "../metric-options";
 /**
  * Marker plot options
  */
-export interface MarkerPlotOptions extends PlotOptions, TextOptions {
+export interface MarkerPlotOptions extends PlotOptions {
 
   /*
   * Marker plot metric with it's color.
@@ -28,16 +26,10 @@ export class MarkerPlotOptionsDefaults
     metric: {
       name: "",
       caption: "",
-      color: new Color("blue")
+      color: new Color('blue')
     },
     markerSize: 5,
-    kind: PlotKind.Bars,
-    font: {
-      family: 'Calibri',
-      size: 10,
-      units: FontUnits.Points
-    },
-    foregroundColor:''
+    kind: PlotKind.Marker
   }
 
   public static get Instance()

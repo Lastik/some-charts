@@ -1,10 +1,11 @@
 {
   "name": "angular-charts",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build-lib": "npm run --prefix projects/angular-charts-lib build",
+    "build": "npm run build-lib",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

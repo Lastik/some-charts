@@ -1,4 +1,3 @@
-import {FontInUnits} from "../../../font";
 import {MetricDependantValue, Palette} from "../../../chart/plots";
 import {MarkerPlotOptions} from "./marker-plot-options";
 import {PlotOptionsClass} from "../plot-options-class";
@@ -10,15 +9,11 @@ import * as Color from "color";
  */
 export class MarkerPlotOptionsClass extends PlotOptionsClass implements MarkerPlotOptions {
   metric: MetricOptions<Color | Palette>;
-  font: FontInUnits;
-  foregroundColor: string;
   markerSize: number | MetricDependantValue<number>;
 
   constructor(markerPlotOptions: MarkerPlotOptions) {
     super(markerPlotOptions);
     this.metric = markerPlotOptions.metric;
-    this.font = markerPlotOptions.font;
-    this.foregroundColor = markerPlotOptions.foregroundColor;
     this.markerSize = markerPlotOptions.markerSize;
   }
 

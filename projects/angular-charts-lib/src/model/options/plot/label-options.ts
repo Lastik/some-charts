@@ -1,6 +1,7 @@
 import {TextOptions} from "../common";
 import {FontUnits} from "../../font";
 import {HorizontalAlignment} from "../../alignment";
+import * as Color from "color";
 
 /**
  * Label options
@@ -29,7 +30,7 @@ export class LabelOptionsDefaults
       units: FontUnits.Points,
       family: 'Calibri'
     },
-    foregroundColor: 'white',
+    foregroundColor: new Color("white"),
     verticalPadding: 6,
     textAlignment: HorizontalAlignment.Center
   }
