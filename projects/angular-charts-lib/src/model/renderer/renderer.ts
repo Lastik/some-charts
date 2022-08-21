@@ -1,7 +1,9 @@
 import {RenderableItem} from "./renderable-item";
 import Konva from "konva";
 import extend from "lodash-es/extend";
-import {Cursor, IDisposable, RendererOptions, RendererOptionsDefaults} from "../index";
+import {Cursor} from "../cursor";
+import {IDisposable} from "../i-disposable";
+import {RendererOptions, RendererOptionsDefaults} from "../options";
 import {Size} from "../geometry/size";
 import {JqueryHelper} from "../../services";
 

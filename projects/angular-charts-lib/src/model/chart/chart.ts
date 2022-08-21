@@ -14,15 +14,24 @@ import {
   DataRect,
   DataTransformation,
   CoordinateTransformationStatic,
+  Point
+} from "../geometry";
+
+import {
+  PlotOptionsClass, PlotOptionsClassFactory,
+  AxisOptions, ChartOptions, ChartOptionsDefaults,
+  NumericAxisOptions, PlotOptions
+} from "../options";
+
+import {
   EventBase,
-  Point,
-  EventListener,
-  IDisposable, PlotOptionsClass
-} from "../index";
-import {AxisOptions, ChartOptions, ChartOptionsDefaults, NumericAxisOptions, PlotOptions} from "../index";
+  EventListener
+} from "../events";
+
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
 import {LayerName} from "../layer-name";
 import {Legend} from "./legend";
+import {IDisposable} from "../i-disposable";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
@@ -142,7 +151,7 @@ export class Chart<TItemType = any,
 
     this.plots = [];
 
-    let plotOptionsArr = this.options.plots.map(po => PlotOptionsClass.apply(po)).filter(po => po !== undefined) as PlotOptionsClass[];
+    let plotOptionsArr = this.options.plots.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
 
     for(let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);

@@ -1,10 +1,10 @@
-﻿import {AxisOptions, AxisOptionsDefaults} from "../../index";
+﻿import {AxisOptions, AxisOptionsDefaults} from "../../options/axes";
 import Konva from "konva";
 import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
 import {ChartRenderableItem} from "../index";
-import {Chart} from "../index";
+import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
-import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../index';
+import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../geometry';
 import zipWith from 'lodash-es/zipWith';
 import chain from 'lodash-es/chain';
 import extend from "lodash-es/extend";

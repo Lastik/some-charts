@@ -1,4 +1,5 @@
-import {Point, Sorting} from "../index";
+import {Point} from "../geometry";
+import {Sorting} from "../sorting";
 
 export class DimensionValue<XDimensionType extends number | string | Date> {
   public readonly value: XDimensionType;

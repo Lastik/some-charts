@@ -2,7 +2,7 @@ import {Chart} from "./chart";
 
 export function ChartContent<TBase extends abstract new (...args: any[]) => any>(Base: TBase) {
   abstract class Mixin extends Base {
-    protected _chart?: Chart<any, any, any>;
+    _chart?: Chart<any, any, any>;
 
     /**
      * Places this item on the chart.

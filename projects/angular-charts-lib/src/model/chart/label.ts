@@ -1,11 +1,12 @@
 ﻿import extend from "lodash-es/extend";
 import Konva from "konva";
 import {inject} from "tsyringe";
-import {ChartRenderableItem} from "./index";
-import {HorizontalAlignment, NumericPoint, Size} from "../index";
-import {LabelOptions, LabelOptionsDefaults} from "../index";
+import {NumericPoint, Size} from "../geometry";
+import {LabelOptions, LabelOptionsDefaults} from "../options";
 import {FontHelper, TextMeasureUtils} from "../../services";
 import {LayerName} from "../layer-name";
+import {HorizontalAlignment} from "../alignment";
+import {ChartRenderableItem} from "./chart-renderable-item";
 
 export class Label extends ChartRenderableItem {
   private location: NumericPoint;

@@ -1,6 +1,9 @@
-﻿import {Range, DataRect, NumericPoint, NumericRange} from '../index';
-import {CoordinateTransformation} from "./coordinate-transformation";
+﻿import {CoordinateTransformation} from "./coordinate-transformation";
 import {Size} from "../size";
+import {Range} from "../range";
+import {DataRect} from "../data-rect";
+import {NumericPoint} from "../point";
+import {NumericRange} from "../numeric-range";
 
 export class DataTransformation {
   public coordinateTransformation?: CoordinateTransformation;

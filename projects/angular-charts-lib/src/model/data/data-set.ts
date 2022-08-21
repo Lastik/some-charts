@@ -1,7 +1,9 @@
 import {DimensionValue} from "./dimension-value";
-import {ACEventTarget, DataRect, Range, Sorting} from "../index";
+import {ACEventTarget} from "../events";
+import {DataRect, Range} from "../geometry";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
 import {DimensionType} from "./dimension-type";
+import {Sorting} from "../sorting";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,

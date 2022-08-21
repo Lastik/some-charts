@@ -1,7 +1,8 @@
 import Konva from "konva";
-import {FontInUnits, NumericPoint, PlotOptions, PlotOptionsClass} from "../../index";
-import {ChartRenderableItem} from "../index";
-import {DataRect, DataTransformation} from "../../index";
+import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
+import {FontInUnits} from "../../font"
+import {ChartRenderableItem} from "../chart-renderable-item";
+import {NumericPoint, DataRect, DataTransformation} from "../../geometry";
 import {DataSet, DimensionValue} from "../../data";
 import * as Color from "color";
 import {Palette} from "./metric";
@@ -40,7 +41,7 @@ export abstract class Plot<
 
     this.dataSet = dataSet;
     this.dataTransformation = dataTransformation;
-    this.plotOptions = PlotOptionsClass.apply(plotOptions) as PlotOptionsClassType;
+    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
 
     this.layerName = `plot-layer-${this.id}`;
     this.plotShape = new Konva.Shape({

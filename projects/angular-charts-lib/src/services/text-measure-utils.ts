@@ -1,6 +1,7 @@
 ﻿import Konva from "konva";
 import Util = Konva.Util;
-import {FontInUnits, FontInPx, Size} from "../model";
+import {FontInUnits, FontInPx} from "../model/font";
+import {Size} from "../model/geometry";
 import {FontHelper} from "./font-helper";
 import {singleton} from "tsyringe";
 

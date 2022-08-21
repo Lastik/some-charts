@@ -2,8 +2,8 @@
 import Konva from "konva";
 import extend from "lodash-es/extend";
 import {ChartRenderableItem} from "./chart-renderable-item";
-import {NumericPoint, Size} from "../index";
-import {GridOptions, GridOptionsDefaults} from "../index";
+import {NumericPoint, Size} from "../geometry";
+import {GridOptions, GridOptionsDefaults} from "../options";
 import {MathHelper} from "../../services";
 import {LayerName} from "../layer-name";
 

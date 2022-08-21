@@ -3,16 +3,19 @@ import extend from "lodash-es/extend";
 import {
   BarsPlotOptions,
   BarsPlotOptionsDefaults,
+  PlotOptionsClassFactory
+} from "../../../options";
+
+import {
   DataRect,
   DataTransformation,
   NumericPoint,
-  PlotOptionsClass
-} from "../../../index";
+  Range
+} from "../../../geometry";
 import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {Range} from '../../../geometry'
 import {MathHelper, TextMeasureUtils} from "../../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {inject} from "tsyringe";
@@ -30,7 +33,7 @@ export class BarsPlot<TItemType,
               @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
     super(dataSet, dataTransformation, options);
 
-    this.plotOptions = PlotOptionsClass.apply(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
+    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
   }
 
   protected draw1DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[]): void {
