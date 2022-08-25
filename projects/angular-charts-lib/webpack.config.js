@@ -29,7 +29,7 @@ module.exports = {
         use: {
           loader: 'ts-loader',
           options: {
-            configFile: "tsconfig.lib.json"
+            configFile: "tsconfig.webpack.json"
           }
         }
       },
@@ -46,6 +46,16 @@ module.exports = {
           'postcss-loader', // post process the compiled CSS
           'sass-loader' // compiles Sass to CSS, using Node Sass by default
         ]
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
       }
     ]
   },
