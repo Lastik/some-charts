@@ -10,6 +10,8 @@
   "include": ["src"],
   "exclude": [
     "src/test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "node_modules",
+    "../../node_modules"
   ]
 }

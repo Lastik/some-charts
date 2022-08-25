@@ -2,12 +2,12 @@ import Konva from "konva";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
 import {inject} from "tsyringe";
-import {Label, Plot, PlotFactory} from "./plots";
+import {Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
-import {KeyboardNavigation, KeyboardNavigationsFactory} from "./navigation/keyboard";
-import {MouseNavigation} from "./navigation/mouse-navigation";
+import {KeyboardNavigation, KeyboardNavigationsFactory} from "./navigation";
+import {MouseNavigation} from "./navigation";
 import {
   NumericPoint,
   Size,
@@ -32,6 +32,7 @@ import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./
 import {LayerName} from "../layer-name";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
+import {Label} from "./label";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,

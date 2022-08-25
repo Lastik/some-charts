@@ -1,6 +1,6 @@
 ﻿import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard";
-import {ChartContent} from "../../index";
+import {Chart, ChartContent} from "../../index";
 import {DataRect, NumericPoint, NumericRange, Size} from "../../index";
 import {Renderer} from "../../renderer";
 

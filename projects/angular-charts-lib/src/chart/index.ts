@@ -5,3 +5,5 @@ export * from './axis';
 export * from './grid';
 export * from './legend';
 export * from './plots';
+export * from './navigation';
+export * from './label';

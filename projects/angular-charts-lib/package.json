@@ -5,7 +5,7 @@
   "module": "dist/angular-charts.mjs",
   "typings": "dist/angular-charts.d.ts",
   "scripts": {
-    "build": "rollup -c"
+    "build": "webpack && tsc"
   },
   "dependencies": {
     "@types/color": "^3.0.3",
@@ -15,9 +15,9 @@
     "lodash-es": "^4.17.21",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.4.0",
+    "tslib": "^2.3.0",
     "tsyringe": "^4.7.0",
     "typedi": "^0.10.0",
-    "zone.js": "~0.11.4",
-    "tslib": "^2.3.0"
+    "zone.js": "~0.11.4"
   }
 }
