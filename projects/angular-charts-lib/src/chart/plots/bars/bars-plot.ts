@@ -16,7 +16,7 @@ import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {MathHelper, TextMeasureUtils} from "../../../../services";
+import {MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {inject} from "tsyringe";
 

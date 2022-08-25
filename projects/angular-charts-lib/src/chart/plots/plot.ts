@@ -8,7 +8,7 @@ import * as Color from "color";
 import {Palette} from "./metric";
 import {Transition} from "../../transition";
 import {MetricDependantValue} from "./metric";
-import {FontHelper} from "../../../services";
+import {FontHelper} from "../../services";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,

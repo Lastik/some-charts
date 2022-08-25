@@ -6,8 +6,8 @@ import {Label, Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
-import {KeyboardNavigation, KeyboardNavigationsFactory} from "../navigation/keyboard";
-import {MouseNavigation} from "../navigation/mouse-navigation";
+import {KeyboardNavigation, KeyboardNavigationsFactory} from "./navigation/keyboard";
+import {MouseNavigation} from "./navigation/mouse-navigation";
 import {
   NumericPoint,
   Size,

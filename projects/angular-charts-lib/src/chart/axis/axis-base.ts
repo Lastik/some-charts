@@ -1,6 +1,6 @@
 ﻿import {AxisOptions, AxisOptionsDefaults} from "../../options/axes";
 import Konva from "konva";
-import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
+import {FontHelper, MathHelper, TextMeasureUtils} from "../../services";
 import {ChartRenderableItem} from "../index";
 import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";

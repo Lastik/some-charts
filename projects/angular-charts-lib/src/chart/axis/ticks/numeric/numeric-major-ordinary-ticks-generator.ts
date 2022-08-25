@@ -1,7 +1,7 @@
 import {Tick} from "../tick";
 import {Range} from "../../../../index"
 import {MajorTicksGenerator} from "../major-ticks-generator";
-import {MathHelper} from "../../../../../services";
+import {MathHelper} from "../../../../services";
 
 export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<number> {
 

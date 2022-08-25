@@ -4,7 +4,7 @@ import extend from "lodash-es/extend";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {NumericPoint, Size} from "../geometry";
 import {GridOptions, GridOptionsDefaults} from "../options";
-import {MathHelper} from "../../services";
+import {MathHelper} from "../services";
 import {LayerName} from "../layer-name";
 
 export class Grid extends ChartRenderableItem {

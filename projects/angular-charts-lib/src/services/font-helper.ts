@@ -1,7 +1,7 @@
 ﻿/**
  * Provides methods with font interface.
  */
-import {FontInUnits, FontInPx} from "../model";
+import {FontInUnits, FontInPx} from "../index";
 
 export class FontHelper {
   public static fontToString(font: FontInUnits | FontInPx): string {

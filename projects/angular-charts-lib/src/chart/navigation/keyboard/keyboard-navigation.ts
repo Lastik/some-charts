@@ -1,7 +1,7 @@
 import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
-import {Chart, ChartContent} from "../../chart";
-import {DataRect, IDisposable, NumericRange} from "../../index";
+import {Chart, ChartContent} from "../../../index";
+import {DataRect, IDisposable, NumericRange} from "../../../index";
 
 export class KeyboardNavigation extends ChartContent(Object) implements IDisposable {
   private readonly _id: number;

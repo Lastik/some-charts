@@ -3,7 +3,7 @@ import Konva from "konva";
 import {inject} from "tsyringe";
 import {NumericPoint, Size} from "../geometry";
 import {LabelOptions, LabelOptionsDefaults} from "../options";
-import {FontHelper, TextMeasureUtils} from "../../services";
+import {FontHelper, TextMeasureUtils} from "../services";
 import {LayerName} from "../layer-name";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
