@@ -5,7 +5,7 @@
   "module": "dist/angular-charts.mjs",
   "typings": "dist/angular-charts.d.ts",
   "scripts": {
-    "build": "webpack && tsc"
+    "build": "webpack && tsc --declaration --project tsconfig.lib.json"
   },
   "dependencies": {
     "@types/color": "^3.0.3",

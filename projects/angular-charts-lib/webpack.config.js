@@ -1,18 +1,22 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const packageJson = require('../../package.json');
 
 module.exports = {
+  target: 'web',
   mode: "production",
   devtool: 'source-map',
   entry: './src/index.ts',
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, './../../dist/' + packageJson.name),
     library: "angular-charts",
     libraryTarget: 'umd',
-    clean: true
+    clean: true,
+    globalObject: 'this',
+    umdNamedDefine: true,
   },
   optimization: {
     minimize: true,
@@ -21,17 +25,26 @@ module.exports = {
       new CssMinimizerPlugin()
     ],
   },
+  plugins: [
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: false,
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, './../../dist/' + packageJson.name)],
+      dangerouslyAllowCleanPatternsOutsideProject: true
+    }),
+  ],
   module: {
     rules: [
       {
         test: /\.(m|j|t)s$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            configFile: "tsconfig.webpack.json"
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: path.resolve(__dirname, './tsconfig.lib.json')
+            }
           }
-        }
+        ],
       },
       {
         test: /\.scss$/,

@@ -2,10 +2,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../out-tsc",
+    "outDir": "./../../dist/angular-charts/types",
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "sourceMap": true
   },
   "include": ["src"],
   "exclude": [
