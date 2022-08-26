@@ -2,6 +2,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 const packageJson = require('../../package.json');
 
 module.exports = {
@@ -9,6 +10,10 @@ module.exports = {
   mode: "production",
   devtool: 'source-map',
   entry: './src/index.ts',
+  externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
+  externals: [nodeExternals({
+    modulesDir: path.resolve(__dirname, './../../node_modules')
+  })],
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, './../../dist/' + packageJson.name),
