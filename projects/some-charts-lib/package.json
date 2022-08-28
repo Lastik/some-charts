@@ -2,7 +2,8 @@
   "name": "some-charts",
   "version": "0.0.1",
   "scripts": {
-    "build": "webpack && tsc --declaration --project tsconfig.lib.json"
+    "build-dev": "webpack --mode=development && tsc --declaration --project tsconfig.lib.json",
+    "build": "webpack --mode=production && tsc --declaration --project tsconfig.lib.json"
   },
   "dependencies": {
     "@types/color": "^3.0.3",

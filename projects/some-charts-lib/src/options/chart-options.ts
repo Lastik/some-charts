@@ -11,15 +11,15 @@ export interface ChartOptions {
   /**
    * Chart navigation options.
    */
-  navigation: NavigationOptions;
+  navigation?: NavigationOptions;
   /**
    *  Chart axes options
    */
-  axes: AxesOptions;
+  axes?: AxesOptions;
   /**
    *  Chart grid options
    */
-  grid: GridOptions;
+  grid?: GridOptions;
   /**
    *  Chart header options
    */
@@ -31,11 +31,11 @@ export interface ChartOptions {
   /**
    *  Chart's plots options
    */
-  plots: Array<PlotOptions>;
+  plots?: Array<PlotOptions>;
   /**
    *  Chart renderer options
    */
-  renderer: RendererOptions
+  renderer?: RendererOptions
 }
 
 

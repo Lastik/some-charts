@@ -6,6 +6,8 @@
     "start": "ng serve",
     "build-lib": "npm run --prefix projects/some-charts-lib build",
     "build": "npm run build-lib",
+    "build-lib-dev": "npm run --prefix projects/some-charts-lib build-dev",
+    "build-dev": "npm run build-lib-dev",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -30,7 +32,8 @@
     "tslib": "^2.3.0",
     "tsyringe": "^4.7.0",
     "typedi": "^0.10.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "some-charts": "dist/some-charts/some-charts-0.0.1.tgz"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.3.9",
@@ -40,6 +43,7 @@
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^12.11.1",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-pkg-json-webpack-plugin": "0.0.40",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",

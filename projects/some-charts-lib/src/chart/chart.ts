@@ -112,7 +112,7 @@ export class Chart<TItemType = any,
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    this._renderer = new Renderer(elementId, size, this.options!.renderer)
+    this._renderer = new Renderer(elementId, size, this.options!.renderer!)
 
     Chart.createLayers(this._renderer);
 
@@ -123,16 +123,16 @@ export class Chart<TItemType = any,
     this.dataSet = dataSet;
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
-    let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes));
+    let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes!));
 
     this.contentItems = [];
 
-    this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes.horizontal);
+    this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes!.horizontal);
     if(this.horizontalAxis) {
       this.contentItems.push(this.horizontalAxis);
     }
 
-    this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes.vertical);
+    this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes!.vertical);
     if(this.verticalAxis) {
       this.contentItems.push(this.verticalAxis);
     }
@@ -145,14 +145,14 @@ export class Chart<TItemType = any,
       this.contentItems.push(this.headerLabel);
     }
 
-    if (this.options.navigation.isEnabled) {
+    if (this.options.navigation!.isEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(location, size)
     }
 
     this.plots = [];
 
-    let plotOptionsArr = this.options.plots.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
+    let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
 
     for(let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
@@ -216,7 +216,7 @@ export class Chart<TItemType = any,
     let verticalRange = this._dataRect.getVerticalRange();
 
     let horizontalAxisHeight = 0;
-    if (this.options.axes.horizontal.axisType != AxisTypes.None) {
+    if (this.options.axes!.horizontal.axisType != AxisTypes.None) {
       horizontalAxisHeight = this.horizontalAxis!.size.height;
     }
 
@@ -298,8 +298,8 @@ export class Chart<TItemType = any,
           chartBoundingRect.width + offsetX,
           chartBoundingRect.height + offsetY);
 
-        if (this.options.navigation.fixedTopBound) {
-          chartBoundingRect = chartBoundingRect.withHeight((this.options.navigation.fixedTopBound - chartBoundingRect.minY) * (1 + coeff));
+        if (this.options.navigation!.fixedTopBound) {
+          chartBoundingRect = chartBoundingRect.withHeight((this.options.navigation!.fixedTopBound - chartBoundingRect.minY) * (1 + coeff));
         }
         if (chartBoundingRect.height == 0) {
           chartBoundingRect = chartBoundingRect.withHeight(1);
@@ -359,12 +359,12 @@ export class Chart<TItemType = any,
 
     const dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage = 'DataSet with labeled axis must have the corresponding dimension of string type!';
 
-    if (this.options.axes.horizontal.axisType === AxisTypes.LabeledAxis) {
+    if (this.options.axes!.horizontal.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.dimensionXType === DimensionType.String) {
         (this.horizontalAxis as LabeledAxis).updateLabels(this.dataSet.dimensionXValues.map(v => <Point<string>>v.toPoint()));
       } else throw new Error(dataSetWithLabeledAxisMustHaveStringDimensionErrorMessage)
     }
-    if (this.options.axes.vertical.axisType === AxisTypes.LabeledAxis) {
+    if (this.options.axes!.vertical.axisType === AxisTypes.LabeledAxis) {
       if (this.dataSet.is2D) {
         if (this.dataSet.dimensionXType === DimensionType.String) {
           (this.verticalAxis as LabeledAxis).updateLabels(this.dataSet.dimensionYValues!.map(v => <Point<string>>v.toPoint()));

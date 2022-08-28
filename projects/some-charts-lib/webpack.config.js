@@ -10,7 +10,6 @@ const buildDirectory = './../../dist/' + packageJson.name;
 
 module.exports = {
   target: 'web',
-  mode: "production",
   devtool: 'source-map',
   entry: './src/index.ts',
   externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
