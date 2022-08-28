@@ -2,7 +2,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./../../dist/angular-charts/types",
+    "outDir": "./../../dist/some-charts/types",
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,

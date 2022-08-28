@@ -2,7 +2,7 @@
 
 # compiled output
 /dist
-/projects/angular-charts-lib/dist
+/projects/some-charts-lib/dist
 /tmp
 /out-tsc
 # Only exists if Bazel was run

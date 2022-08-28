@@ -2,8 +2,11 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const nodeExternals = require('webpack-node-externals');
-const packageJson = require('../../package.json');
+const packageJson = require(path.resolve(__dirname, 'package.json'));
+
+const buildDirectory = './../../dist/' + packageJson.name;
 
 module.exports = {
   target: 'web',
@@ -16,8 +19,8 @@ module.exports = {
   })],
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, './../../dist/' + packageJson.name),
-    library: "angular-charts",
+    path: path.resolve(__dirname, buildDirectory),
+    library: "some-charts",
     libraryTarget: 'umd',
     clean: true,
     globalObject: 'this',
@@ -33,9 +36,19 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
-      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, './../../dist/' + packageJson.name)],
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, buildDirectory)],
       dangerouslyAllowCleanPatternsOutsideProject: true
     }),
+    new CopyPlugin({
+      patterns: [{
+        from: "package.json",
+        to: buildDirectory,
+        transform(content, absoluteFrom) {
+          content.scripts = undefined;
+          return content;
+        }
+      }]
+    })
   ],
   module: {
     rules: [

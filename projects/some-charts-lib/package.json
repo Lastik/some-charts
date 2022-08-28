@@ -1,9 +1,9 @@
 {
-  "name": "angular-charts",
+  "name": "some-charts",
   "version": "0.0.1",
-  "main": "dist/angular-charts.js",
-  "module": "dist/angular-charts.mjs",
-  "typings": "dist/angular-charts.d.ts",
+  "main": "dist/some-charts.js",
+  "module": "dist/some-charts.mjs",
+  "typings": "dist/some-charts.d.ts",
   "scripts": {
     "build": "webpack && tsc --declaration --project tsconfig.lib.json"
   },
