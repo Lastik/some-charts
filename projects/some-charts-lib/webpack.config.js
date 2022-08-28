@@ -2,7 +2,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyPkgJsonPlugin = require("copy-pkg-json-webpack-plugin")
 const nodeExternals = require('webpack-node-externals');
 const packageJson = require(path.resolve(__dirname, 'package.json'));
 
@@ -39,15 +39,12 @@ module.exports = {
       cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, buildDirectory)],
       dangerouslyAllowCleanPatternsOutsideProject: true
     }),
-    new CopyPlugin({
-      patterns: [{
-        from: "package.json",
-        to: buildDirectory,
-        transform(content, absoluteFrom) {
-          content.scripts = undefined;
-          return content;
-        }
-      }]
+    new CopyPkgJsonPlugin({
+      remove: ['scripts'],
+      replace: {
+        "main": "index.js",
+        "types": "types/index.d.ts",
+      }
     })
   ],
   module: {

@@ -40,7 +40,7 @@
     "@types/jquery": "^3.5.14",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^12.11.1",
-    "clean-webpack-plugin": "^4.0.0",
+    "copy-pkg-json-webpack-plugin": "0.0.40",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",

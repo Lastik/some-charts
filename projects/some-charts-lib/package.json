@@ -1,9 +1,6 @@
 {
   "name": "some-charts",
   "version": "0.0.1",
-  "main": "dist/some-charts.js",
-  "module": "dist/some-charts.mjs",
-  "typings": "dist/some-charts.d.ts",
   "scripts": {
     "build": "webpack && tsc --declaration --project tsconfig.lib.json"
   },
