@@ -33,11 +33,12 @@ import {LayerName} from "../layer-name";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
+import {ChartContentPlaceholder} from "./chart-content-placeholder";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-    implements EventListener<DataSetEventType>, IDisposable {
+    implements EventListener<DataSetEventType>, IDisposable, ChartContentPlaceholder {
 
   public static readonly MinZoomLevel: number = 1e-8;
 

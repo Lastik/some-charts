@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Chart, DataRect, NumericPoint, PlotKind, Size} from "some-charts";
+import {Chart, DataRect, MarkerPlotOptions, NumericPoint, PlotKind, Size} from "some-charts";
 import {DataSet} from "some-charts/types/data";
 import * as Color from "color";
 import {MoneyForIndex} from "./model/money-for-index";
@@ -40,14 +40,15 @@ export class ChartDemoComponent implements OnInit {
       dataSet,
       {
         plots: [
-          {kind: PlotKind.Marker, metric: {
+          {
+            kind: PlotKind.Marker, metric: {
               name: 'money',
               caption: 'Money',
-              color: new Color("#AA0000");
-            }}
+              color: new Color("#AA0000")
+            }
+          } as MarkerPlotOptions
         ]
       }
     )
   }
-
 }
