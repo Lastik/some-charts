@@ -8,7 +8,7 @@ import {LayerName} from "../layer-name";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
 
-export class Label extends ChartRenderableItem {
+export class Label extends ChartRenderableItem{
   private location: NumericPoint;
   private width: number;
   private options: LabelOptions;

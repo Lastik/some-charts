@@ -1,6 +1,6 @@
 ﻿import {inject} from "tsyringe";
 import {KeyboardNavigationsFactory} from "./keyboard";
-import {Chart, ChartContent} from "../../index";
+import {ChartApi, ChartContent} from "../../index";
 import {DataRect, NumericPoint, NumericRange, Size} from "../../index";
 import {Renderer} from "../../renderer";
 
@@ -281,7 +281,7 @@ export class MouseNavigation extends ChartContent(Object) {
    * Binds mouse navigation to the chart.
    * @param {Chart} chart - Chart, this navigation is bound to.
    */
-  override placeOnChart(chart?: Chart<any, any, any>) {
+  override placeOnChart(chart?: ChartApi<any>) {
     super.placeOnChart(chart);
     if(chart) {
       this.renderer = chart.getRenderer();

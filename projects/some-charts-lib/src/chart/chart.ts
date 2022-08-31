@@ -33,12 +33,12 @@ import {LayerName} from "../layer-name";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
-import {ChartContentPlaceholder} from "./chart-content-placeholder";
+import {ChartApi} from "./api";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-    implements EventListener<DataSetEventType>, IDisposable, ChartContentPlaceholder {
+    implements EventListener<DataSetEventType>, IDisposable, ChartApi<ChartRenderableItem> {
 
   public static readonly MinZoomLevel: number = 1e-8;
 
@@ -385,5 +385,9 @@ export class Chart<TItemType = any,
 
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
+  }
+
+  get minZoomLevel(): number {
+    return Chart.MinZoomLevel;
   }
 }

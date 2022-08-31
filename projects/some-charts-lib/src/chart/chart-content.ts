@@ -1,19 +1,14 @@
-import {Chart} from "./chart";
-import {ChartContentPlaceholder} from "./chart-content-placeholder";
-import {ChartView} from "./chart-view";
-import {ChartPlotMetadata} from "./chart-plot-metadata";
+import {ChartApi} from "./api";
 
-export type ChartInterface = ChartContentPlaceholder & ChartView & ChartPlotMetadata;
-
-export function ChartContent<TBase extends abstract new (...args: any[]) => any>(Base: TBase) {
+export function ChartContent<ChartContentItemType, TBase extends abstract new (...args: any[]) => any>(Base: TBase) {
   abstract class Mixin extends Base {
-    _chart?: ChartInterface;
+    _chart?: ChartApi<ChartContentItemType>;
 
     /**
      * Places this item on the chart.
-     * @param {Chart | undefined} chart - Chart where to place this item.
+     * @param {ChartApi | undefined} chart - Chart where to place this item.
      */
-    placeOnChart(chart?: ChartInterface) {
+    placeOnChart(chart?: ChartApi<ChartContentItemType>) {
       this._chart = chart;
     }
 
@@ -28,7 +23,7 @@ export function ChartContent<TBase extends abstract new (...args: any[]) => any>
      * Returns related chart
      * @returns {Chart} chart.
      */
-    get chart(): ChartInterface | undefined {
+    get chart(): ChartApi<ChartContentItemType> | undefined {
       return this._chart;
     }
   }

@@ -69,12 +69,4 @@ export abstract class RenderableItem {
   markDirty() {
     this.isDirty = true;
   }
-
-  /**
-   * Returns renderer, this item is attached to.
-   * @returns Renderer
-   */
-  getRenderer(): Renderer | undefined {
-    return this.renderer;
-  }
 }

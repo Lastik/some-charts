@@ -4,7 +4,7 @@ import extend from "lodash-es/extend";
 import {Cursor} from "../cursor";
 import {IDisposable} from "../i-disposable";
 import {RendererOptions, RendererOptionsDefaults} from "../options";
-import {Size} from "../geometry/size";
+import {Size} from "../geometry";
 import {JqueryHelper} from "../services";
 
 export class Renderer implements IDisposable{

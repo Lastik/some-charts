@@ -1,7 +1,8 @@
 import {inject} from "tsyringe";
-import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
-import {Chart, ChartContent} from "../../../index";
+import {ChartContent} from "../../chart-content";
+import {ChartApi} from "../../api";
 import {DataRect, IDisposable, NumericRange} from "../../../index";
+import {KeyboardNavigationsFactoryApi} from "./keyboard-navigations-factory-api";
 
 export class KeyboardNavigation extends ChartContent(Object) implements IDisposable {
   private readonly _id: number;
@@ -16,7 +17,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
     return this._id;
   }
 
-  public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
+  public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactoryApi<KeyboardNavigation> ) {
     super();
     this._id = id;
     this.isHostFocused = false;
@@ -36,7 +37,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
    * Attaches keyboard navigation to chart.
    * @param {Chart} chart - Target chart.
    * */
-  override placeOnChart(chart?: Chart<any, any, any>) {
+  override placeOnChart(chart?: ChartApi<any>) {
     super.placeOnChart(chart);
     if(chart) {
       let chartRenderer = chart.getRenderer();
@@ -112,7 +113,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
           break;
       }
 
-      if (horizontalRange.max - horizontalRange.min >= Chart.MinZoomLevel && verticalRange.max - verticalRange.min >= Chart.MinZoomLevel) {
+      if (horizontalRange.max - horizontalRange.min >= this.chart.minZoomLevel && verticalRange.max - verticalRange.min >= this.chart.minZoomLevel) {
         let newChartDataRect = new DataRect(horizontalRange.min, verticalRange.min, horizontalRange.max - horizontalRange.min, verticalRange.max - verticalRange.min);
         this.chart.update(newChartDataRect);
       }
