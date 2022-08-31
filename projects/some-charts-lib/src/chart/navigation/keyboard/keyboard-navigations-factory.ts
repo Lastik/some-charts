@@ -1,9 +1,8 @@
 import { singleton } from "tsyringe";
 import {KeyboardNavigation} from "./keyboard-navigation";
-import {KeyboardNavigationsFactoryApi} from "./keyboard-navigations-factory-api";
 
 @singleton()
-export class KeyboardNavigationsFactory implements KeyboardNavigationsFactoryApi<KeyboardNavigation>{
+export class KeyboardNavigationsFactory {
 
   private currentId: number = 1;
   private navigationsById: Map<number, KeyboardNavigation>;

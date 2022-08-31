@@ -1,8 +1,8 @@
 import {inject} from "tsyringe";
 import {ChartContent} from "../../chart-content";
-import {ChartApi} from "../../api";
+import {Chart} from "../../chart";
 import {DataRect, IDisposable, NumericRange} from "../../../index";
-import {KeyboardNavigationsFactoryApi} from "./keyboard-navigations-factory-api";
+import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
 
 export class KeyboardNavigation extends ChartContent(Object) implements IDisposable {
   private readonly _id: number;
@@ -17,7 +17,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
     return this._id;
   }
 
-  public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactoryApi<KeyboardNavigation> ) {
+  public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
     super();
     this._id = id;
     this.isHostFocused = false;
@@ -37,7 +37,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
    * Attaches keyboard navigation to chart.
    * @param {Chart} chart - Target chart.
    * */
-  override placeOnChart(chart?: ChartApi<any>) {
+  override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
     if(chart) {
       let chartRenderer = chart.getRenderer();

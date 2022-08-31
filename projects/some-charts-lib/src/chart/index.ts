@@ -7,4 +7,3 @@ export * from './legend';
 export * from './plots';
 export * from './navigation';
 export * from './label';
-export * from './api';
