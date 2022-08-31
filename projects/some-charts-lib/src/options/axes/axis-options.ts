@@ -3,6 +3,7 @@
  */
 import {FontInPx} from "../../font";
 import {AxisTypes} from "../../chart/axis/axis-types";
+import {NumericAxisOptions, NumericAxisScaleType} from "./numeric";
 
 export interface AxisOptions {
   /**
@@ -37,8 +38,11 @@ export interface AxisOptions {
 
 export class AxisOptionsDefaults
 {
-  private static _instance: AxisOptions = {
+  private static _instance: NumericAxisOptions = {
     axisType: AxisTypes.NumericAxis,
+    scale: {
+      scaleType: NumericAxisScaleType.Linear
+    },
     foregroundColor: 'white',
     backgroundColor: '#111111',
     font: {

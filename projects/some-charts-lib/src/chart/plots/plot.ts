@@ -17,7 +17,7 @@ export abstract class Plot<
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem {
 
-  private readonly layerName: string;
+  private readonly layerId: string;
   private plotShape: Konva.Shape;
 
   protected visible: DataRect | undefined;
@@ -43,7 +43,7 @@ export abstract class Plot<
     this.dataTransformation = dataTransformation;
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
 
-    this.layerName = `plot-layer-${this.id}`;
+    this.layerId = `plot-layer-${this.id}`;
     this.plotShape = new Konva.Shape({
       sceneFunc: this.drawFunc
     });
@@ -76,7 +76,7 @@ export abstract class Plot<
   }
 
   getDependantLayers(): string[] {
-    return [this.layerName];
+    return [this.layerId];
   }
 
   /**

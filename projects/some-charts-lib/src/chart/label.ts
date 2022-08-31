@@ -4,7 +4,7 @@ import {inject} from "tsyringe";
 import {NumericPoint, Size} from "../geometry";
 import {LabelOptions, LabelOptionsDefaults} from "../options";
 import {FontHelper, TextMeasureUtils} from "../services";
-import {LayerName} from "../layer-name";
+import {LayerId} from "../layer-id";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
 
@@ -59,6 +59,6 @@ export class Label extends ChartRenderableItem{
   }
 
   getDependantLayers(): Array<string> {
-    return Array(LayerName.Labels);
+    return Array(LayerId.Labels);
   }
 }

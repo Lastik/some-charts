@@ -5,7 +5,7 @@ import {ChartRenderableItem} from "./chart-renderable-item";
 import {NumericPoint, Size} from "../geometry";
 import {GridOptions, GridOptionsDefaults} from "../options";
 import {MathHelper} from "../services";
-import {LayerName} from "../layer-name";
+import {LayerId} from "../layer-id";
 
 export class Grid extends ChartRenderableItem {
 
@@ -111,14 +111,14 @@ export class Grid extends ChartRenderableItem {
   }
 
   getDependantLayers(): string[] {
-    return [LayerName.Chart];
+    return [LayerId.Chart];
   }
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
 
     if (chart) {
-      let chartLayer = chart!.getLayer(LayerName.Chart);
+      let chartLayer = chart!.getLayer(LayerId.Chart);
       if(chartLayer) {
         chartLayer.add(this.borderShape);
         chartLayer.add(this.compositeShape);

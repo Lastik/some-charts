@@ -29,7 +29,7 @@ import {
 } from "../events";
 
 import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
-import {LayerName} from "../layer-name";
+import {LayerId} from "../layer-id";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
@@ -175,13 +175,13 @@ export class Chart<TItemType = any,
     return this._renderer;
   }
 
-  getLayer(layerName: string): Konva.Layer | undefined {
+  getLayer(layerId: string): Konva.Layer | undefined {
     let renderer = this.getRenderer();
-    return renderer ? <Konva.Layer>renderer.getLayer(layerName): undefined;
+    return renderer ? <Konva.Layer>renderer.getLayer(layerId): undefined;
   }
 
   getDependantLayers(): Array<string> {
-    return [LayerName.Chart, LayerName.Labels];
+    return [LayerId.Chart, LayerId.Labels];
   }
 
   public addContentItem(contentItem: ChartRenderableItem){
@@ -325,7 +325,7 @@ export class Chart<TItemType = any,
                      orientation: AxisOrientation,
                      options: AxisOptions): AxisBase<any, any> | undefined {
     let axisWidth = orientation === AxisOrientation.Vertical ? undefined : this.size.width;
-    let axisHeight = orientation === AxisOrientation.Horizontal ? this.size.height : undefined;
+    let axisHeight = orientation === AxisOrientation.Vertical ? this.size.height : undefined;
 
     let axisLocation = orientation === AxisOrientation.Vertical ? this.location :
       new NumericPoint(this.location.x, this.location.y + this.size.height);
@@ -342,11 +342,11 @@ export class Chart<TItemType = any,
   }
 
   private static createLayers(renderer: Renderer) {
-    renderer.createLayers(Object.values(LayerName));
+    renderer.createLayers(Object.values(LayerId));
   }
 
   private static destroyLayers(renderer: Renderer) {
-    renderer.destroyLayers(Object.values(LayerName));
+    renderer.destroyLayers(Object.values(LayerId));
   }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {

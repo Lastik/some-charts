@@ -28,14 +28,14 @@ export class CoordinateTransformationStatic {
     if (horizontalAxisOptions.axisType == AxisTypes.NumericAxis) {
       let numericAxisOptions = horizontalAxisOptions as NumericAxisOptions;
 
-      if (numericAxisOptions.scale.scaleType === NumericAxisScaleType.Logarithmic) {
+      if (numericAxisOptions.scale?.scaleType === NumericAxisScaleType.Logarithmic) {
         let logarithmicScale = numericAxisOptions.scale as NumericAxisLogarithmicScale;
         axesCoordinateTransformations.push(new LogPointXTransformation(logarithmicScale.logarithmBase));
       }
     } else if (horizontalAxisOptions.axisType == AxisTypes.LabeledAxis) {
       let numericAxisOptions = verticalAxisOptions as NumericAxisOptions;
 
-      if (numericAxisOptions.scale.scaleType === NumericAxisScaleType.Logarithmic) {
+      if (numericAxisOptions.scale?.scaleType === NumericAxisScaleType.Logarithmic) {
         let logarithmicScale = numericAxisOptions.scale as NumericAxisLogarithmicScale;
         axesCoordinateTransformations.push(new LogPointYTransformation(logarithmicScale.logarithmBase));
       }

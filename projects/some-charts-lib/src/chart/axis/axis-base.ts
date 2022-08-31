@@ -10,7 +10,7 @@ import chain from 'lodash-es/chain';
 import extend from "lodash-es/extend";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
-import {LayerName} from "../../layer-name";
+import {LayerId} from "../../layer-id";
 import {inject} from "tsyringe";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
@@ -70,14 +70,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.initialWidth = width;
     this.initialHeight = height;
 
+    this.orientation = orientation;
+
     this.validateAxisInitialWidth();
     this.validateAxisInitialHeight();
 
     this._size = new Size(width ?? 0, height ?? 0);
 
     this.markDirty();
-
-    this.orientation = orientation;
 
     this.majorTicks = [];
     this.minorTicks = [];
@@ -218,13 +218,13 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   protected validateAxisInitialWidth(){
     if(this.initialWidth === undefined && this.orientation != AxisOrientation.Vertical){
-      throw "Undefined width is supported for vertical axis only";
+      throw new Error("Undefined width is supported for vertical axis only");
     }
   }
 
   protected validateAxisInitialHeight(){
     if(this.initialHeight === undefined && this.orientation != AxisOrientation.Horizontal){
-      throw "Undefined width is supported for horizontal axis only";
+      throw new Error("Undefined height is supported for horizontal axis only");
     }
   }
 
@@ -236,14 +236,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @returns {Array<string>} Axis dependant layers.
    */
   override getDependantLayers(): Array<string> {
-    return [LayerName.Chart];
+    return [LayerId.Chart];
   }
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
 
     if (chart) {
-      let chartLayer = chart!.getLayer(LayerName.Chart);
+      let chartLayer = chart!.getLayer(LayerId.Chart);
       if(chartLayer) {
         chartLayer.add(this.borderShape);
         chartLayer.add(this.ticksShape);

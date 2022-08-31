@@ -1,4 +1,4 @@
-export enum LayerName {
+export enum LayerId {
   Chart = "chart",
   Labels = "labels"
 }

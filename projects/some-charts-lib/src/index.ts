@@ -11,5 +11,5 @@ export * from './renderer';
 export * from './data';
 export * from './chart';
 export * from './chart/navigation';
-export * from './layer-name';
+export * from './layer-id';
 export * from './services';

@@ -164,8 +164,8 @@ export class Renderer implements IDisposable{
 
     item.detach();
 
-    for (let layerName of item.getDependantLayers()) {
-      this.stage.findOne(layerName).draw();
+    for (let layerId of item.getDependantLayers()) {
+      this.stage.findOne(`#${layerId}`).draw();
     }
   }
 
@@ -186,39 +186,39 @@ export class Renderer implements IDisposable{
 
   /**
    * Creates layer on renderer with specified name.
-   * @param {string} layerName - Name of the layer.
+   * @param {string} layerId - Ud of the layer.
    */
-  createLayer(layerName: string) {
+  createLayer(layerId: string) {
     let stage = this.stage;
-    let layer = new Konva.Layer({name: layerName});
+    let layer = new Konva.Layer({id: layerId});
     stage.add(layer);
   }
 
   /**
-   * Creates multiple layers on renderer with specified names.
-   * @param {Array<string>} layersNames - Array of layers names.
+   * Creates multiple layers on renderer with specified ids.
+   * @param {Array<string>} layersIds - Array of layers ids.
    */
-  createLayers(layersNames: Array<string>) {
-    for (let layerName of layersNames) {
-      this.createLayer(layerName);
+  createLayers(layersIds: Array<string>) {
+    for (let layerId of layersIds) {
+      this.createLayer(layerId);
     }
   }
 
   /**
-   * Destroys layer on renderer with specified name.
-   * @param {string} layerName - Name of the layer.
+   * Destroys layer on renderer with specified id.
+   * @param {string} layerId - Id of the layer.
    */
-  destroyLayer(layerName: string){
-    this.stage.findOne(layerName).destroy();
+  destroyLayer(layerId: string){
+    this.stage.findOne(`#${layerId}`).destroy();
   }
 
   /**
-   * Destroys multiple layers on renderer with specified names.
-   * @param {Array<string>} layersNames - Array of layers names.
+   * Destroys multiple layers on renderer with specified ids.
+   * @param {Array<string>} layersIds - Array of layers ids.
    */
-  destroyLayers(layersNames: Array<string>) {
-    for (let layerName of layersNames) {
-      this.destroyLayer(layerName);
+  destroyLayers(layersIds: Array<string>) {
+    for (let layerId of layersIds) {
+      this.destroyLayer(layerId);
     }
   }
 
@@ -230,10 +230,10 @@ export class Renderer implements IDisposable{
   }
 
   /**
-   * Returns layer by its name
+   * Returns layer by its id
    * */
-  public getLayer(layerName: string) {
-    return this.stage.findOne(layerName);
+  public getLayer(layerId: string) {
+    return this.stage.findOne(`#${layerId}`);
   }
 
   protected static requestAnimFrame: (callback: FrameRequestCallback) => number = (function () {
@@ -244,15 +244,15 @@ export class Renderer implements IDisposable{
   })();
 
   protected static redraw(renderer: Renderer) {
-    let dirtyLayersNames: Array<string> = [];
+    let dirtyLayersIds: Array<string> = [];
     for (let item of renderer.renderableItems) {
       if (item.hasDirtyLayers && item.hasDirtyLayers()) {
         let objectDirtyLayers = item.getDirtyLayers();
-        dirtyLayersNames = dirtyLayersNames.concat(objectDirtyLayers);
+        dirtyLayersIds = dirtyLayersIds.concat(objectDirtyLayers);
       }
     }
-    for (let layerName of dirtyLayersNames) {
-      renderer.getLayer(layerName).draw();
+    for (let layerId of dirtyLayersIds) {
+      renderer.getLayer(layerId).draw();
     }
 
     if (!renderer.isDisposed) {
