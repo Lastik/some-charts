@@ -129,20 +129,20 @@ export class Chart<TItemType = any,
 
     this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes!.horizontal);
     if(this.horizontalAxis) {
-      this.contentItems.push(this.horizontalAxis);
+      this.horizontalAxis.placeOnChart(this as Chart);
     }
 
     this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes!.vertical);
     if(this.verticalAxis) {
-      this.contentItems.push(this.verticalAxis);
+      this.verticalAxis.placeOnChart(this as Chart)
     }
 
     this.chartGrid = new Grid(location, size, this.options.grid);
-    this.contentItems.push(this.chartGrid);
+    this.chartGrid.placeOnChart(this as Chart)
 
     if (this.options.header) {
       this.headerLabel = new Label(location, size.width, this.options.header);
-      this.contentItems.push(this.headerLabel);
+      this.headerLabel.placeOnChart(this as Chart)
     }
 
     if (this.options.navigation!.isEnabled) {
@@ -159,6 +159,7 @@ export class Chart<TItemType = any,
       if (plot) {
         this.plots.push(plot);
         plot.attach(this._renderer);
+        plot.placeOnChart(this as Chart)
       }
     }
 
