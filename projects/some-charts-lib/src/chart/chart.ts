@@ -41,7 +41,7 @@ export class Chart<TItemType = any,
 
   public static readonly MinZoomLevel: number = 1e-8;
 
-  private elementId: string;
+  private elementSelector: string;
 
   private readonly _id: number;
 
@@ -90,7 +90,7 @@ export class Chart<TItemType = any,
 
   /**
    * Creates new instance of chart.
-   * @param {string} elementId - element,
+   * @param {string} elementSelector - element selector.
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
    * @param {Size} size - Chart's size
    * @param {DataRect} dataRect - Currently visible rectangle on chart.
@@ -99,20 +99,20 @@ export class Chart<TItemType = any,
    * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
-  constructor(elementId: string,
+  constructor(elementSelector: string,
               location: NumericPoint, size: Size, dataRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
               @inject("PlotFactory") private plotFactory?: PlotFactory,
               @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
 
-    this.elementId = elementId;
+    this.elementSelector = elementSelector;
 
     this._id = Chart.getNextId();
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    this._renderer = new Renderer(elementId, size, this.options!.renderer!)
+    this._renderer = new Renderer(elementSelector, size, this.options!.renderer!)
 
     Chart.createLayers(this._renderer);
 
@@ -375,7 +375,7 @@ export class Chart<TItemType = any,
 
   private buildLegend(plotOptionsArr: Array<PlotOptionsClass>) {
 
-    this.legend = new Legend(this.elementId, this.size, this.options.legend);
+    this.legend = new Legend(this.elementSelector, this.size, this.options.legend);
 
     this.legend.updateContent(plotOptionsArr.flatMap(po => {
       return po.metricsOptions

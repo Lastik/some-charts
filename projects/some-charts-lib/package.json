@@ -1,6 +1,6 @@
 {
   "name": "some-charts",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "scripts": {
     "build-dev": "webpack --env=development && tsc --declaration --project tsconfig.lib.json",
     "build": "webpack --env=production && tsc --declaration --project tsconfig.lib.json"
@@ -16,6 +16,7 @@
     "tslib": "^2.3.0",
     "tsyringe": "^4.7.0",
     "typedi": "^0.10.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "jquery": "^3.6.1"
   }
 }

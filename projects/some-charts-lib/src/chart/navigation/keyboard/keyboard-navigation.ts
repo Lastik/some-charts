@@ -3,6 +3,7 @@ import {ChartContent} from "../../chart-content";
 import {Chart} from "../../chart";
 import {DataRect, IDisposable, NumericRange} from "../../../index";
 import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
+import * as $ from 'jquery'
 
 export class KeyboardNavigation extends ChartContent(Object) implements IDisposable {
   private readonly _id: number;

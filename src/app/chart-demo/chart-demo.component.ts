@@ -33,7 +33,7 @@ export class ChartDemoComponent implements OnInit {
     );
 
     let chart = new Chart<MoneyForIndex, number>(
-      'chart-element',
+      '#chart-element',
       new NumericPoint(0, 0),
       new Size(300, 300),
       new DataRect(0, 0, 100, 100),

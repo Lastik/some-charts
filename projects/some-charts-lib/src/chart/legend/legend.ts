@@ -1,6 +1,7 @@
 import {LegendOptions, LegendOptionsDefaults} from "../../index";
 import {LegendItem, Size} from "../../index";
 import * as Color from "color";
+import * as $ from 'jquery'
 
 export class Legend {
 
@@ -13,16 +14,16 @@ export class Legend {
 
   /**
    * Creates new instance of Legend.
-   * @param {string} elementID - ID of HTML element where to create renderer.
+   * @param {string} elementSelector - Selector of HTML element where to create legend.
    * @param {Size} containerSize - Legend containing element size.
    * @param {LegendOptions | undefined} options - Legend element display options.
    */
-  constructor(elementID: string, containerSize: Size, options?: LegendOptions) {
+  constructor(elementSelector: string, containerSize: Size, options?: LegendOptions) {
 
-    let container = $(elementID);
+    let container = $(elementSelector);
 
     if (!container.length) {
-      throw new Error(`Element with ${elementID} id not found!`);
+      throw new Error(`Element with ${elementSelector} id not found!`);
     }
 
     this.container = container;

@@ -4,6 +4,7 @@ import {ChartContent} from "../chart-content";
 import {Chart} from "../chart";
 import {DataRect, NumericPoint, NumericRange, Size} from "../../index";
 import {Renderer} from "../../renderer";
+import * as $ from 'jquery'
 
 export class MouseNavigation extends ChartContent(Object) {
 

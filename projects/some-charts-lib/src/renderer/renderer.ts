@@ -6,6 +6,7 @@ import {IDisposable} from "../i-disposable";
 import {RendererOptions, RendererOptionsDefaults} from "../options";
 import {Size} from "../geometry";
 import {JqueryHelper} from "../services";
+import * as $ from 'jquery'
 
 export class Renderer implements IDisposable{
 
@@ -26,17 +27,17 @@ export class Renderer implements IDisposable{
 
   /**
    * Creates new instance of renderer.
-   * @param {string} elementID - ID of HTML element where to create renderer.
+   * @param {string} elementSelector - Selector of HTML element where to create renderer.
    * @param {Size} size - Renderer size
    * @param {RendererOptions} options - renderer options
    */
-  constructor(elementID: string, size: Size,
+  constructor(elementSelector: string, size: Size,
               options: RendererOptions) {
 
-    let container = $(elementID);
+    let container = $(elementSelector);
 
     if (!container.length) {
-      throw new Error(`Element with ${elementID} id not found!`);
+      throw new Error(`Element with ${elementSelector} id not found!`);
     }
 
     this.container = container;
