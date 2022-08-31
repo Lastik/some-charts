@@ -54,7 +54,7 @@ export class Chart<TItemType = any,
   private readonly contentItems: ChartRenderableItem[];
   private readonly plots: Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType>[];
 
-  private _dataRect: DataRect;
+  private _visibleRect: DataRect;
 
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
   private readonly mouseNavigation: MouseNavigation | undefined;
@@ -76,8 +76,8 @@ export class Chart<TItemType = any,
     return this._size;
   }
 
-  public get dataRect(): DataRect {
-    return this._dataRect;
+  public get visibleRect(): DataRect {
+    return this._visibleRect;
   }
 
   private options: ChartOptions;
@@ -119,7 +119,7 @@ export class Chart<TItemType = any,
 
     this._location = location;
     this._size = size;
-    this._dataRect = dataRect;
+    this._visibleRect = dataRect;
 
     this.dataSet = dataSet;
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
@@ -202,10 +202,10 @@ export class Chart<TItemType = any,
 
   /**
    * Updates chart's new instance of chart.
-   * @param {DataRect} dataRect - new visible rectangle for chart
+   * @param {DataRect} visibleRect - new visible rectangle for chart
    * */
-  update(dataRect: DataRect) {
-    this._dataRect = dataRect;
+  update(visibleRect: DataRect) {
+    this._visibleRect = visibleRect;
 
     let offsetYAfterHeader = 0;
 
@@ -213,8 +213,8 @@ export class Chart<TItemType = any,
       offsetYAfterHeader += this.headerLabel.height;
     }
 
-    let horizontalRange = this._dataRect.getHorizontalRange();
-    let verticalRange = this._dataRect.getVerticalRange();
+    let horizontalRange = this._visibleRect.getHorizontalRange();
+    let verticalRange = this._visibleRect.getVerticalRange();
 
     let horizontalAxisHeight = 0;
     if (this.options.axes!.horizontal.axisType != AxisTypes.None) {
@@ -265,7 +265,7 @@ export class Chart<TItemType = any,
 
     for (let plot of this.plots) {
       plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height));
-      plot.setVisible(this._dataRect);
+      plot.setVisible(this._visibleRect);
     }
   }
 
@@ -331,7 +331,7 @@ export class Chart<TItemType = any,
     let axisLocation = orientation === AxisOrientation.Vertical ? this.location :
       new NumericPoint(this.location.x, this.location.y + this.size.height);
 
-    let axisRange = orientation === AxisOrientation.Vertical ? this.dataRect.getVerticalRange() : this.dataRect.getHorizontalRange();
+    let axisRange = orientation === AxisOrientation.Vertical ? this.visibleRect.getVerticalRange() : this.visibleRect.getHorizontalRange();
 
     if (options.axisType == AxisTypes.NumericAxis) {
       return new NumericAxis(axisLocation, orientation, axisRange, dataTransformation, options as NumericAxisOptions, axisWidth, axisHeight);

@@ -1,14 +1,12 @@
-﻿import {ChartContent} from "./chart-content"
-import {Chart} from "./chart";
+﻿import {ChartContent, ChartInterface} from "./chart-content"
 import {RenderableItem} from "../renderer";
-import {ChartContentPlaceholder} from "./chart-content-placeholder";
 
 /**
  * Implementation of RenderableItem class drawn on chart.
  */
 export abstract class ChartRenderableItem extends ChartContent(RenderableItem) {
 
-  override placeOnChart(chart?: ChartContentPlaceholder) {
+  override placeOnChart(chart?: ChartInterface) {
     super.placeOnChart(chart);
     chart?.addContentItem(this);
   }

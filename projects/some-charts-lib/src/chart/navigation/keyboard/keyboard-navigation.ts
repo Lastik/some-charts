@@ -66,8 +66,8 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
   protected onKeyDown(e: JQuery.Event) {
     if(this.chart && this.host && this.isHostFocused){
 
-      let horizontalRange = this.chart!.dataRect.getHorizontalRange();
-      let verticalRange = this.chart!.dataRect.getVerticalRange();
+      let horizontalRange = this.chart!.visibleRect.getHorizontalRange();
+      let verticalRange = this.chart!.visibleRect.getVerticalRange();
 
       let horizontalDelta = horizontalRange.max - horizontalRange.min;
       let verticalDelta = verticalRange.max - verticalRange.min;

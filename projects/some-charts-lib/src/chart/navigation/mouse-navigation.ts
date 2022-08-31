@@ -211,8 +211,8 @@ export class MouseNavigation extends ChartContent(Object) {
 
   private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {
     if (this.chart) {
-      let horizontalRange = this.chart.dataRect.getHorizontalRange();
-      let verticalRange = this.chart.dataRect.getVerticalRange();
+      let horizontalRange = this.chart.visibleRect.getHorizontalRange();
+      let verticalRange = this.chart.visibleRect.getVerticalRange();
 
       let plotSize = this.chart.getPlotSize();
 
@@ -234,8 +234,8 @@ export class MouseNavigation extends ChartContent(Object) {
     if(this.chart) {
       let plotSize = this.chart.getPlotSize();
 
-      let horizontalRange = this.chart.dataRect.getHorizontalRange();
-      let verticalRange = this.chart.dataRect.getVerticalRange();
+      let horizontalRange = this.chart.visibleRect.getHorizontalRange();
+      let verticalRange = this.chart.visibleRect.getVerticalRange();
 
       let propX = horizontalRange.getLength() / plotSize.width;
       let propY = verticalRange.getLength() / plotSize.height
@@ -257,8 +257,8 @@ export class MouseNavigation extends ChartContent(Object) {
 
   private handleScrollEvent(delta: number){
     if(this.chart) {
-      let horRange = this.chart.dataRect.getHorizontalRange();
-      let verRange = this.chart.dataRect.getVerticalRange();
+      let horRange = this.chart.visibleRect.getHorizontalRange();
+      let verRange = this.chart.visibleRect.getVerticalRange();
 
       let zoomCoeff = 0.01;
       let sign = delta > 0 ? 1 : -1;
