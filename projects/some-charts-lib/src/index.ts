@@ -1,3 +1,5 @@
+import './../scss/main.scss';
+
 export * from './events';
 export * from './font';
 export * from './geometry';
