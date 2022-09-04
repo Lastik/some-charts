@@ -1,13 +1,11 @@
-import { singleton } from "tsyringe";
 import {KeyboardNavigation} from "./keyboard-navigation";
 
-@singleton()
 export class KeyboardNavigationsFactory {
 
   private currentId: number = 1;
   private navigationsById: Map<number, KeyboardNavigation>;
 
-  constructor() {
+  private constructor() {
     this.navigationsById = new Map<number, KeyboardNavigation>();
   }
 
@@ -33,4 +31,6 @@ export class KeyboardNavigationsFactory {
   private getNextId(): number {
     return this.currentId++;
   }
+
+  public static readonly Instance = new KeyboardNavigationsFactory();
 }

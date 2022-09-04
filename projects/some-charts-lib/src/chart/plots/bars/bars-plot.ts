@@ -18,7 +18,6 @@ import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
 import {MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
-import {inject} from "tsyringe";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -30,7 +29,7 @@ export class BarsPlot<TItemType,
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
               options: BarsPlotOptions,
-              @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
+              private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     super(dataSet, dataTransformation, options);
 
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;

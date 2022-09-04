@@ -1,6 +1,5 @@
 ﻿import extend from "lodash-es/extend";
 import Konva from "konva";
-import {inject} from "tsyringe";
 import {NumericPoint, Size} from "../geometry";
 import {LabelOptions, LabelOptionsDefaults} from "../options";
 import {FontHelper, TextMeasureUtils} from "../services";
@@ -23,7 +22,7 @@ export class Label extends ChartRenderableItem{
   }
 
   constructor(location: NumericPoint, width: number, options: LabelOptions,
-              @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
+              private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     super();
     this.location = location;
     this.width = width;

@@ -1,4 +1,3 @@
-import {singleton} from "tsyringe";
 import {Plot} from "./plot";
 import {DataSet} from "../../data";
 import {BarsPlot} from "./bars";
@@ -16,8 +15,10 @@ import {
   DataTransformation,
 } from "../../geometry";
 
-@singleton()
 export class PlotFactory {
+
+  private PlotFactory(){ }
+
   public createPlot<TItemType,
     XDimensionType extends number | string | Date,
     YDimensionType extends number | string | Date | undefined = undefined>(
@@ -30,4 +31,7 @@ export class PlotFactory {
       return new MarkerPlot(dataSet, dataTransformation, <MarkerPlotOptions>plotOptions);
     } else return undefined;
   }
+
+
+  public static readonly Instance = new PlotFactory();
 }

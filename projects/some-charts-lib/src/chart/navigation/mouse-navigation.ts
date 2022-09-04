@@ -1,5 +1,4 @@
-﻿import {inject} from "tsyringe";
-import {KeyboardNavigationsFactory} from "./keyboard";
+﻿import {KeyboardNavigationsFactory} from "./keyboard";
 import {ChartContent} from "../chart-content";
 import {Chart} from "../chart";
 import {DataRect, NumericPoint, NumericRange, Size} from "../../index";
@@ -27,7 +26,7 @@ export class MouseNavigation extends ChartContent(Object) {
   private readonly onMouseDoubleClickHandler: (event: JQuery.Event) => void;
 
   constructor(location: NumericPoint, size: Size,
-              @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
+              private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
 
     super();
     this.location = location;

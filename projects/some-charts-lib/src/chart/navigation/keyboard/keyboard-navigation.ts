@@ -1,4 +1,3 @@
-import {inject} from "tsyringe";
 import {ChartContent} from "../../chart-content";
 import {Chart} from "../../chart";
 import {DataRect, IDisposable, NumericRange} from "../../../index";
@@ -18,7 +17,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
     return this._id;
   }
 
-  public constructor(id: number, @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
+  public constructor(id: number, private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
     super();
     this._id = id;
     this.isHostFocused = false;

@@ -1,7 +1,6 @@
 import Konva from "konva";
 import extend from "lodash-es/extend";
 import {Grid} from "./grid";
-import {inject} from "tsyringe";
 import {Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
 import {Renderer} from "../renderer";
@@ -103,8 +102,8 @@ export class Chart<TItemType = any,
               location: NumericPoint, size: Size, dataRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
-              @inject("PlotFactory") private plotFactory?: PlotFactory,
-              @inject("KeyboardNavigationFactory") private keyboardNavigationsFactory?: KeyboardNavigationsFactory ) {
+              private plotFactory: PlotFactory = PlotFactory.Instance,
+              private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
 
     this.elementSelector = elementSelector;
 

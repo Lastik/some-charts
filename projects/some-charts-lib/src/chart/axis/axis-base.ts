@@ -6,12 +6,11 @@ import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
 import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../geometry';
 import zipWith from 'lodash-es/zipWith';
-import chain from 'lodash-es/chain';
 import extend from "lodash-es/extend";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
 import {LayerId} from "../../layer-id";
-import {inject} from "tsyringe";
+import {chain} from "../../lodash";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
   /**
@@ -59,7 +58,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
                         options: AxisOptionsType,
                         width?: number,
                         height?: number,
-                        @inject("TextMeasureUtils") private textMeasureUtils?: TextMeasureUtils) {
+                        private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     super();
 
     this.location = location;
