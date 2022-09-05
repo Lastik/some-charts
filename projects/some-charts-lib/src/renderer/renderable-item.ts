@@ -64,9 +64,15 @@ export abstract class RenderableItem {
 
   /**
    * Marks specified renderable item as dirty.
-   * This method must be called by renderer, when dirty layers of specified components are redrawn.
    */
   markDirty() {
     this.isDirty = true;
+  }
+
+  /**
+   * Method being called after specified renderable item has been redrawn.
+   */
+  afterRedrawn() {
+    this.isDirty = false;
   }
 }

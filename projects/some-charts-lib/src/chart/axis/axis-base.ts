@@ -10,7 +10,9 @@ import extend from "lodash-es/extend";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
 import {LayerId} from "../../layer-id";
-import {chain} from "../../lodash";
+import {flow, partialRight} from "lodash-es";
+import sortBy from "lodash-es/sortBy";
+import map from "lodash-es/map";
 
 export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
   /**
@@ -40,7 +42,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   protected majorTicks: Tick<TickType>[];
   protected minorTicks?: Tick<TickType>[];
 
-  protected majorTicksLabelsSizes: Size[];
+  protected majorTicksLabelsSizes?: Size[];
   protected majorTicksScreenCoords: number[];
   protected minorTicksScreenCoords: number[];
 
@@ -80,8 +82,6 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
     this.majorTicks = [];
     this.minorTicks = [];
-
-    this.majorTicksLabelsSizes = [];
 
     this.majorTicksScreenCoords = [];
     this.minorTicksScreenCoords = [];
@@ -320,7 +320,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   protected measureLabelSizeForMajorTick(tick: Tick<TickType>): Size{
     if (this.majorTicks != null) {
       let tickFromArr = this.majorTicks[tick.index];
-      if (tickFromArr != null && tickFromArr.index === tick.index) {
+      if (tickFromArr != null && tickFromArr.index === tick.index && this.majorTicksLabelsSizes) {
         return this.majorTicksLabelsSizes[tick.index];
       }
       else {
@@ -374,7 +374,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
                             size: Size){
 
     this.majorTicks = this.generateMajorTicks(range, size);
-    this.measureLabelsSizesForMajorTicks(this.majorTicks);
+    this.majorTicksLabelsSizes = this.measureLabelsSizesForMajorTicks(this.majorTicks);
     this.minorTicks = this.minorTicksGenerator?.generateMinorTicks(range, this.majorTicks);
 
     let majorTicksScreenCoords = [];
@@ -493,12 +493,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   protected checkLabelsArrangement(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<TickType>>, range: Range<TickType>): TicksCountChange {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
-    let ticksRenderInfo = chain(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };})).map(sizeTickTuple=>{
-      return {
-        coord: this.getTickScreenCoordinate(sizeTickTuple.tick, axisSize.width, axisSize.height, range),
-        length: isAxisHorizontal ? sizeTickTuple.labelSize.width : sizeTickTuple.labelSize.height
-      }
-    }).sortBy(i => i.coord).value();
+    let ticksRenderInfo = flow(
+      partialRight(map, ((sizeTickTuple : {tick: Tick<TickType>, labelSize: Size})=>{
+        return {
+          coord: this.getTickScreenCoordinate(sizeTickTuple.tick, axisSize.width, axisSize.height, range),
+          length: isAxisHorizontal ? sizeTickTuple.labelSize.width : sizeTickTuple.labelSize.height
+        }
+      })),
+      sortBy((i: {coord: number, length: number}) => i.coord))(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };}));
 
     let res: TicksCountChange = TicksCountChange.OK;
 

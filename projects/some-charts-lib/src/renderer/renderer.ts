@@ -246,13 +246,20 @@ export class Renderer implements IDisposable{
   protected static redraw(renderer: Renderer) {
     let dirtyLayersIds: Array<string> = [];
     for (let item of renderer.renderableItems) {
-      if (item.hasDirtyLayers && item.hasDirtyLayers()) {
+      if (item.hasDirtyLayers()) {
         let objectDirtyLayers = item.getDirtyLayers();
         dirtyLayersIds = dirtyLayersIds.concat(objectDirtyLayers);
       }
     }
+
+    dirtyLayersIds = [...new Set(dirtyLayersIds)];
+
     for (let layerId of dirtyLayersIds) {
       renderer.getLayer(layerId).draw();
+    }
+
+    for (let item of renderer.renderableItems) {
+      item.afterRedrawn();
     }
 
     if (!renderer.isDisposed) {

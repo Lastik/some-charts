@@ -1,8 +1,9 @@
 import {Tick} from "../tick";
 import {Point, Range} from "../../../../index"
 import {MajorTicksGenerator} from "../major-ticks-generator";
-import chain from "lodash-es/chain";
 import {LabeledTick} from "../labeled-tick";
+import {filter, flow, partialRight} from "lodash-es";
+import map from "lodash-es/map";
 
 export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
 
@@ -18,11 +19,14 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
   }
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
-    return chain(this.labels).filter(label => {
-      return label.y >= range.min && label.y <= range.max;
-    }).map((label, index) => {
-      return new LabeledTick(label.y, this.majorTickHeight, index, label.x);
-    }).value();
+    return flow(
+      filter((label: Point<string>) => {
+        return label.y >= range.min && label.y <= range.max;
+      }),
+      partialRight(map, (label: Point<string>, index: number) => {
+          return new LabeledTick(label.y, this.majorTickHeight, index, label.x);
+        }
+      ))(this.labels);
   }
 
   suggestDecreasedTickCount(ticksCount: number): number {

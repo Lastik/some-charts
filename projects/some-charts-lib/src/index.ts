@@ -1,6 +1,5 @@
 import './../scss/main.scss';
 
-export * from './lodash';
 export * from './events';
 export * from './font';
 export * from './geometry';

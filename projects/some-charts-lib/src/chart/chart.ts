@@ -62,6 +62,8 @@ export class Chart<TItemType = any,
 
   private legend: Legend | undefined;
 
+  private layersIds: Array<string>;
+
   public get id(): number{
     return this._id;
   }
@@ -111,9 +113,11 @@ export class Chart<TItemType = any,
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    this._renderer = new Renderer(elementSelector, size, this.options!.renderer!)
+    this._renderer = new Renderer(elementSelector, size, this.options!.renderer!);
 
-    Chart.createLayers(this._renderer);
+    this.layersIds = [];
+
+    this.layersIds.push(...Chart.getCommonLayersIds());
 
     this._location = location;
     this._size = size;
@@ -158,9 +162,18 @@ export class Chart<TItemType = any,
       if (plot) {
         this.plots.push(plot);
         plot.attach(this._renderer);
-        plot.placeOnChart(this as Chart)
+        plot.placeOnChart(this as Chart);
+
+        let plotLayers = plot.getDependantLayers();
+        for(let plotLayerId of plotLayers) {
+          if (this.layersIds.indexOf(plotLayerId) < 0) {
+            this.layersIds.push(plotLayerId);
+          }
+        }
       }
     }
+
+    Chart.createLayers(this.getRenderer(), this.layersIds);
 
     for(let contentItem of this.contentItems){
       contentItem.attach(this._renderer);
@@ -341,12 +354,12 @@ export class Chart<TItemType = any,
     } else throw new Error("Specified axis type is not supported");
   }
 
-  private static createLayers(renderer: Renderer) {
-    renderer.createLayers(Object.values(LayerId));
+  private static getCommonLayersIds(){
+    return Object.values(LayerId);
   }
 
-  private static destroyLayers(renderer: Renderer) {
-    renderer.destroyLayers(Object.values(LayerId));
+  private static createLayers(renderer: Renderer, layersIds: Array<string>) {
+    renderer.createLayers(layersIds);
   }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
