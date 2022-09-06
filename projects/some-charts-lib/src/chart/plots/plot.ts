@@ -9,6 +9,8 @@ import {Palette} from "./metric";
 import {Transition} from "../../transition";
 import {MetricDependantValue} from "./metric";
 import {FontHelper} from "../../services";
+import {Chart} from "../chart";
+import {LayerId} from "../../layer-id";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -24,7 +26,7 @@ export abstract class Plot<
   protected screen: DataRect | undefined;
 
   protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
-  protected readonly  dataTransformation: DataTransformation;
+  protected readonly dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsClassType;
 
   private screenPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
@@ -50,10 +52,9 @@ export abstract class Plot<
   }
 
   private drawFunc(context: Konva.Context, shape: Konva.Shape): void {
-    let screen = this.screen;
-    if (screen) {
-      let screenLocation = screen.getMinXMinY();
-      let screenSize = screen.getSize();
+    if (this.visible && this.screen) {
+      let screenLocation = this.screen.getMinXMinY();
+      let screenSize = this.screen.getSize();
 
       context.save();
       context.beginPath();
@@ -72,6 +73,8 @@ export abstract class Plot<
       }
 
       context.restore();
+
+      this.isDirty = false;
     }
   }
 
@@ -146,7 +149,7 @@ export abstract class Plot<
     return this.screenPoints1DMap.get(metricName);
   }
 
-  protected setContextFont(context: Konva.Context, font: FontInUnits){
+  protected setContextFont(context: Konva.Context, font: FontInUnits) {
     context.setAttr('font', FontHelper.fontToString(font));
   }
 
@@ -155,6 +158,17 @@ export abstract class Plot<
    * */
   getBoundingRectangle(): DataRect | undefined {
     return this.dataSet.getBoundingRectangle(this.plotOptions.metricsOptions.map(o => o.name));
+  }
+
+  override placeOnChart(chart?: Chart) {
+    super.placeOnChart(chart);
+
+    if (chart) {
+      let plotLayer = chart!.getLayer(this.layerId);
+      if (plotLayer) {
+        plotLayer.add(this.plotShape);
+      }
+    }
   }
 }
 

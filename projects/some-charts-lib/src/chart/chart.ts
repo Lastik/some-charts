@@ -157,12 +157,11 @@ export class Chart<TItemType = any,
 
     let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
 
+
     for(let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
-        plot.attach(this._renderer);
-        plot.placeOnChart(this as Chart);
 
         let plotLayers = plot.getDependantLayers();
         for(let plotLayerId of plotLayers) {
@@ -174,6 +173,11 @@ export class Chart<TItemType = any,
     }
 
     Chart.createLayers(this.getRenderer(), this.layersIds);
+
+    for(let plot of this.plots){
+      plot.attach(this._renderer);
+      plot.placeOnChart(this as Chart);
+    }
 
     for(let contentItem of this.contentItems){
       contentItem.attach(this._renderer);

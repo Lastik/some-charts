@@ -19,6 +19,8 @@ export class Grid extends ChartRenderableItem {
   private borderShape: Konva.Shape;
 
   private options: GridOptions;
+  private isBorderShapeDirty: boolean;
+  private isCompositeShapeDirty: boolean;
 
   /**
    * Creates new instance of grid. Grid is grid net on chart's plot area.
@@ -32,6 +34,9 @@ export class Grid extends ChartRenderableItem {
     this.size = size;
 
     this.options = extend(GridOptionsDefaults.Instance, options);
+
+    this.isBorderShapeDirty = true;
+    this.isCompositeShapeDirty = true;
 
     this.horizontalLinesCoords = [];
     this.verticalLinesCoords = [];
@@ -94,6 +99,8 @@ export class Grid extends ChartRenderableItem {
 
         context.stroke();
         context.restore();
+
+        grid.isCompositeShapeDirty = false;
       }
     });
 
@@ -106,6 +113,7 @@ export class Grid extends ChartRenderableItem {
         let size = grid.size;
         context.strokeRect(location.x, location.y, size.width, size.height);
         context.fillRect(location.x, location.y, size.width, size.height);
+        grid.isBorderShapeDirty = false;
       }
     });
   }
@@ -153,5 +161,14 @@ export class Grid extends ChartRenderableItem {
     this.horizontalLinesCoords = horizontalLinesCoords;
     this.verticalLinesCoords = verticalLinesCoords;
     this.markDirty();
+  }
+
+  override get isDirty(){
+    return this.isCompositeShapeDirty || this.isBorderShapeDirty;
+  }
+
+  override set isDirty(value: boolean){
+    this.isBorderShapeDirty = value;
+    this.isCompositeShapeDirty = value;
   }
 }

@@ -31,6 +31,8 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   private dataTransformation: DataTransformation;
 
   protected _size: Size;
+  private isBorderShapeDirty: boolean;
+  private isTicksShapeDirty: boolean;
 
   public get size(): Size{
     return this._size;
@@ -78,6 +80,8 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
     this._size = new Size(width ?? 0, height ?? 0);
 
+    this.isBorderShapeDirty = true;
+    this.isTicksShapeDirty = true;
     this.markDirty();
 
     this.majorTicks = [];
@@ -110,6 +114,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
           context.strokeRect(roundedX, roundedY, roundedWidth, roundedHeight);
         }
         context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
+        self.isBorderShapeDirty = false;
       }
     });
 
@@ -211,7 +216,10 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         }
         context.stroke();
         context.restore();
+        self.isTicksShapeDirty = false;
       }
+
+
     })
   }
 
@@ -525,5 +533,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * */
   public getMajorTicksScreenCoords(){
     return this.majorTicksScreenCoords;
+  }
+
+  override get isDirty(){
+    return this.isBorderShapeDirty || this.isTicksShapeDirty;
+  }
+
+  override set isDirty(value: boolean){
+    this.isBorderShapeDirty = value;
+    this.isTicksShapeDirty = value;
   }
 }

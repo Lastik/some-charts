@@ -53,6 +53,8 @@ export class Label extends ChartRenderableItem{
         y += self.textSize.height / 2 + self.textTopOffset;
 
         context.fillText(self.options.text, x, y);
+
+        self.isDirty = false;
       }
     });
   }

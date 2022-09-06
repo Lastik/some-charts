@@ -13,7 +13,16 @@ export abstract class RenderableItem {
     this.id = RenderableItem.currentPlotID++;
   }
 
-  private isDirty: boolean = true;
+  private _isDirty: boolean = true;
+
+  protected set isDirty(value: boolean) {
+    this._isDirty = value;
+  }
+
+  protected get isDirty(){
+    return this._isDirty;
+  }
+
   private renderer?: Renderer = undefined;
 
   /**
@@ -67,12 +76,5 @@ export abstract class RenderableItem {
    */
   markDirty() {
     this.isDirty = true;
-  }
-
-  /**
-   * Method being called after specified renderable item has been redrawn.
-   */
-  afterRedrawn() {
-    this.isDirty = false;
   }
 }

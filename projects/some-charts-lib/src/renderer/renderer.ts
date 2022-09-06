@@ -258,10 +258,6 @@ export class Renderer implements IDisposable{
       renderer.getLayer(layerId).draw();
     }
 
-    for (let item of renderer.renderableItems) {
-      item.afterRedrawn();
-    }
-
     if (!renderer.isDisposed) {
       Renderer.requestAnimFrame(() => Renderer.redraw((renderer)));
     }
