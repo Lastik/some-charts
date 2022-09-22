@@ -205,9 +205,9 @@ export class DataSet<TItemType,
       this.dimensionYValues!.map(v => [v.primitiveValue, v])
     ) : undefined;
 
-    elements.forEach((element) => {
-      let dimXValue = new DimensionValue(this.dimensionXFunc(element));
-      let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
+    elements.forEach((element, index) => {
+      let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
+      let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element), index) : undefined;
 
       let errorTxt = 'For numeric or Date dimensions, update operation can only add values larger than those already inside DataSet (e.g. extend time series data) or override existing data.';
 
@@ -255,21 +255,21 @@ export class DataSet<TItemType,
       let metricFunc = this.metricsFuncs[metricName];
 
       elements.forEach((element, index) => {
-        let dimXValue = new DimensionValue(this.dimensionXFunc(element));
-        let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element)) : undefined;
+        let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
+        let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element), index) : undefined;
 
         let xIdx = this.indexByXDimension.get(dimXValue.primitiveValue);
         let yIdx = this.indexByYDimension && dimYValue ? this.indexByYDimension.get(dimYValue.primitiveValue) : undefined;
 
         let metricValue = metricFunc(element);
 
-        if (xIdx && yIdx && Array.isArray(metricValues[xIdx])) {
+        if (xIdx !== undefined && yIdx !== undefined && Array.isArray(metricValues[xIdx])) {
           let twoDMetricValues = (metricValues as Array<Array<number>>);
           if(!twoDMetricValues[xIdx]) {
             twoDMetricValues[xIdx] = [];
           }
           twoDMetricValues[xIdx][yIdx] = metricValue;
-        } else if (xIdx) {
+        } else if (xIdx !== undefined) {
           let oneDMetricValues = (metricValues as Array<number>);
           oneDMetricValues[xIdx] = metricValue;
         }

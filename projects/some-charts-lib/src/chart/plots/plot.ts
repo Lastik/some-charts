@@ -46,8 +46,13 @@ export abstract class Plot<
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
 
     this.layerId = `plot-layer-${this.id}`;
+
+    let self = this;
+
     this.plotShape = new Konva.Shape({
-      sceneFunc: this.drawFunc
+      sceneFunc: function(context: Konva.Context, shape: Konva.Shape){
+        self.drawFunc.apply(self, [context, shape]);
+      }
     });
   }
 

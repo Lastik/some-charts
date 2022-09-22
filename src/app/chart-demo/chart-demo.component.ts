@@ -28,7 +28,7 @@ export class ChartDemoComponent implements OnInit {
         }
       },
       item => {
-        return item.money
+        return item.index
       }
     );
 
@@ -36,16 +36,18 @@ export class ChartDemoComponent implements OnInit {
       '#chart-element',
       new NumericPoint(0, 0),
       new Size(300, 300),
-      new DataRect(0, 0, 100, 100),
+      new DataRect(0, 0, 5000, 5000),
       dataSet,
       {
         plots: [
           {
-            kind: PlotKind.Marker, metric: {
+            kind: PlotKind.Marker,
+            metric: {
               name: 'money',
               caption: 'Money',
               color: new Color("#AA0000")
-            }
+            },
+            markerSize: 10
           } as MarkerPlotOptions
         ]
       }

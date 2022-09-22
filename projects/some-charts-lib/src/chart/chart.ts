@@ -94,14 +94,14 @@ export class Chart<TItemType = any,
    * @param {string} elementSelector - element selector.
    * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
    * @param {Size} size - Chart's size
-   * @param {DataRect} dataRect - Currently visible rectangle on chart.
+   * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
    * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
   constructor(elementSelector: string,
-              location: NumericPoint, size: Size, dataRect: DataRect,
+              location: NumericPoint, size: Size, visibleRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
               private plotFactory: PlotFactory = PlotFactory.Instance,
@@ -121,7 +121,7 @@ export class Chart<TItemType = any,
 
     this._location = location;
     this._size = size;
-    this._visibleRect = dataRect;
+    this._visibleRect = visibleRect;
 
     this.dataSet = dataSet;
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
@@ -186,6 +186,8 @@ export class Chart<TItemType = any,
     this.updateLabeledAxesLabels();
 
     this.buildLegend(plotOptionsArr);
+
+    this.update(this.visibleRect);
   }
 
   getRenderer(): Renderer{
