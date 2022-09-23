@@ -98,10 +98,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     let self = this;
 
     this.borderShape = new Konva.Shape({
-      fill: this.options.backgroundColor,
-      stroke: this.options.foregroundColor,
-      strokeWidth: 1,
       sceneFunc: function (context, shape) {
+
+        context.save();
+
+        context.setAttr('fillStyle', self.options.backgroundColor);
+        context.setAttr('strokeStyle', self.options.foregroundColor);
+        context.setAttr('lineWidth', 1);
+
         let location = self.location;
         let size = self._size;
 
@@ -115,13 +119,12 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         }
         context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
         self.isBorderShapeDirty = false;
+
+        context.restore();
       }
     });
 
     this.ticksShape = new Konva.Shape({
-      fill: this.options.backgroundColor,
-      stroke: this.options.foregroundColor,
-      strokeWidth: 1,
       sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
         let majorTicks = self.majorTicks;
 
@@ -138,6 +141,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         let axisRenderHeight = MathHelper.optimizeValue(self._size.height);
 
         context.save();
+
+        context.setAttr('fillStyle', self.options.backgroundColor);
+        context.setAttr('strokeStyle', self.options.foregroundColor);
+        context.setAttr('lineWidth', 1);
+
         context.beginPath();
         context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
         context.clip();

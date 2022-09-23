@@ -44,10 +44,13 @@ export class Grid extends ChartRenderableItem {
     let grid = this;
 
     this.compositeShape = new Konva.Shape({
-      fill: this.options.backgroundColor,
-      stroke: this.options.foregroundColor,
-      strokeWidth: 0.5,
       sceneFunc: function (context, shape) {
+
+        context.save();
+
+        context.setAttr('fillStyle', grid.options.backgroundColor);
+        context.setAttr('strokeStyle', grid.options.foregroundColor);
+        context.setAttr('lineWidth', 0.5);
 
         let horizontalLines = grid.horizontalLinesCoords;
         let verticalLines = grid.verticalLinesCoords;
@@ -105,15 +108,21 @@ export class Grid extends ChartRenderableItem {
     });
 
     this.borderShape = new Konva.Shape({
-      fill: this.options.backgroundColor,
-      stroke: this.options.foregroundColor,
-      strokeWidth: 1,
       sceneFunc: function (context, shape) {
+
+        context.save();
+
+        context.setAttr('fillStyle', grid.options.backgroundColor);
+        context.setAttr('strokeStyle', grid.options.foregroundColor);
+        context.setAttr('lineWidth', 1);
+
         let location = grid.location;
         let size = grid.size;
         context.strokeRect(location.x, location.y, size.width, size.height);
         context.fillRect(location.x, location.y, size.width, size.height);
         grid.isBorderShapeDirty = false;
+
+        context.restore();
       }
     });
   }
