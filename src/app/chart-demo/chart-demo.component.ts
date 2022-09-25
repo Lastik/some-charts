@@ -36,7 +36,7 @@ export class ChartDemoComponent implements OnInit {
       '#chart-element',
       new NumericPoint(0, 0),
       new Size(300, 300),
-      new DataRect(0, 0, 5500, 5000),
+      new DataRect(0, 0, 400, 6000),
       dataSet,
       {
         plots: [

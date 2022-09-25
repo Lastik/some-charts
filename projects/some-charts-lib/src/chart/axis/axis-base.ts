@@ -381,18 +381,29 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.validateAxisInitialWidth();
     this.validateAxisInitialHeight();
 
-    this.updateTicksData(this.location, this.range, this._size);
+    this.updateMajorTicks(this.range, this.size);
+    this.updateMinorTicks(this.range);
+
     this.updateAxisSize();
+
+    this.updateTicksScreenCoords(this.location, this.range, this._size);
+
     this.markDirty();
   }
 
-  protected updateTicksData(location: NumericPoint,
-                            range: Range<TickType>,
-                            size: Size){
-
+  protected updateMajorTicks(range: Range<TickType>,
+                             size: Size){
     this.majorTicks = this.generateMajorTicks(range, size);
     this.majorTicksLabelsSizes = this.measureLabelsSizesForMajorTicks(this.majorTicks);
+  }
+
+  protected updateMinorTicks(range: Range<TickType>){
     this.minorTicks = this.minorTicksGenerator?.generateMinorTicks(range, this.majorTicks);
+  }
+
+  protected updateTicksScreenCoords(location: NumericPoint,
+                                    range: Range<TickType>,
+                                    size: Size){
 
     let majorTicksScreenCoords = [];
     let minorTicksScreenCoords = [];

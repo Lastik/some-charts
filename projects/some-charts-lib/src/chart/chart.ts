@@ -281,7 +281,7 @@ export class Chart<TItemType = any,
       gridLocation,
       gridSize);
 
-    this.chartGrid.setLinesCoords(horizontalAxisTicks ?? [], verticalAxisTicks ?? []);
+    this.chartGrid.setLinesCoords(verticalAxisTicks ?? [], horizontalAxisTicks ?? [], );
 
     if(this.mouseNavigation){
       this.mouseNavigation.update(gridLocation, gridSize);
