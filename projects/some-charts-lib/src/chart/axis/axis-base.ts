@@ -142,16 +142,17 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
         context.save();
 
-        context.setAttr('fillStyle', self.options.backgroundColor);
         context.setAttr('strokeStyle', self.options.foregroundColor);
         context.setAttr('lineWidth', 1);
 
+        context.setAttr('fillStyle', self.options.backgroundColor);
         context.beginPath();
         context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
         context.clip();
 
         context.setAttr('font', FontHelper.fontToString(self.options?.font!));
         context.setAttr('textBaseline', 'top');
+        context.setAttr('fillStyle', self.options.foregroundColor);
 
         context.beginPath();
 
@@ -481,9 +482,9 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
             let prevTicksCount = ticksCount;
 
             if (state == TicksCountChange.Decrease) {
-              ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
-            } else {
               ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
+            } else {
+              ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
             }
             if (ticksCount == 0 || prevTicksCount == ticksCount) {
               ticksCount = prevTicksCount;

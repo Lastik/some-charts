@@ -5,7 +5,7 @@ import {MathHelper} from "../../../../services";
 
 export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<number> {
 
-  protected static readonly majorTicksCount = [80, 40, 20, 10, 5, 4, 3, 2, 1];
+  protected static readonly majorTicksCount = [1, 2, 3, 4, 5, 10, 20, 40, 80];
   protected static readonly majorTicksCountRev = NumericMajorOrdinaryTicksGenerator.majorTicksCount.reverse();
 
   constructor(majorTickHeight: number) {
@@ -57,16 +57,16 @@ export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<numb
   }
 
   suggestDecreasedTickCount(ticksCount: number): number {
-    for (let suggestion of NumericMajorOrdinaryTicksGenerator.majorTicksCount) {
+    for (let suggestion of NumericMajorOrdinaryTicksGenerator.majorTicksCountRev) {
       if (suggestion < ticksCount)
         return suggestion;
     }
-    return NumericMajorOrdinaryTicksGenerator.majorTicksCount[NumericMajorOrdinaryTicksGenerator.majorTicksCount.length - 1];
+    return NumericMajorOrdinaryTicksGenerator.majorTicksCount[0];
   }
 
   suggestIncreasedTicksCount(ticksCount: number): number {
     let newTickCount = undefined;
-    for (let suggestion of NumericMajorOrdinaryTicksGenerator.majorTicksCountRev) {
+    for (let suggestion of NumericMajorOrdinaryTicksGenerator.majorTicksCount) {
       if (suggestion > ticksCount) {
         newTickCount = suggestion;
         break;
