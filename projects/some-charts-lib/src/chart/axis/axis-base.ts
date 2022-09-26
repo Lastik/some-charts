@@ -537,7 +537,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
           length: isAxisHorizontal ? sizeTickTuple.labelSize.width : sizeTickTuple.labelSize.height
         }
       })),
-      sortBy((i: {coord: number, length: number}) => i.coord))(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };}));
+      partialRight(sortBy, ((i: {coord: number, length: number}) => i.coord)))(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };}));
 
     let res: TicksCountChange = TicksCountChange.OK;
 

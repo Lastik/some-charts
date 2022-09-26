@@ -20,9 +20,9 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
     return flow(
-      filter((label: Point<string>) => {
+      partialRight(filter, ((label: Point<string>) => {
         return label.y >= range.min && label.y <= range.max;
-      }),
+      })),
       partialRight(map, (label: Point<string>, index: number) => {
           return new LabeledTick(label.y, this.majorTickHeight, index, label.x);
         }
