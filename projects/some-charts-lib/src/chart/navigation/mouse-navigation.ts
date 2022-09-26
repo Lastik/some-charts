@@ -220,7 +220,7 @@ export class MouseNavigation extends ChartContent(Object) {
       let dataDeltaX = pixelDeltaX * (horizontalRange.getLength() / plotSize.width);
       let dataDeltaY = pixelDeltaY * (verticalRange.getLength() / plotSize.height);
 
-      let newHorizontalRange = horizontalRange.withShift(dataDeltaX);
+      let newHorizontalRange = horizontalRange.withShift(-dataDeltaX);
       let newVerticalRange = verticalRange.withShift(dataDeltaY);
 
       this.chart.update(

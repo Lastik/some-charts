@@ -140,11 +140,6 @@ export class Chart<TItemType = any,
       this.headerLabel.placeOnChart(this as Chart)
     }
 
-    if (this.options.navigation!.isEnabled) {
-      this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
-      this.mouseNavigation = new MouseNavigation(location, size)
-    }
-
     this.plots = [];
 
     let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
@@ -194,6 +189,13 @@ export class Chart<TItemType = any,
     this.buildLegend(plotOptionsArr);
 
     this.update(this.visibleRect);
+
+    if (this.options.navigation!.isEnabled) {
+      this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
+      this.mouseNavigation = new MouseNavigation(location, size);
+      this.keyboardNavigation?.placeOnChart(this as Chart);
+      this.mouseNavigation?.placeOnChart(this as Chart)
+    }
   }
 
   getRenderer(): Renderer{
