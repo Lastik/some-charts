@@ -272,8 +272,8 @@ export class MouseNavigation extends ChartContent(Object) {
 
       if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
         this.chart.update(
-          new DataRect(horRange.min, verRange.min,
-            horRange.max - horRange.min, verRange.max - verRange.min));
+          new DataRect(newHorRange.min, newVerRange.min,
+            newHorRange.max - newHorRange.min, newVerRange.max - newVerRange.min));
       }
     }
   }

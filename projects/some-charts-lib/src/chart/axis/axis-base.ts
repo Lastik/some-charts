@@ -381,6 +381,10 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.validateAxisInitialWidth();
     this.validateAxisInitialHeight();
 
+    this.cleanMajorTicks();
+
+    this.updateAxisSize();
+
     this.updateMajorTicks(this.range, this.size);
     this.updateMinorTicks(this.range);
 
@@ -389,6 +393,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.updateTicksScreenCoords(this.location, this.range, this._size);
 
     this.markDirty();
+  }
+
+  protected cleanMajorTicks(){
+    this.majorTicks = [];
+    this.majorTicksLabelsSizes = undefined;
   }
 
   protected updateMajorTicks(range: Range<TickType>,
