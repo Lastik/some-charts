@@ -2,10 +2,11 @@ import extend from "lodash-es/extend";
 import Konva from "konva";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../options";
 import {DataSet, DimensionValue} from "../../data";
-import {DataTransformation, NumericPoint} from "../../geometry";
+import {DataRect, DataTransformation, NumericPoint} from "../../geometry";
 import {Plot} from "./plot";
 import * as Color from "color";
 import {MarkerPlotOptionsClass} from "../../options/plot/marker";
+import {PlotDrawableElement} from "./plot-drawable-element";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -21,11 +22,11 @@ export class MarkerPlot<TItemType,
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(MarkerPlotOptionsDefaults.Instance, options)) as MarkerPlotOptionsClass;
   }
 
-  protected create1DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[]): Konva.Shape[] {
+  protected create1DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[]): PlotDrawableElement[] {
 
     let metricValues = this.dataSet.getMetricValues(this.plotOptions.metric.name) as number[];
 
-    let shapes: Konva.Shape[] = [];
+    let elements: PlotDrawableElement[] = [];
 
     xDimension.forEach((xDimVal) => {
 
@@ -35,16 +36,16 @@ export class MarkerPlot<TItemType,
       if (markerColor && markerSize) {
         let metricValue = metricValues[xDimVal.index];
         let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
-        shapes.push(MarkerPlot.createShapeForMarker(point, markerColor, markerSize));
+        elements.push(MarkerPlot.createElementForMarker(point, markerColor, markerSize));
       }
     });
 
-    return shapes;
+    return elements;
   }
 
-  protected create2DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[], yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Konva.Shape[] {
+  protected create2DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[], yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): PlotDrawableElement[] {
 
-    let shapes: Konva.Shape[] = [];
+    let elements: PlotDrawableElement[] = [];
 
     xDimension.forEach((xDimVal) => {
       yDimension.forEach((yDimVal) => {
@@ -54,15 +55,15 @@ export class MarkerPlot<TItemType,
 
         if(markerColor && markerSize) {
           let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
-          shapes.push(MarkerPlot.createShapeForMarker(point, markerColor, markerSize));
+          elements.push(MarkerPlot.createElementForMarker(point, markerColor, markerSize));
         }
       });
     });
 
-    return shapes;
+    return elements;
   }
 
-  private static createShapeForMarker(location: NumericPoint, markerColor: Color, markerSize: number): Konva.Shape {
+  private static createElementForMarker(dataPoint: NumericPoint, markerColor: Color, markerSize: number): PlotDrawableElement {
     let circle = new Konva.Circle({
       radius: markerSize,
       fill: markerColor.toString(),
@@ -70,9 +71,13 @@ export class MarkerPlot<TItemType,
       strokeWidth: 1
     });
 
-    circle.setAttr('markerDataLocation', location);
+    return {dataPoint: dataPoint, shape: circle};
+  }
 
-    return circle;
+  protected updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void {
+    let markerShape = element.shape;
+    let markerScreenLocation = this.dataTransformation.dataToScreenRegionXY(element.dataPoint, visible, screen);
+    markerShape.setPosition(markerScreenLocation);
   }
 
   private getMarkerSize(xDimVal: DimensionValue<XDimensionType>,

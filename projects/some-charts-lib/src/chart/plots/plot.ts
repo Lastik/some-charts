@@ -12,6 +12,7 @@ import {Chart} from "../chart";
 import {IDisposable} from "../../i-disposable";
 
 import {EventBase, EventListener} from "../../events";
+import {PlotDrawableElement} from "./plot-drawable-element";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -22,7 +23,7 @@ export abstract class Plot<
   implements EventListener<DataSetEventType>, IDisposable{
 
   private readonly layerId: string;
-  protected plotShapes: Konva.Shape[];
+  protected plotElements: PlotDrawableElement[];
 
   protected visible: DataRect | undefined;
   protected screen: DataRect | undefined;
@@ -65,30 +66,37 @@ export abstract class Plot<
       }
     });
 
-    this.plotShapes = [];
+    this.plotElements = [];
+
+    this.initPlotFromDataSet();
   }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
     if (event.type === DataSetEventType.Changed) {
-      this.plotShapes = this.createPlotShapes();
-      this.shapesGroup.removeChildren();
-      for (let shape of this.plotShapes) {
-        this.shapesGroup.add(shape);
-      }
-      this.isDirty = true;
+      this.initPlotFromDataSet();
     }
   }
 
-  private createPlotShapes(): Array<Konva.Shape> {
+  private initPlotFromDataSet(){
+    this.plotElements = this.createPlotElements();
+    this.shapesGroup.removeChildren();
+    for (let element of this.plotElements) {
+      element.shape.cache();
+      this.shapesGroup.add(element.shape);
+    }
+    this.isDirty = true;
+  }
+
+  private createPlotElements(): Array<PlotDrawableElement> {
     let xDimension = this.dataSet.dimensionXValues;
     let yDimension = this.dataSet.dimensionYValues;
 
     let is2D = this.dataSet.is2D;
 
     if (is2D) {
-      return this.create2DPlotShapes(xDimension, yDimension!);
+      return this.create2DPlotElements(xDimension, yDimension!);
     } else {
-      return this.create1DPlotShapes(xDimension);
+      return this.create1DPlotElements(xDimension);
     }
   }
 
@@ -118,18 +126,18 @@ export abstract class Plot<
 
   private updatePlotShapes() {
     if(this.visible && this.screen){
-      for(let shape of this.plotShapes){
-        this.updatePlotShape(shape, this.visible, this.screen)
+      for(let plotElement of this.plotElements){
+        this.updateDrawableElementShape(plotElement, this.visible, this.screen)
       }
     }
   }
 
-  protected abstract create1DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[]): Array<Konva.Shape>;
+  protected abstract create1DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[]): Array<PlotDrawableElement>;
 
-  protected abstract create2DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[],
-                                        yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<Konva.Shape>;
+  protected abstract create2DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[],
+                                          yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement>;
 
-  protected abstract updatePlotShape(shape: Konva.Shape, visible: DataRect, screen: DataRect);
+  protected abstract updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void;
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,

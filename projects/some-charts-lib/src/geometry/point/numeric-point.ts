@@ -15,6 +15,15 @@ export class NumericPoint extends Point<number>{
   }
 
   /**
+   * Adds other NumericPoint to this one.
+   * @param {NumericPoint} other - Other point.
+   * @returns {NumericPoint}
+   */
+  scalarPlus(other: NumericPoint): NumericPoint{
+    return new NumericPoint(this.x + other.x, this.y + other.y);
+  }
+
+  /**
    * Compares x coordinates of two numeric points.
    * @param {NumericPoint} point1 - First point to compare.
    * @param {NumericPoint} point2 - Second point to compare.
