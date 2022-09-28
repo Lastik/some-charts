@@ -2,25 +2,27 @@ import Konva from "konva";
 import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
 import {FontInUnits} from "../../font"
 import {ChartRenderableItem} from "../chart-renderable-item";
-import {NumericPoint, DataRect, DataTransformation} from "../../geometry";
-import {DataSet, DimensionValue} from "../../data";
+import {DataRect, DataTransformation, NumericPoint} from "../../geometry";
+import {DataSet, DataSetEventType, DimensionValue} from "../../data";
 import * as Color from "color";
-import {Palette} from "./metric";
+import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
-import {MetricDependantValue} from "./metric";
 import {FontHelper} from "../../services";
 import {Chart} from "../chart";
-import {LayerId} from "../../layer-id";
+import {IDisposable} from "../../i-disposable";
+
+import {EventBase, EventListener} from "../../events";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
   PlotOptionsClassType extends PlotOptionsClass,
   TItemType,
   XDimensionType extends number | string | Date,
-  YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem {
+  YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem
+  implements EventListener<DataSetEventType>, IDisposable{
 
   private readonly layerId: string;
-  private plotShape: Konva.Shape;
+  protected plotShapes: Konva.Shape[];
 
   protected visible: DataRect | undefined;
   protected screen: DataRect | undefined;
@@ -35,6 +37,8 @@ export abstract class Plot<
     doesntSupport2DData: "This plot doesn't support 2D Data"
   }
 
+  private shapesGroup: Konva.Group;
+
   protected constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
     dataTransformation: DataTransformation,
@@ -45,41 +49,46 @@ export abstract class Plot<
     this.dataTransformation = dataTransformation;
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
 
+    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
+
     this.layerId = `plot-layer-${this.id}`;
 
     let self = this;
 
-    this.plotShape = new Konva.Shape({
-      sceneFunc: function(context: Konva.Context, shape: Konva.Shape){
-        self.drawFunc.apply(self, [context, shape]);
+    this.shapesGroup = new Konva.Group({
+      clipFunc: function (context) {
+        if (self.visible && self.screen) {
+          let screenLocation = self.screen.getMinXMinY();
+          let screenSize = self.screen.getSize();
+          context.rect(screenLocation.x + 0.5, screenLocation.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
+        }
       }
     });
+
+    this.plotShapes = [];
   }
 
-  private drawFunc(context: Konva.Context, shape: Konva.Shape): void {
-    if (this.visible && this.screen) {
-      let screenLocation = this.screen.getMinXMinY();
-      let screenSize = this.screen.getSize();
-
-      context.save();
-      context.beginPath();
-      context.rect(screenLocation.x + 0.5, screenLocation.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
-      context.clip();
-
-      let xDimension = this.dataSet.dimensionXValues;
-      let yDimension = this.dataSet.dimensionYValues;
-
-      let is2D = this.dataSet.is2D;
-
-      if (is2D) {
-        this.draw2DData(context, shape, xDimension, yDimension!);
-      } else {
-        this.draw1DData(context, shape, xDimension);
+  eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
+    if (event.type === DataSetEventType.Changed) {
+      this.plotShapes = this.createPlotShapes();
+      this.shapesGroup.removeChildren();
+      for (let shape of this.plotShapes) {
+        this.shapesGroup.add(shape);
       }
+      this.isDirty = true;
+    }
+  }
 
-      context.restore();
+  private createPlotShapes(): Array<Konva.Shape> {
+    let xDimension = this.dataSet.dimensionXValues;
+    let yDimension = this.dataSet.dimensionYValues;
 
-      this.isDirty = false;
+    let is2D = this.dataSet.is2D;
+
+    if (is2D) {
+      return this.create2DPlotShapes(xDimension, yDimension!);
+    } else {
+      return this.create1DPlotShapes(xDimension);
     }
   }
 
@@ -93,6 +102,7 @@ export abstract class Plot<
    */
   setVisible(visible: DataRect) {
     this.visible = visible;
+    this.updatePlotShapes();
     this.markDirty();
   }
 
@@ -102,15 +112,24 @@ export abstract class Plot<
    */
   setScreen(screen: DataRect) {
     this.screen = screen;
+    this.updatePlotShapes();
     this.markDirty();
   }
 
-  protected abstract draw1DData(context: Konva.Context, shape: Konva.Shape,
-                                xDimension: readonly DimensionValue<XDimensionType>[]): void;
+  private updatePlotShapes() {
+    if(this.visible && this.screen){
+      for(let shape of this.plotShapes){
+        this.updatePlotShape(shape, this.visible, this.screen)
+      }
+    }
+  }
 
-  protected abstract draw2DData(context: Konva.Context, shape: Konva.Shape,
-                                xDimension: readonly DimensionValue<XDimensionType>[],
-                                yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): void;
+  protected abstract create1DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[]): Array<Konva.Shape>;
+
+  protected abstract create2DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[],
+                                        yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<Konva.Shape>;
+
+  protected abstract updatePlotShape(shape: Konva.Shape, visible: DataRect, screen: DataRect);
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
@@ -170,10 +189,12 @@ export abstract class Plot<
 
     if (chart) {
       let plotLayer = chart!.getLayer(this.layerId);
-      if (plotLayer) {
-        plotLayer.add(this.plotShape);
-      }
+      plotLayer?.add(this.shapesGroup);
     }
+  }
+
+  dispose(): void {
+    this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
   }
 }
 

@@ -1,6 +1,5 @@
 import extend from "lodash-es/extend";
-import {Context} from "konva/lib/Context";
-import {Shape, ShapeConfig} from "konva/lib/Shape";
+import Konva from "konva";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../options";
 import {DataSet, DimensionValue} from "../../data";
 import {DataTransformation, NumericPoint} from "../../geometry";
@@ -22,62 +21,58 @@ export class MarkerPlot<TItemType,
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(MarkerPlotOptionsDefaults.Instance, options)) as MarkerPlotOptionsClass;
   }
 
-  protected draw1DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[]): void {
+  protected create1DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[]): Konva.Shape[] {
 
     let metricValues = this.dataSet.getMetricValues(this.plotOptions.metric.name) as number[];
 
-    if (this.screen) {
-      let screenLocation = this.screen.getMinXMinY();
+    let shapes: Konva.Shape[] = [];
 
-      xDimension.forEach((xDimVal) => {
+    xDimension.forEach((xDimVal) => {
 
-        let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
-        let markerSize = this.getMarkerSize(xDimVal);
+      let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
+      let markerSize = this.getMarkerSize(xDimVal);
 
-        if (markerColor && markerSize) {
-          let metricValue = metricValues[xDimVal.index];
-          let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
-          this.drawMarker(context, point, markerColor, markerSize, screenLocation);
+      if (markerColor && markerSize) {
+        let metricValue = metricValues[xDimVal.index];
+        let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
+        shapes.push(MarkerPlot.createShapeForMarker(point, markerColor, markerSize));
+      }
+    });
+
+    return shapes;
+  }
+
+  protected create2DPlotShapes(xDimension: readonly DimensionValue<XDimensionType>[], yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Konva.Shape[] {
+
+    let shapes: Konva.Shape[] = [];
+
+    xDimension.forEach((xDimVal) => {
+      yDimension.forEach((yDimVal) => {
+
+        let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal, yDimVal);
+        let markerSize =  this.getMarkerSize(xDimVal, yDimVal);
+
+        if(markerColor && markerSize) {
+          let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
+          shapes.push(MarkerPlot.createShapeForMarker(point, markerColor, markerSize));
         }
       });
+    });
 
-      context.stroke();
-    }
+    return shapes;
   }
 
-  protected draw2DData(context: Context, shape: Shape<ShapeConfig>, xDimension: readonly DimensionValue<XDimensionType>[], yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
+  private static createShapeForMarker(location: NumericPoint, markerColor: Color, markerSize: number): Konva.Shape {
+    let circle = new Konva.Circle({
+      radius: markerSize,
+      fill: markerColor.toString(),
+      stroke: 'black',
+      strokeWidth: 1
+    });
 
-    if(this.screen) {
-      let screenLocation = this.screen.getMinXMinY();
+    circle.setAttr('markerDataLocation', location);
 
-      xDimension.forEach((xDimVal) => {
-        yDimension.forEach((yDimVal) => {
-
-          let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal, yDimVal);
-          let markerSize =  this.getMarkerSize(xDimVal, yDimVal);
-
-          if(markerColor && markerSize) {
-            let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
-            this.drawMarker(context, point, markerColor, markerSize, screenLocation);
-          }
-        });
-      });
-
-      context.stroke();
-    }
-  }
-
-  private drawMarker(context: Context, location: NumericPoint, markerColor: Color, markerSize: number, screenLocation: NumericPoint) {
-    let markerScreenLocation = this.dataTransformation.dataToScreenXY(location, this.visible!, this.screen!.getSize());
-    markerScreenLocation.x += screenLocation.x;
-    markerScreenLocation.y += screenLocation.y;
-
-    context.beginPath();
-    context.arc(markerScreenLocation.x, markerScreenLocation.y, markerSize, 0, Math.PI * 2, true);
-    context.setAttr('fillStyle', markerColor.toString());
-    context.fill();
-    context.setAttr('lineWidth', 1);
-    context.stroke();
+    return circle;
   }
 
   private getMarkerSize(xDimVal: DimensionValue<XDimensionType>,

@@ -411,6 +411,10 @@ export class Chart<TItemType = any,
 
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
+
+    for (let plot of this.plots) {
+      plot.dispose();
+    }
   }
 
   get minZoomLevel(): number {

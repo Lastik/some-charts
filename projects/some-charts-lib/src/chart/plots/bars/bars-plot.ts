@@ -35,7 +35,7 @@ export class BarsPlot<TItemType,
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
   }
 
-  protected draw1DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[]): void {
+  protected create1DPlotShapes(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[]): void {
     if (this.visible && this.screen) {
       let screenLocation = this.screen.getMinXMinY();
       let screenSize = this.screen.getSize();
@@ -242,7 +242,7 @@ export class BarsPlot<TItemType,
     return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
   }
 
-  protected draw2DData(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
+  protected create2DPlotShapes(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
     throw new Error(Plot.errors.doesntSupport2DData);
   }
 
