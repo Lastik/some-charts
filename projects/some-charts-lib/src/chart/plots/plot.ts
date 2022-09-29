@@ -32,7 +32,7 @@ export abstract class Plot<
   protected readonly dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsClassType;
 
-  private screenPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
+  private metricPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
 
   protected static readonly errors = {
     doesntSupport2DData: "This plot doesn't support 2D Data"
@@ -163,22 +163,20 @@ export abstract class Plot<
       undefined;
   }
 
-  protected getScreenPoints1D(metricName: string): Array<NumericPoint> | undefined {
+  protected getMetricPoints1D(metricName: string): Array<NumericPoint> | undefined {
 
-    if (!this.screenPoints1DMap.has(metricName) && this.visible && this.screen) {
+    if (!this.metricPoints1DMap.has(metricName) && this.visible && this.screen) {
       let dimensionXValues = this.dataSet.dimensionXValues;
 
       if (this.dataSet.is1D) {
         let metricValues = this.dataSet.getMetricValues(metricName) as number[];
-        let transformedPoints = dimensionXValues.map((dimXVal, index) => {
-          return this.dataTransformation.dataToScreenRegionXY(
-            new NumericPoint(dimXVal.toNumericValue(), metricValues[index]),
-            this.visible!, this.screen!);
+        let points = dimensionXValues.map((dimXVal, index) => {
+          return new NumericPoint(dimXVal.toNumericValue(), metricValues[index])
         });
-        this.screenPoints1DMap.set(metricName, transformedPoints);
+        this.metricPoints1DMap.set(metricName, points);
       } else throw new Error("DataSet is not 1-Dimensional!");
     }
-    return this.screenPoints1DMap.get(metricName);
+    return this.metricPoints1DMap.get(metricName);
   }
 
   protected setContextFont(context: Konva.Context, font: FontInUnits) {
