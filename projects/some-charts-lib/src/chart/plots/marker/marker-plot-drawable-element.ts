@@ -1,12 +1,13 @@
+import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
-import {NumericPoint} from "../../geometry";
+import {NumericPoint} from "../../../geometry";
 
-export class PlotDrawableElement {
-  dataPoint: NumericPoint;
-  konvaDrawable: Konva.Group | Konva.Shape;
+export class MarkerPlotDrawableElement extends PlotDrawableElement {
 
-  constructor(dataPoint: NumericPoint, konvaDrawable: Konva.Group | Konva.Shape) {
-    this.dataPoint = dataPoint;
-    this.konvaDrawable = konvaDrawable;
+  public readonly markerShape: Konva.Shape;
+
+  constructor(dataPoint: NumericPoint, markerShape: Konva.Shape) {
+    super(dataPoint, markerShape);
+    this.markerShape = markerShape;
   }
 }

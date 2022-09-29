@@ -81,7 +81,6 @@ export abstract class Plot<
     this.plotElements = this.createPlotElements();
     this.shapesGroup.removeChildren();
     for (let element of this.plotElements) {
-      element.konvaDrawable.cache();
       this.shapesGroup.add(element.konvaDrawable);
     }
     this.isDirty = true;
@@ -110,7 +109,7 @@ export abstract class Plot<
    */
   setVisible(visible: DataRect) {
     this.visible = visible;
-    this.updatePlotShapes();
+    this.updatePlotElements();
     this.markDirty();
   }
 
@@ -120,14 +119,14 @@ export abstract class Plot<
    */
   setScreen(screen: DataRect) {
     this.screen = screen;
-    this.updatePlotShapes();
+    this.updatePlotElements();
     this.markDirty();
   }
 
-  private updatePlotShapes() {
+  private updatePlotElements() {
     if(this.visible && this.screen){
       for(let plotElement of this.plotElements){
-        this.updateDrawableElementShape(plotElement, this.visible, this.screen)
+        plotElement.update(this.dataTransformation, this.visible, this.screen);
       }
     }
   }
@@ -136,8 +135,6 @@ export abstract class Plot<
 
   protected abstract create2DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[],
                                           yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement>;
-
-  protected abstract updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void;
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,

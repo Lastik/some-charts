@@ -1,12 +1,13 @@
 import extend from "lodash-es/extend";
 import Konva from "konva";
-import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../options";
-import {DataSet, DimensionValue} from "../../data";
-import {DataRect, DataTransformation, NumericPoint} from "../../geometry";
-import {Plot} from "./plot";
+import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
+import {DataSet, DimensionValue} from "../../../data";
+import {DataRect, DataTransformation, NumericPoint} from "../../../geometry";
+import {Plot} from "../plot";
 import * as Color from "color";
-import {MarkerPlotOptionsClass} from "../../options/plot/marker";
-import {PlotDrawableElement} from "./plot-drawable-element";
+import {MarkerPlotOptionsClass} from "../../../options/plot/marker";
+import {PlotDrawableElement} from "../plot-drawable-element";
+import {MarkerPlotDrawableElement} from "./marker-plot-drawable-element";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -71,13 +72,7 @@ export class MarkerPlot<TItemType,
       strokeWidth: 1
     });
 
-    return {dataPoint: dataPoint, konvaDrawable: circle};
-  }
-
-  protected updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void {
-    let markerShape = element.konvaDrawable;
-    let markerScreenLocation = this.dataTransformation.dataToScreenRegionXY(element.dataPoint, visible, screen);
-    markerShape.setPosition(markerScreenLocation);
+    return new MarkerPlotDrawableElement(dataPoint, circle);
   }
 
   private getMarkerSize(xDimVal: DimensionValue<XDimensionType>,

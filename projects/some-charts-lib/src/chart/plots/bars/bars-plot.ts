@@ -19,6 +19,7 @@ import * as Color from "color";
 import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
+import {BarsPlotDrawableElement} from "./bars-plot-drawable-element";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -140,19 +141,23 @@ export class BarsPlot<TItemType,
             if (rectH != 0) {
 
               let group = new Konva.Group({
+                x: rectX,
+                y: rectY,
                 clipFunc: function (ctx) {
                   ctx.rect(rectX, rectY, rectW, rectH);
                 }
               });
 
               let rect = sampleRect.clone({
-                x: rectX,
-                y: rectY,
+                x: 0,
+                y: 0,
                 width: rectW,
                 height: rectH,
               });
 
               group.add(rect);
+
+              let label: Konva.Text | undefined;
 
               if (this.plotOptions.drawLabelsOnBars) {
 
@@ -162,15 +167,14 @@ export class BarsPlot<TItemType,
 
                 let pointLocation = metricPoints[ptIdx];
 
-                let x = pointLocation.x - textWidth / 2;
-                let h = pointLocation.y;
+                let x = barWidthWithMargin / 2 - textWidth / 2;
 
                 this.labelsHeight = this.labelsHeight ??
                   this.textMeasureUtils!.measureFontHeight(this.plotOptions.font);
 
-                let y = h + this.labelsHeight + 2;
+                let y = this.labelsHeight + 2;
 
-                let label = new Konva.Text({
+                label = new Konva.Text({
                   x: x,
                   y: y,
                   text: labelText,
@@ -182,10 +186,7 @@ export class BarsPlot<TItemType,
                 group.add(label);
               }
 
-              drawableElements.push({
-                konvaDrawable: group,
-                dataPoint: pointLocation
-              })
+              drawableElements.push(new BarsPlotDrawableElement(pointLocation, group, rect, label));
             }
           }
         }
@@ -195,9 +196,6 @@ export class BarsPlot<TItemType,
     }
 
     return drawableElements;
-  }
-
-  protected updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void {
   }
 
   /**
