@@ -16,7 +16,7 @@ import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {MathHelper, TextMeasureUtils} from "../../../services";
+import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
 
@@ -37,6 +37,8 @@ export class BarsPlot<TItemType,
   }
 
   protected create1DPlotElements(xDimension: DimensionValue<XDimensionType>[]): Array<PlotDrawableElement> {
+
+    let drawableElements: Array<PlotDrawableElement> = [];
 
     let minY = 0;
 
@@ -86,13 +88,19 @@ export class BarsPlot<TItemType,
 
           let barsColoring = this.getBarsColoring(metric.color);
 
-          let gradient = context.createLinearGradient(screenLocation.x, minY, screenLocation.x, zero.y);
-          gradient.addColorStop(0, barsColoring.fillGradient.min.toString());
-          gradient.addColorStop(0.4, barsColoring.fillGradient.min.toString());
-          gradient.addColorStop(1, barsColoring.fillGradient.max.toString());
-          context.setAttr('fillStyle', gradient);
-          context.setAttr('strokeStyle', barsColoring.stroke.toString());
-          context.setAttr('lineWidth', 1);
+          let sampleRect = new Konva.Rect({
+            stroke: barsColoring.stroke.toString(),
+            strokeWidth: 1,
+            fillLinearGradientStartPoint: { x: 0, y: 0 },
+            fillLinearGradientEndPoint: { x: 0, y: 50 },
+            fillLinearGradientColorStops: [
+              0,
+              barsColoring.fillGradient.min.toString(),
+              0.4,
+              barsColoring.fillGradient.max.toString(),
+              1,
+              barsColoring.fillGradient.max.toString()],
+          })
 
           for (let ptIdx = 0; ptIdx < metricPoints.length; ptIdx++) {
 
@@ -101,14 +109,14 @@ export class BarsPlot<TItemType,
             let rectW: number | undefined;
             let rectH: number | undefined;
 
+            let pointLocation = metricPoints[ptIdx];
+
             if (metricIdx == 0) {
-              let pointLocation = metricPoints[ptIdx];
               rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
               rectY = 0;
               rectW = MathHelper.optimizeValue(barWidthWithMargin);
               rectH = MathHelper.optimizeValue(pointLocation.y);
             } else {
-              let pointLocation = metricPoints[ptIdx];
               let prevPointLocation = prevMetricPts![ptIdx];
 
               let barHeight = pointLocation.y;
@@ -130,25 +138,27 @@ export class BarsPlot<TItemType,
             }
 
             if (rectH != 0) {
-              context.beginPath();
-              context.rect(rectX, rectY, rectW, rectH);
-              context.closePath();
-              context.fill()
-              context.stroke();
+
+              let group = new Konva.Group({
+                clipFunc: function (ctx) {
+                  ctx.rect(rectX, rectY, rectW, rectH);
+                }
+              });
+
+              let rect = sampleRect.clone({
+                x: rectX,
+                y: rectY,
+                width: rectW,
+                height: rectH,
+              });
+
+              group.add(rect);
 
               if (this.plotOptions.drawLabelsOnBars) {
-                context.save();
-
-                context.beginPath();
-                context.rect(rectX, rectY, rectW, rectH);
-                context.clip();
-
-                context.setAttr('fillStyle', this.plotOptions.foregroundColor.toString());
-                this.setContextFont(context, this.plotOptions.font);
 
                 let labelText: string = metricValues[ptIdx].toFixed(this.plotOptions.labelsPrecision);
 
-                let textWidth = context.measureText(labelText).width;
+                let textWidth = this.textMeasureUtils.measureTextSize(this.plotOptions.font, labelText).width;
 
                 let pointLocation = metricPoints[ptIdx];
 
@@ -159,9 +169,23 @@ export class BarsPlot<TItemType,
                   this.textMeasureUtils!.measureFontHeight(this.plotOptions.font);
 
                 let y = h + this.labelsHeight + 2;
-                context.fillText(labelText, x, y);
-                context.restore();
+
+                let label = new Konva.Text({
+                  x: x,
+                  y: y,
+                  text: labelText,
+                  fill: this.plotOptions.foregroundColor.toString(),
+                  stroke: this.plotOptions.foregroundColor.toString(),
+                  font: FontHelper.fontToString(this.plotOptions.font)
+                })
+
+                group.add(label);
               }
+
+              drawableElements.push({
+                konvaDrawable: group,
+                dataPoint: pointLocation
+              })
             }
           }
         }
@@ -169,6 +193,8 @@ export class BarsPlot<TItemType,
         prevMetricPts = metricPoints;
       }
     }
+
+    return drawableElements;
   }
 
   protected updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void {
@@ -237,7 +263,7 @@ export class BarsPlot<TItemType,
     return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
   }
 
-  protected create2DPlotElements(context: Konva.Context, shape: Konva.Shape, xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): void {
+  protected create2DPlotElements(xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement> {
     throw new Error(Plot.errors.doesntSupport2DData);
   }
 

@@ -81,8 +81,8 @@ export abstract class Plot<
     this.plotElements = this.createPlotElements();
     this.shapesGroup.removeChildren();
     for (let element of this.plotElements) {
-      element.shape.cache();
-      this.shapesGroup.add(element.shape);
+      element.konvaDrawable.cache();
+      this.shapesGroup.add(element.konvaDrawable);
     }
     this.isDirty = true;
   }

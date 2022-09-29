@@ -3,5 +3,5 @@ import {NumericPoint} from "../../geometry";
 
 export interface PlotDrawableElement {
   dataPoint: NumericPoint;
-  shape: Konva.Shape;
+  konvaDrawable: Konva.Group | Konva.Shape;
 }

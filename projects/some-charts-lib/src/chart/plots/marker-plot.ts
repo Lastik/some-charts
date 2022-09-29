@@ -71,11 +71,11 @@ export class MarkerPlot<TItemType,
       strokeWidth: 1
     });
 
-    return {dataPoint: dataPoint, shape: circle};
+    return {dataPoint: dataPoint, konvaDrawable: circle};
   }
 
   protected updateDrawableElementShape(element: PlotDrawableElement, visible: DataRect, screen: DataRect): void {
-    let markerShape = element.shape;
+    let markerShape = element.konvaDrawable;
     let markerScreenLocation = this.dataTransformation.dataToScreenRegionXY(element.dataPoint, visible, screen);
     markerShape.setPosition(markerScreenLocation);
   }
