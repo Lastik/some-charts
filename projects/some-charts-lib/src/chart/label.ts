@@ -18,7 +18,7 @@ export class Label extends ChartRenderableItem{
   private shape: Konva.Shape;
 
   public get height(){
-    return this.textSize.height + this.textTopOffset + this.options.verticalPadding;
+    return this.textSize.height + this.textTopOffset + (this.options.verticalPadding ?? 0);
   }
 
   constructor(location: NumericPoint, width: number, options: LabelOptions,
@@ -30,12 +30,12 @@ export class Label extends ChartRenderableItem{
 
     let self = this;
 
-    this.textSize = this.textMeasureUtils!.measureTextSize(this.options.font, this.options.text);
-    this.textTopOffset = this.textSize.height * 0.214 + this.options.verticalPadding;
+    this.textSize = this.textMeasureUtils!.measureTextSize(this.options.font!, this.options.text);
+    this.textTopOffset = this.textSize.height * 0.214 + (this.options.verticalPadding ?? 0);
 
     this.shape = new Konva.Shape({
-      stroke: this.options.foregroundColor.toString(),
-      fill: this.options.foregroundColor.toString(),
+      stroke: this.options.foregroundColor!.toString(),
+      fill: this.options.foregroundColor!.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.setAttr('font', FontHelper.fontToString(self.options?.font!));

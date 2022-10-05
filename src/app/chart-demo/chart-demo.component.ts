@@ -39,6 +39,9 @@ export class ChartDemoComponent implements OnInit {
       new DataRect(0, 0, 400, 6000),
       dataSet,
       {
+        header:{
+          text: 'Chart title'
+        },
         plots: [
           {
             kind: PlotKind.Marker,

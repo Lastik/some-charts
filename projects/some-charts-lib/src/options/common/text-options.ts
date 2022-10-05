@@ -5,9 +5,9 @@ export interface TextOptions {
   /**
    * Font
    */
-  font: FontInUnits;
+  font?: FontInUnits;
   /**
    * Foreground color
    */
-  foregroundColor: Color;
+  foregroundColor?: Color;
 }

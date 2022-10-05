@@ -14,11 +14,11 @@ export interface LabelOptions extends TextOptions {
   /**
    * Label vertical padding.
    */
-  verticalPadding: number;
+  verticalPadding?: number;
   /**
    * Label text alignment.
    */
-  textAlignment: HorizontalAlignment
+  textAlignment?: HorizontalAlignment
 }
 
 export class LabelOptionsDefaults

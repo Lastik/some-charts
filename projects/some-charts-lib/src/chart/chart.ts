@@ -188,14 +188,14 @@ export class Chart<TItemType = any,
 
     this.buildLegend(plotOptionsArr);
 
-    this.update(this.visibleRect);
-
     if (this.options.navigation!.isEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(location, size);
       this.keyboardNavigation?.placeOnChart(this as Chart);
       this.mouseNavigation?.placeOnChart(this as Chart)
     }
+
+    this.update(this.visibleRect);
   }
 
   getRenderer(): Renderer{

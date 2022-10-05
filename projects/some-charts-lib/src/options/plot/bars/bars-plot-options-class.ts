@@ -21,8 +21,8 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
     super(barsPlotOptions);
     this.metrics = barsPlotOptions.metrics;
     this.drawLabelsOnBars = barsPlotOptions.drawLabelsOnBars;
-    this.font = barsPlotOptions.font;
-    this.foregroundColor = barsPlotOptions.foregroundColor;
+    this.font = barsPlotOptions.font!;
+    this.foregroundColor = barsPlotOptions.foregroundColor!;
     this.labelsPrecision = barsPlotOptions.labelsPrecision;
     this.useDarkerBorder = barsPlotOptions.useDarkerBorder;
   }
