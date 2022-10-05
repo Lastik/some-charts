@@ -38,7 +38,9 @@ export abstract class Plot<
   }
 
   protected layerId: string;
-  protected konvaDrawable: Konva.Group;
+
+  protected shapesGroup: Konva.Group;
+  protected konvaDrawables: Konva.Group[];
 
   protected constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -56,7 +58,7 @@ export abstract class Plot<
 
     let self = this;
 
-    this.konvaDrawable = new Konva.Group({
+    this.shapesGroup = new Konva.Group({
       clipFunc: function (context) {
         if (self.visible && self.screen) {
           let screenLocation = self.screen.getMinXMinY();
@@ -65,6 +67,8 @@ export abstract class Plot<
         }
       }
     });
+
+    this.konvaDrawables = [this.shapesGroup];
 
     this.plotElements = [];
 
@@ -79,9 +83,9 @@ export abstract class Plot<
 
   private initPlotFromDataSet(){
     this.plotElements = this.createPlotElements();
-    this.konvaDrawable.removeChildren();
+    this.shapesGroup.removeChildren();
     for (let element of this.plotElements) {
-      this.konvaDrawable.add(element.konvaDrawable);
+      this.shapesGroup.add(element.konvaDrawable);
     }
     this.isDirty = true;
   }
@@ -97,10 +101,6 @@ export abstract class Plot<
     } else {
       return this.create1DPlotElements(xDimension);
     }
-  }
-
-  getDependantLayers(): string[] {
-    return [this.layerId];
   }
 
   /**

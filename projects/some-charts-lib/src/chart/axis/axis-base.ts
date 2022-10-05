@@ -14,7 +14,7 @@ import {flow, partialRight} from "lodash-es";
 import sortBy from "lodash-es/sortBy";
 import map from "lodash-es/map";
 
-export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem {
+export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem<Konva.Shape> {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -50,6 +50,9 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   protected readonly majorTicksGenerator: MajorTicksGenerator<TickType>;
   protected readonly minorTicksGenerator?: MinorTicksGenerator<TickType>;
+
+  protected layerId: string;
+  protected konvaDrawables: Konva.Shape[];
 
   static readonly increaseTicksCountCoeff = 2;
   static readonly decreaseTicksCountCoeff = 1.5;
@@ -227,9 +230,10 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         context.restore();
         self.isTicksShapeDirty = false;
       }
+    });
 
-
-    })
+    this.layerId = LayerId.Chart;
+    this.konvaDrawables = [this.borderShape, this.ticksShape];
   }
 
   protected validateAxisInitialWidth(){
@@ -247,24 +251,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   protected abstract createMajorTicksGenerator(): MajorTicksGenerator<TickType>;
   protected abstract createMinorTicksGenerator(): MinorTicksGenerator<TickType> | undefined;
 
-  /**
-   * Returns axis dependant layers.
-   * @returns {Array<string>} Axis dependant layers.
-   */
-  override getDependantLayers(): Array<string> {
-    return [LayerId.Chart];
-  }
-
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
 
-    if (chart) {
-      let chartLayer = chart!.getLayer(LayerId.Chart);
-      if(chartLayer) {
-        chartLayer.add(this.borderShape);
-        chartLayer.add(this.ticksShape);
-        this.update(this.location, this.range, this.initialWidth, this.initialHeight);
-      }
+    if(chart){
+      this.update(this.location, this.range, this.initialWidth, this.initialHeight);
     }
   }
 
@@ -282,16 +273,6 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    */
   getOrientation() {
     return this.orientation;
-  }
-
-
-  /**
-   * Removes axis from chart.
-   */
-  override removeFromChart() {
-    super.removeFromChart();
-    this.ticksShape.remove();
-    this.borderShape.remove();
   }
 
   /**

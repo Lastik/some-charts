@@ -9,7 +9,7 @@ import Konva from "konva";
 export abstract class ChartRenderableItem<ShapeType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> extends ChartContent(RenderableItem) {
 
   protected abstract layerId: string;
-  protected abstract konvaDrawable: ShapeType;
+  protected abstract konvaDrawables: ShapeType[];
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
@@ -17,13 +17,21 @@ export abstract class ChartRenderableItem<ShapeType extends Konva.Group | Konva.
 
     if (chart) {
       let layer = chart!.getLayer(this.layerId);
-      layer?.add(this.konvaDrawable);
+      for(let konvaDrawable of this.konvaDrawables) {
+        layer?.add(konvaDrawable);
+      }
     }
   }
 
   override removeFromChart() {
-    this.konvaDrawable.remove();
+    for(let konvaDrawable of this.konvaDrawables) {
+      konvaDrawable.remove();
+    }
     this.chart?.removeContentItem(this);
     super.removeFromChart();
+  }
+
+  getDependantLayers(): string[] {
+    return [this.layerId];
   }
 }

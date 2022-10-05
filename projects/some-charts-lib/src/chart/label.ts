@@ -13,13 +13,13 @@ export class Label extends ChartRenderableItem<Konva.Shape>{
   private options: LabelOptions;
 
   private textSize: Size;
-  private textTopOffset: number;
+  private textTopBottomOffset: number;
 
-  protected konvaDrawable: Konva.Shape;
+  protected konvaDrawables: Konva.Shape[];
   protected layerId: string;
 
   public get height(){
-    return this.textSize.height + this.textTopOffset + (this.options.verticalPadding ?? 0);
+    return this.textSize.height + this.textTopBottomOffset  * 2;
   }
 
   constructor(location: NumericPoint, width: number, options: LabelOptions,
@@ -32,35 +32,33 @@ export class Label extends ChartRenderableItem<Konva.Shape>{
     let self = this;
 
     this.textSize = this.textMeasureUtils!.measureTextSize(this.options.font!, this.options.text);
-    this.textTopOffset = this.textSize.height * 0.214 + (this.options.verticalPadding ?? 0);
+    this.textTopBottomOffset = this.textSize.height * 0.214 + (this.options.verticalPadding ?? 0);
 
-    this.konvaDrawable = new Konva.Shape({
-      sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
+    this.konvaDrawables = [
+      new Konva.Shape({
+        sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
-        context.setAttr('font', FontHelper.fontToString(self.options?.font!));
-        context.setAttr('textBaseline', 'top');
-        context.setAttr('strokeStyle', self.options.foregroundColor!.toString());
-        context.setAttr('fillStyle', self.options.foregroundColor!.toString());
+          context.setAttr('font', FontHelper.fontToString(self.options?.font!));
+          context.setAttr('textBaseline', 'top');
+          context.setAttr('strokeStyle', self.options.foregroundColor!.toString());
+          context.setAttr('fillStyle', self.options.foregroundColor!.toString());
 
-        context.measureText(self.options.text).width;
+          let x = self.location.x;
+          let y = self.location.y;
 
-        let x = self.location.x;
-        let y = self.location.y;
+          if (self.options.textAlignment == HorizontalAlignment.Center) {
+            x += self.width / 2 - self.textSize.width / 2;
+          }
 
-        if (self.options.textAlignment == HorizontalAlignment.Center) {
-          x += self.width / 2 - self.textSize.width / 2;
+          y += self.textTopBottomOffset;
+
+          context.fillText(self.options.text, x, y);
+
+          self.isDirty = false;
         }
+      })
+    ];
 
-        y += self.textSize.height / 2 + self.textTopOffset;
-
-        context.fillText(self.options.text, x, y);
-
-        self.isDirty = false;
-      }
-    });
-  }
-
-  getDependantLayers(): Array<string> {
-    return Array(LayerId.Labels);
+    this.layerId = LayerId.Labels
   }
 }

@@ -40,7 +40,7 @@ export class ChartDemoComponent implements OnInit {
       dataSet,
       {
         header:{
-          text: 'Chart title'
+          text: 'Заголовок графика'
         },
         plots: [
           {

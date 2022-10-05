@@ -207,10 +207,6 @@ export class Chart<TItemType = any,
     return renderer ? <Konva.Layer>renderer.getLayer(layerId): undefined;
   }
 
-  getDependantLayers(): Array<string> {
-    return [LayerId.Chart, LayerId.Labels];
-  }
-
   public addContentItem(contentItem: ChartRenderableItem){
     this.contentItems.push(contentItem);
   }

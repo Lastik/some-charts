@@ -7,13 +7,17 @@ import {GridOptions, GridOptionsDefaults} from "../options";
 import {MathHelper} from "../services";
 import {LayerId} from "../layer-id";
 
-export class Grid extends ChartRenderableItem {
+export class Grid extends ChartRenderableItem<Konva.Shape> {
+
+  protected layerId: string;
 
   private location: NumericPoint;
   private size: Size;
 
   protected horizontalLinesCoords: number[];
   protected verticalLinesCoords: number[];
+
+  protected konvaDrawables: Konva.Shape[];
 
   private compositeShape: Konva.Shape;
   private borderShape: Konva.Shape;
@@ -125,28 +129,9 @@ export class Grid extends ChartRenderableItem {
         context.restore();
       }
     });
-  }
 
-  getDependantLayers(): string[] {
-    return [LayerId.Chart];
-  }
-
-  override placeOnChart(chart?: Chart) {
-    super.placeOnChart(chart);
-
-    if (chart) {
-      let chartLayer = chart!.getLayer(LayerId.Chart);
-      if(chartLayer) {
-        chartLayer.add(this.borderShape);
-        chartLayer.add(this.compositeShape);
-      }
-    }
-  }
-
-  override removeFromChart() {
-    super.removeFromChart();
-    this.borderShape.remove();
-    this.compositeShape.remove();
+    this.layerId = LayerId.Chart;
+    this.konvaDrawables = [this.borderShape, this.compositeShape];
   }
 
   /**
