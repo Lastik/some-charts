@@ -19,10 +19,9 @@ export abstract class Plot<
   PlotOptionsClassType extends PlotOptionsClass,
   TItemType,
   XDimensionType extends number | string | Date,
-  YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem
+  YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem<Konva.Group>
   implements EventListener<DataSetEventType>, IDisposable{
 
-  private readonly layerId: string;
   protected plotElements: PlotDrawableElement[];
 
   protected visible: DataRect | undefined;
@@ -38,7 +37,8 @@ export abstract class Plot<
     doesntSupport2DData: "This plot doesn't support 2D Data"
   }
 
-  private shapesGroup: Konva.Group;
+  protected layerId: string;
+  protected konvaDrawable: Konva.Group;
 
   protected constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -56,7 +56,7 @@ export abstract class Plot<
 
     let self = this;
 
-    this.shapesGroup = new Konva.Group({
+    this.konvaDrawable = new Konva.Group({
       clipFunc: function (context) {
         if (self.visible && self.screen) {
           let screenLocation = self.screen.getMinXMinY();
@@ -79,9 +79,9 @@ export abstract class Plot<
 
   private initPlotFromDataSet(){
     this.plotElements = this.createPlotElements();
-    this.shapesGroup.removeChildren();
+    this.konvaDrawable.removeChildren();
     for (let element of this.plotElements) {
-      this.shapesGroup.add(element.konvaDrawable);
+      this.konvaDrawable.add(element.konvaDrawable);
     }
     this.isDirty = true;
   }
@@ -185,15 +185,6 @@ export abstract class Plot<
    * */
   getBoundingRectangle(): DataRect | undefined {
     return this.dataSet.getBoundingRectangle(this.plotOptions.metricsOptions.map(o => o.name));
-  }
-
-  override placeOnChart(chart?: Chart) {
-    super.placeOnChart(chart);
-
-    if (chart) {
-      let plotLayer = chart!.getLayer(this.layerId);
-      plotLayer?.add(this.shapesGroup);
-    }
   }
 
   dispose(): void {

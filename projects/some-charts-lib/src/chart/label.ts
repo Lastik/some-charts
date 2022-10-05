@@ -7,7 +7,7 @@ import {LayerId} from "../layer-id";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
 
-export class Label extends ChartRenderableItem{
+export class Label extends ChartRenderableItem<Konva.Shape>{
   private location: NumericPoint;
   private width: number;
   private options: LabelOptions;
@@ -15,7 +15,8 @@ export class Label extends ChartRenderableItem{
   private textSize: Size;
   private textTopOffset: number;
 
-  private shape: Konva.Shape;
+  protected konvaDrawable: Konva.Shape;
+  protected layerId: string;
 
   public get height(){
     return this.textSize.height + this.textTopOffset + (this.options.verticalPadding ?? 0);
@@ -33,13 +34,13 @@ export class Label extends ChartRenderableItem{
     this.textSize = this.textMeasureUtils!.measureTextSize(this.options.font!, this.options.text);
     this.textTopOffset = this.textSize.height * 0.214 + (this.options.verticalPadding ?? 0);
 
-    this.shape = new Konva.Shape({
-      stroke: this.options.foregroundColor!.toString(),
-      fill: this.options.foregroundColor!.toString(),
+    this.konvaDrawable = new Konva.Shape({
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.setAttr('font', FontHelper.fontToString(self.options?.font!));
         context.setAttr('textBaseline', 'top');
+        context.setAttr('strokeStyle', self.options.foregroundColor!.toString());
+        context.setAttr('fillStyle', self.options.foregroundColor!.toString());
 
         context.measureText(self.options.text).width;
 

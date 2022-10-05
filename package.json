@@ -30,7 +30,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.4.0",
     "save": "^2.5.0",
-    "some-charts": "dist/some-charts/some-charts-0.0.65.tgz",
+    "some-charts": "dist/some-charts/some-charts-0.0.66.tgz",
     "jquery": "^3.6.1",
     "tslib": "^2.3.0",
     "typedi": "^0.10.0",
