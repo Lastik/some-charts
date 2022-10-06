@@ -70,6 +70,7 @@ export class Chart<TItemType = any,
   private layersIds: Array<string>;
 
   private resizeSensor: ResizeSensor | undefined;
+  private resizeSensorCallback: () => void;
 
   public get id(): number{
     return this._id;
@@ -112,6 +113,8 @@ export class Chart<TItemType = any,
               private plotFactory: PlotFactory = PlotFactory.Instance,
               private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
 
+    let self = this;
+
     this.elementSelector = elementSelector;
 
     this.jqueryElt = $(elementSelector);
@@ -121,7 +124,11 @@ export class Chart<TItemType = any,
     this._location = new NumericPoint(0, 0);
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
 
-    this.resizeSensor = this.element ? new ResizeSensor(this.element, this.onChartElementResized) : undefined ;
+    this.resizeSensorCallback = () => {
+      self.onChartElementResized();
+    };
+
+    this.resizeSensor = this.element ? new ResizeSensor(this.element, this.resizeSensorCallback) : undefined ;
 
     this._id = Chart.getNextId();
 
@@ -155,7 +162,6 @@ export class Chart<TItemType = any,
     this.plots = [];
 
     let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
-
 
     for(let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
@@ -298,9 +304,13 @@ export class Chart<TItemType = any,
     }
 
     for (let plot of this.plots) {
-      plot.setScreen(new DataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height));
-      plot.setVisible(this._visibleRect);
+      plot.update(
+        this._visibleRect,
+        new DataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height)
+      );
     }
+
+    this.headerLabel?.update(this.location, this.size.width);
   }
 
   /**
@@ -425,7 +435,7 @@ export class Chart<TItemType = any,
     }
 
     if (this.resizeSensor) {
-      this.resizeSensor.detach(this.onChartElementResized);
+      this.resizeSensor.detach(this.resizeSensorCallback);
     }
   }
 
@@ -435,6 +445,7 @@ export class Chart<TItemType = any,
 
   onChartElementResized(){
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
+    this._renderer.setSize(this._size);
     this.update(this.visibleRect);
   }
 }

@@ -104,20 +104,12 @@ export abstract class Plot<
   }
 
   /**
-   * Sets visible rectangle of plot
+   * Sets visible and screen rectangle of plot
    * @param {DataRect} visible - Visible rectangle of plot.
-   */
-  setVisible(visible: DataRect) {
-    this.visible = visible;
-    this.updatePlotElements();
-    this.markDirty();
-  }
-
-  /**
-   * Sets screen rectangle of plot
    * @param {DataRect} screen - Screen rectangle of plot.
    */
-  setScreen(screen: DataRect) {
+  update(visible: DataRect, screen: DataRect) {
+    this.visible = visible;
     this.screen = screen;
     this.updatePlotElements();
     this.markDirty();

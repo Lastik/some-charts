@@ -6,6 +6,7 @@ import {FontHelper, TextMeasureUtils} from "../services";
 import {LayerId} from "../layer-id";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
+import {words} from "lodash-es";
 
 export class Label extends ChartRenderableItem<Konva.Shape>{
   private location: NumericPoint;
@@ -60,5 +61,16 @@ export class Label extends ChartRenderableItem<Konva.Shape>{
     ];
 
     this.layerId = LayerId.Labels
+  }
+
+  /**
+   * Sets location and width of this label
+   * @param {NumericPoint} location - Label location on the canvas.
+   * @param {number} width - Label render width.
+   */
+  update(location: NumericPoint, width: number){
+    this.location = location;
+    this.width = width;
+    this.isDirty = true;
   }
 }
