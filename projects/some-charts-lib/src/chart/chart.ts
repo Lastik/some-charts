@@ -32,6 +32,9 @@ import {LayerId} from "../layer-id";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
+import {ResizeSensor} from "css-element-queries";
+
+import * as $ from 'jquery'
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
@@ -41,13 +44,15 @@ export class Chart<TItemType = any,
   public static readonly MinZoomLevel: number = 1e-8;
 
   private elementSelector: string;
+  private element: HTMLElement | undefined;
+  private jqueryElt: JQuery<HTMLElement>;
 
   private readonly _id: number;
 
   private _renderer: Renderer;
 
   private readonly _location: NumericPoint;
-  private readonly _size: Size;
+  private _size: Size;
 
   private readonly contentItems: ChartRenderableItem[];
   private readonly plots: Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType>[];
@@ -63,6 +68,8 @@ export class Chart<TItemType = any,
   private legend: Legend | undefined;
 
   private layersIds: Array<string>;
+
+  private resizeSensor: ResizeSensor | undefined;
 
   public get id(): number{
     return this._id;
@@ -92,8 +99,6 @@ export class Chart<TItemType = any,
   /**
    * Creates new instance of chart.
    * @param {string} elementSelector - element selector.
-   * @param {NumericPoint} location - Chart's location relative to left up corner of canvas.
-   * @param {Size} size - Chart's size
    * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
@@ -101,7 +106,7 @@ export class Chart<TItemType = any,
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
   constructor(elementSelector: string,
-              location: NumericPoint, size: Size, visibleRect: DataRect,
+              visibleRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options?: ChartOptions,
               private plotFactory: PlotFactory = PlotFactory.Instance,
@@ -109,18 +114,25 @@ export class Chart<TItemType = any,
 
     this.elementSelector = elementSelector;
 
+    this.jqueryElt = $(elementSelector);
+
+    this.element = this.jqueryElt.length > 0 ? this.jqueryElt[0] : undefined;
+
+    this._location = new NumericPoint(0, 0);
+    this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
+
+    this.resizeSensor = this.element ? new ResizeSensor(this.element, this.onChartElementResized) : undefined ;
+
     this._id = Chart.getNextId();
 
     this.options = extend(ChartOptionsDefaults.Instance, options);
 
-    this._renderer = new Renderer(elementSelector, size, this.options!.renderer!);
+    this._renderer = new Renderer(elementSelector, this.size, this.options!.renderer!);
 
     this.layersIds = [];
 
     this.layersIds.push(...Chart.getCommonLayersIds());
 
-    this._location = location;
-    this._size = size;
     this._visibleRect = visibleRect;
 
     this.dataSet = dataSet;
@@ -133,10 +145,10 @@ export class Chart<TItemType = any,
     this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes!.horizontal);
     this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes!.vertical);
 
-    this.chartGrid = new Grid(location, size, this.options.grid);
+    this.chartGrid = new Grid(this.location, this.size, this.options.grid);
 
     if (this.options.header) {
-      this.headerLabel = new Label(location, size.width, this.options.header);
+      this.headerLabel = new Label(this.location, this.size.width, this.options.header);
       this.headerLabel.placeOnChart(this as Chart)
     }
 
@@ -190,7 +202,7 @@ export class Chart<TItemType = any,
 
     if (this.options.navigation!.isEnabled) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
-      this.mouseNavigation = new MouseNavigation(location, size);
+      this.mouseNavigation = new MouseNavigation(this.location, this.size);
       this.keyboardNavigation?.placeOnChart(this as Chart);
       this.mouseNavigation?.placeOnChart(this as Chart)
     }
@@ -411,9 +423,18 @@ export class Chart<TItemType = any,
     for (let plot of this.plots) {
       plot.dispose();
     }
+
+    if (this.resizeSensor) {
+      this.resizeSensor.detach(this.onChartElementResized);
+    }
   }
 
   get minZoomLevel(): number {
     return Chart.MinZoomLevel;
+  }
+
+  onChartElementResized(){
+    this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
+    this.update(this.visibleRect);
   }
 }
