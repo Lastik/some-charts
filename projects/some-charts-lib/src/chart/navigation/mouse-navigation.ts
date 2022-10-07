@@ -261,7 +261,7 @@ export class MouseNavigation extends ChartContent(Object) {
       let horRange = this.chart.visibleRect.getHorizontalRange();
       let verRange = this.chart.visibleRect.getVerticalRange();
 
-      let zoomCoeff = 0.01;
+      let zoomCoeff = 0.015;
       let sign = delta > 0 ? 1 : -1;
 
       let deltaX = horRange.getLength() * zoomCoeff * sign;

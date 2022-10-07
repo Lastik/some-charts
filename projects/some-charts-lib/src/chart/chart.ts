@@ -100,16 +100,16 @@ export class Chart<TItemType = any,
   /**
    * Creates new instance of chart.
    * @param {string} elementSelector - element selector.
-   * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
+   * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
   constructor(elementSelector: string,
-              visibleRect: DataRect,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
-              options?: ChartOptions,
+              options: ChartOptions,
+              visibleRect: DataRect | undefined = undefined,
               private plotFactory: PlotFactory = PlotFactory.Instance,
               private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
 
@@ -128,7 +128,7 @@ export class Chart<TItemType = any,
       self.onChartElementResized();
     };
 
-    this.resizeSensor = this.element ? new ResizeSensor(this.element, this.resizeSensorCallback) : undefined ;
+    this.resizeSensor = this.element ? new ResizeSensor(this.element, this.resizeSensorCallback) : undefined;
 
     this._id = Chart.getNextId();
 
@@ -140,7 +140,7 @@ export class Chart<TItemType = any,
 
     this.layersIds.push(...Chart.getCommonLayersIds());
 
-    this._visibleRect = visibleRect;
+    this._visibleRect = visibleRect ?? new DataRect(0, 0, 1, 1);
 
     this.dataSet = dataSet;
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
@@ -161,15 +161,16 @@ export class Chart<TItemType = any,
 
     this.plots = [];
 
-    let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po)).filter(po => po !== undefined) as PlotOptionsClass[];
+    let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po))
+      .filter(po => po !== undefined) as PlotOptionsClass[];
 
-    for(let plotOptions of plotOptionsArr) {
+    for (let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
 
         let plotLayers = plot.getDependantLayers();
-        for(let plotLayerId of plotLayers) {
+        for (let plotLayerId of plotLayers) {
           if (this.layersIds.indexOf(plotLayerId) < 0) {
             this.layersIds.push(plotLayerId);
           }
@@ -179,11 +180,11 @@ export class Chart<TItemType = any,
 
     Chart.createLayers(this.getRenderer(), this.layersIds);
 
-    if(this.horizontalAxis) {
+    if (this.horizontalAxis) {
       this.horizontalAxis.placeOnChart(this as Chart);
     }
 
-    if(this.verticalAxis) {
+    if (this.verticalAxis) {
       this.verticalAxis.placeOnChart(this as Chart)
     }
 
@@ -193,12 +194,12 @@ export class Chart<TItemType = any,
       this.headerLabel.placeOnChart(this as Chart)
     }
 
-    for(let plot of this.plots){
+    for (let plot of this.plots) {
       plot.attach(this._renderer);
       plot.placeOnChart(this as Chart);
     }
 
-    for(let contentItem of this.contentItems){
+    for (let contentItem of this.contentItems) {
       contentItem.attach(this._renderer);
     }
 
@@ -214,6 +215,10 @@ export class Chart<TItemType = any,
     }
 
     this.update(this.visibleRect);
+
+    if (!visibleRect) {
+      this.fitToView();
+    }
   }
 
   getRenderer(): Renderer{

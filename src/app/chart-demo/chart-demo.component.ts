@@ -34,7 +34,6 @@ export class ChartDemoComponent implements OnInit {
 
     let chart = new Chart<MoneyForIndex, number>(
       '#chart-element',
-      new DataRect(0, 0, 400, 6000),
       dataSet,
       {
         header:{

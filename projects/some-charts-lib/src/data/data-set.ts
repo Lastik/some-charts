@@ -336,7 +336,7 @@ export class DataSet<TItemType,
   getBoundingRectangle(metricsNames: Array<string>): DataRect | undefined {
     let boundingRect: DataRect | undefined = undefined;
 
-    for (let metricName in metricsNames) {
+    for (let metricName of metricsNames) {
 
       let curMetricBoundingRect: DataRect | undefined = undefined;
 
