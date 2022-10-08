@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {DataRect, DataTransformation, NumericPoint} from "../../geometry";
+import {DataRect, DataTransformation, NumericPoint, Size} from "../../geometry";
 
 export class PlotDrawableElement {
   public readonly dataPoint: NumericPoint;

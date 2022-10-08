@@ -1,8 +1,7 @@
 import extend from "lodash-es/extend";
-import Konva from "konva";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
 import {DataSet, DimensionValue} from "../../../data";
-import {DataRect, DataTransformation, NumericPoint} from "../../../geometry";
+import {DataTransformation, NumericPoint} from "../../../geometry";
 import {Plot} from "../plot";
 import * as Color from "color";
 import {MarkerPlotOptionsClass} from "../../../options/plot/marker";
@@ -65,14 +64,7 @@ export class MarkerPlot<TItemType,
   }
 
   private static createElementForMarker(dataPoint: NumericPoint, markerColor: Color, markerSize: number): PlotDrawableElement {
-    let circle = new Konva.Circle({
-      radius: markerSize,
-      fill: markerColor.toString(),
-      stroke: 'black',
-      strokeWidth: 1
-    });
-
-    return new MarkerPlotDrawableElement(dataPoint, circle);
+    return new MarkerPlotDrawableElement(dataPoint, markerColor, markerSize);
   }
 
   private getMarkerSize(xDimVal: DimensionValue<XDimensionType>,

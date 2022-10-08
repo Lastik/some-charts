@@ -4,6 +4,9 @@ import {DataRect, Range} from "../geometry";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
 import {DimensionType} from "./dimension-type";
 import {Sorting} from "../sorting";
+import isUndefined from "lodash-es/isUndefined";
+import min from "lodash-es/min";
+import max from "lodash-es/max";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
@@ -130,7 +133,7 @@ export class DataSet<TItemType,
   }
 
   public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
-    if (y && !this.dimensionYFunc || !y && this.dimensionYFunc) {
+    if (!isUndefined(y) && !this.dimensionYFunc || isUndefined(y) && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
 
@@ -139,11 +142,11 @@ export class DataSet<TItemType,
     let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
 
     if (metricValues) {
-      if (x && y) {
+      if (!isUndefined(y)) {
         let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
-        return xIdx && yIdx ? (metricValues as Array<Array<number>>)[xIdx][yIdx] : undefined;
+        return !isUndefined(xIdx) && !isUndefined(yIdx) ? (metricValues as Array<Array<number>>)[xIdx][yIdx] : undefined;
       } else {
-        return xIdx ? (metricValues as Array<number>)[xIdx] : undefined;
+        return !isUndefined(xIdx) ? (metricValues as Array<number>)[xIdx] : undefined;
       }
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
@@ -157,7 +160,7 @@ export class DataSet<TItemType,
     let metricValues = this.metricsValues.get(metricName);
 
     if (metricValues) {
-      if (xDimVal && yDimVal) {
+      if (!isUndefined(xDimVal) && !isUndefined(yDimVal)) {
         return (metricValues as Array<Array<number>>)[xDimVal.index][yDimVal.index];
       } else {
         return (metricValues as Array<number>)[xDimVal.index];
@@ -211,14 +214,14 @@ export class DataSet<TItemType,
 
       let errorTxt = 'For numeric or Date dimensions, update operation can only add values larger than those already inside DataSet (e.g. extend time series data) or override existing data.';
 
-      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && maxDimensionXPrimitiveValue && dimXValue.primitiveValue < maxDimensionXPrimitiveValue){
+      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && !isUndefined(maxDimensionXPrimitiveValue) && dimXValue.primitiveValue < maxDimensionXPrimitiveValue){
         throw new Error(errorTxt)
       }
 
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
       if (dimYValue) {
 
-        if(maxDimensionXPrimitiveValue && dimensionYValuesMap &&
+        if(!isUndefined(maxDimensionXPrimitiveValue) && dimensionYValuesMap &&
           !dimensionYValuesMap.has(dimYValue.primitiveValue) && maxDimensionYPrimitiveValue && dimYValue.primitiveValue < maxDimensionXPrimitiveValue){
           throw new Error(errorTxt)
         }
@@ -263,13 +266,13 @@ export class DataSet<TItemType,
 
         let metricValue = metricFunc(element);
 
-        if (xIdx !== undefined && yIdx !== undefined && Array.isArray(metricValues[xIdx])) {
+        if (!isUndefined(xIdx)  && !isUndefined(yIdx) && Array.isArray(metricValues[xIdx])) {
           let twoDMetricValues = (metricValues as Array<Array<number>>);
           if(!twoDMetricValues[xIdx]) {
             twoDMetricValues[xIdx] = [];
           }
           twoDMetricValues[xIdx][yIdx] = metricValue;
-        } else if (xIdx !== undefined) {
+        } else if (!isUndefined(xIdx)) {
           let oneDMetricValues = (metricValues as Array<number>);
           oneDMetricValues[xIdx] = metricValue;
         }
@@ -341,26 +344,30 @@ export class DataSet<TItemType,
       let curMetricBoundingRect: DataRect | undefined = undefined;
 
       if (this.dimensionXValues.length) {
-        let minX = this.dimensionXValues[0];
-        let maxX = this.dimensionXValues[this.dimensionXValues.length - 1];
+        let minX = this.dimensionXValues[0].toNumericValue();
+        let maxX = this.dimensionXValues[this.dimensionXValues.length - 1].toNumericValue();
 
         if (this.is1D) {
-          let minY = this.getMetricValue(metricName, minX.value);
-          let maxY = this.getMetricValue(metricName, maxX.value);
 
-          if (minY && maxY) {
-            curMetricBoundingRect = new DataRect(minX.toNumericValue(), minY, maxX.toNumericValue() - minX.toNumericValue(), maxY - minY);
+          let yValues = this.getMetricValues(metricName) as number[];
+
+          let minY = min(yValues);
+          let maxY = max(yValues);
+
+          if (!isUndefined(minY) && !isUndefined(maxY)) {
+            curMetricBoundingRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
           }
         } else {
           if (this.dimensionYValues && this.dimensionYValues.length) {
-            let minY = this.dimensionYValues[0];
-            let maxY = this.dimensionYValues[this.dimensionYValues.length - 1];
 
-            curMetricBoundingRect = new DataRect(
-              minX.toNumericValue(),
-              minY.toNumericValue(),
-              maxX.toNumericValue() - minX.toNumericValue(),
-              maxY.toNumericValue() - minY.toNumericValue());
+            let dimensionYNumericValues = this.dimensionYValues.map(v => v.toNumericValue());
+
+            let minY = min(dimensionYNumericValues);
+            let maxY = max(dimensionYNumericValues);
+
+            if (!isUndefined(minY) && !isUndefined(maxY)) {
+              curMetricBoundingRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
+            }
           }
         }
       }
