@@ -95,7 +95,7 @@ export class Chart<TItemType = any,
 
   private chartGrid: Grid;
 
-  private static currentChartId: number;
+  private static currentChartId: number = 1;
 
   /**
    * Creates new instance of chart.

@@ -12,7 +12,7 @@ export class KeyboardNavigationsFactory {
   public create(): KeyboardNavigation {
     let id = this.getNextId();
     let newNavigation = new KeyboardNavigation(id);
-    this.navigationsById.set(id, new KeyboardNavigation(id));
+    this.navigationsById.set(id, newNavigation);
     return newNavigation;
   }
 
