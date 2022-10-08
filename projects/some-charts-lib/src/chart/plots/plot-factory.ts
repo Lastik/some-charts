@@ -26,8 +26,7 @@ export class PlotFactory {
     dataTransformation: DataTransformation,
     plotOptions: PlotOptions): Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType> | undefined {
     if (plotOptions.kind === PlotKind.Bars) {
-      return undefined;
-      //return new BarsPlot(dataSet, dataTransformation, <BarsPlotOptions>plotOptions)
+      return new BarsPlot(dataSet, dataTransformation, <BarsPlotOptions>plotOptions)
     } else if (plotOptions.kind === PlotKind.Marker) {
       return new MarkerPlot(dataSet, dataTransformation, <MarkerPlotOptions>plotOptions);
     } else return undefined;

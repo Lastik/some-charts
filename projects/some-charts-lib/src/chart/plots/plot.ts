@@ -87,6 +87,9 @@ export abstract class Plot<
     for (let element of this.plotElements) {
       this.shapesGroup.add(element.konvaDrawable);
     }
+    if(this.visible && this.screen) {
+      this.update(this.visible, this.screen);
+    }
     this.isDirty = true;
   }
 

@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Chart, DataRect, MarkerPlotOptions, NumericPoint, PlotKind, Size} from "some-charts";
-import {DataSet} from "some-charts/types/data";
+import {Chart, DataRect, MarkerPlotOptions, NumericPoint, PlotKind, Size, DataSet} from "some-charts";
 import * as Color from "color";
-import {MoneyForIndex} from "./model/money-for-index";
+import {XY} from "./model/x-y";
 
 @Component({
   selector: 'chart-demo',
@@ -16,35 +15,58 @@ export class ChartDemoComponent implements OnInit {
 
   ngOnInit(): void {
 
-    let dataSet = new DataSet<MoneyForIndex, number>([
-        {index: 0, money: 1000},
-        {index: 200, money: 4000},
-        {index: 300, money: 5000},
-        {index: 400, money: 1000}
-      ],
+    let amplitude = 40;
+    let frequency = 20;
+    let width = 100;
+    let height = 200;
+
+    function generateSinData(origin: number, count: number): XY[]{
+      return [...Array(count).keys()].map((val, idx) => {
+        let x = (idx + origin) * 2;
+        let y = height / 2 + amplitude * Math.sin(x / frequency);
+        return {x: x, y: y}
+      })
+    }
+
+    let origin = 0;
+    let count = 100;
+
+    let data = generateSinData(0, count);
+
+    origin = count;
+
+    let dataSet = new DataSet<XY, number>(
+      data,
       {
-        money: item => {
-          return item.money
+        y: item => {
+          return item.y
         }
       },
       item => {
-        return item.index
+        return item.x
       }
     );
 
-    let chart = new Chart<MoneyForIndex, number>(
+    setInterval(function (){
+      data.shift()
+      data.push(generateSinData(origin, 1)[0]);
+      origin++;
+      dataSet.replace(data);
+    }, 1000 / 10)
+
+    let chart = new Chart<XY, number>(
       '#chart-element',
       dataSet,
       {
-        header:{
+        header: {
           text: 'Заголовок графика'
         },
         plots: [
           {
             kind: PlotKind.Marker,
             metric: {
-              name: 'money',
-              caption: 'Money',
+              name: 'y',
+              caption: 'Y',
               color: new Color("#AA0000")
             },
             markerSize: 10
