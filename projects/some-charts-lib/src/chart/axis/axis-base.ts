@@ -6,11 +6,11 @@ import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
 import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../geometry';
 import zipWith from 'lodash-es/zipWith';
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {AxisOrientation} from "./axis-orientation";
 import {TicksCountChange} from "./ticks-count-change";
 import {LayerId} from "../../layer-id";
-import {flow, partialRight} from "lodash-es";
+import {cloneDeep, flow, partialRight} from "lodash-es";
 import sortBy from "lodash-es/sortBy";
 import map from "lodash-es/map";
 
@@ -93,7 +93,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.majorTicksScreenCoords = [];
     this.minorTicksScreenCoords = [];
 
-    this.options = extend(AxisOptionsDefaults.Instance, options);
+    this.options = merge(cloneDeep(AxisOptionsDefaults.Instance), options);
 
     this.majorTicksGenerator = this.createMajorTicksGenerator();
     this.minorTicksGenerator = this.createMinorTicksGenerator();

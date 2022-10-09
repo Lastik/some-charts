@@ -22,14 +22,14 @@ export class ChartDemoComponent implements OnInit {
 
     function generateSinData(origin: number, count: number): XY[]{
       return [...Array(count).keys()].map((val, idx) => {
-        let x = (idx + origin) * 2;
+        let x = (idx + origin);
         let y = height / 2 + amplitude * Math.sin(x / frequency);
         return {x: x, y: y}
       })
     }
 
     let origin = 0;
-    let count = 100;
+    let count = 300;
 
     let data = generateSinData(0, count);
 
@@ -52,12 +52,15 @@ export class ChartDemoComponent implements OnInit {
       data.push(generateSinData(origin, 1)[0]);
       origin++;
       dataSet.replace(data);
-    }, 1000 / 10)
+    }, 1000 / 60)
 
     let chart = new Chart<XY, number>(
       '#chart-element',
       dataSet,
       {
+        navigation: {
+          isFitToViewModeEnabled: true
+        },
         header: {
           text: 'Заголовок графика'
         },

@@ -226,7 +226,8 @@ export class MouseNavigation extends ChartContent(Object) {
       this.chart.update(
         new DataRect(
           newHorizontalRange.min, newVerticalRange.min,
-          newHorizontalRange.getLength(), newVerticalRange.getLength())
+          newHorizontalRange.getLength(), newVerticalRange.getLength()),
+        true
       );
     }
   }
@@ -252,7 +253,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
       let dataRange = new DataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
 
-      this.chart.update(dataRange);
+      this.chart.update(dataRange, true);
     }
   };
 
@@ -273,7 +274,8 @@ export class MouseNavigation extends ChartContent(Object) {
       if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
         this.chart.update(
           new DataRect(newHorRange.min, newVerRange.min,
-            newHorRange.max - newHorRange.min, newVerRange.max - newVerRange.min));
+            newHorRange.max - newHorRange.min, newVerRange.max - newVerRange.min),
+          true);
       }
     }
   }

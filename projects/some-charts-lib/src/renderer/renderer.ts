@@ -1,12 +1,13 @@
 import {RenderableItem} from "./renderable-item";
 import Konva from "konva";
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {Cursor} from "../cursor";
 import {IDisposable} from "../i-disposable";
 import {RendererOptions, RendererOptionsDefaults} from "../options";
 import {Size} from "../geometry";
 import {JqueryHelper} from "../services";
 import * as $ from 'jquery'
+import {cloneDeep} from "lodash-es";
 
 export class Renderer implements IDisposable{
 
@@ -47,7 +48,7 @@ export class Renderer implements IDisposable{
 
     let backDiv = $('<div class="fac-renderer__back"></div>');
 
-    this.options = extend(RendererOptionsDefaults.Instance, options);
+    this.options = merge(cloneDeep(RendererOptionsDefaults.Instance), options);
 
     let borderStyle = this.options.borderStyle!
     let backgroundStyle = this.options.backgroundColor!

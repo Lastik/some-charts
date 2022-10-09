@@ -1,4 +1,4 @@
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
 import {DataSet, DimensionValue} from "../../../data";
 import {DataTransformation, NumericPoint} from "../../../geometry";
@@ -7,6 +7,7 @@ import * as Color from "color";
 import {MarkerPlotOptionsClass} from "../../../options/plot/marker";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {MarkerPlotDrawableElement} from "./marker-plot-drawable-element";
+import {cloneDeep} from "lodash-es";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -19,7 +20,7 @@ export class MarkerPlot<TItemType,
     options: MarkerPlotOptions) {
     super(dataSet, dataTransformation, options);
 
-    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(MarkerPlotOptionsDefaults.Instance, options)) as MarkerPlotOptionsClass;
+    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(MarkerPlotOptionsDefaults.Instance), options)) as MarkerPlotOptionsClass;
   }
 
   protected create1DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[]): PlotDrawableElement[] {

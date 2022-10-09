@@ -1,5 +1,5 @@
 import Konva from "konva";
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {Grid} from "./grid";
 import {Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType} from "../data";
@@ -35,6 +35,7 @@ import {Label} from "./label";
 import {ResizeSensor} from "css-element-queries";
 
 import * as $ from 'jquery'
+import {cloneDeep} from "lodash-es";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
@@ -71,6 +72,8 @@ export class Chart<TItemType = any,
 
   private resizeSensor: ResizeSensor | undefined;
   private resizeSensorCallback: () => void;
+
+  private isFitToViewModeEnabled: boolean;
 
   public get id(): number{
     return this._id;
@@ -132,7 +135,7 @@ export class Chart<TItemType = any,
 
     this._id = Chart.getNextId();
 
-    this.options = extend(ChartOptionsDefaults.Instance, options);
+    this.options = merge(cloneDeep(ChartOptionsDefaults.Instance), options);
 
     this._renderer = new Renderer(elementSelector, this.size, this.options!.renderer!);
 
@@ -207,7 +210,7 @@ export class Chart<TItemType = any,
 
     this.buildLegend(plotOptionsArr);
 
-    if (this.options.navigation!.isEnabled) {
+    if (this.options.navigation!.isEnabled === true) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
       this.mouseNavigation = new MouseNavigation(this.location, this.size);
       this.keyboardNavigation?.placeOnChart(this as Chart);
@@ -216,8 +219,14 @@ export class Chart<TItemType = any,
 
     this.update(this.visibleRect);
 
-    if (!visibleRect) {
+    this.isFitToViewModeEnabled = false;
+
+    if (!visibleRect || this.options?.navigation?.isFitToViewModeEnabled) {
       this.fitToView();
+
+      if(this.options?.navigation?.isFitToViewModeEnabled){
+        this.isFitToViewModeEnabled = true;
+      }
     }
   }
 
@@ -248,8 +257,9 @@ export class Chart<TItemType = any,
   /**
    * Updates chart's new instance of chart.
    * @param {DataRect} visibleRect - new visible rectangle for chart
+   * @param {boolean} isTriggeredByInputDevice - whether this update is triggered by user input device (Mouse, Keyboard, etc) or not.
    * */
-  update(visibleRect: DataRect) {
+  update(visibleRect: DataRect, isTriggeredByInputDevice: boolean = false) {
     this._visibleRect = visibleRect;
 
     let offsetYAfterHeader = 0;
@@ -316,12 +326,17 @@ export class Chart<TItemType = any,
     }
 
     this.headerLabel?.update(this.location, this.size.width);
+
+    if(isTriggeredByInputDevice) {
+      this.isFitToViewModeEnabled = false;
+    }
   }
 
   /**
    * Fits all plots on chart to view them
    * */
   fitToView() {
+    this.isFitToViewModeEnabled = true;
     if(this.plots.length) {
       let firstPlot = this.plots[0];
       let chartBoundingRect = firstPlot.getBoundingRectangle();
@@ -402,6 +417,9 @@ export class Chart<TItemType = any,
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
     if(event.type === DataSetEventType.Changed){
       this.updateLabeledAxesLabels();
+      if(this.isFitToViewModeEnabled){
+        this.fitToView();
+      }
     }
   }
 

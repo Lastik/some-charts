@@ -1,11 +1,12 @@
 ﻿import {Chart} from "./chart";
 import Konva from "konva";
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {NumericPoint, Size} from "../geometry";
 import {GridOptions, GridOptionsDefaults} from "../options";
 import {MathHelper} from "../services";
 import {LayerId} from "../layer-id";
+import {cloneDeep} from "lodash-es";
 
 export class Grid extends ChartRenderableItem<Konva.Shape> {
 
@@ -37,7 +38,7 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
     this.location = location;
     this.size = size;
 
-    this.options = extend(GridOptionsDefaults.Instance, options);
+    this.options = merge(cloneDeep(GridOptionsDefaults.Instance), options);
 
     this.isBorderShapeDirty = true;
     this.isCompositeShapeDirty = true;

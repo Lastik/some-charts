@@ -1,4 +1,4 @@
-﻿import extend from "lodash-es/extend";
+﻿import merge from "lodash-es/merge";
 import Konva from "konva";
 import {NumericPoint, Size} from "../geometry";
 import {LabelOptions, LabelOptionsDefaults} from "../options";
@@ -6,7 +6,7 @@ import {FontHelper, TextMeasureUtils} from "../services";
 import {LayerId} from "../layer-id";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
-import {words} from "lodash-es";
+import {cloneDeep, words} from "lodash-es";
 
 export class Label extends ChartRenderableItem<Konva.Shape>{
   private location: NumericPoint;
@@ -28,7 +28,7 @@ export class Label extends ChartRenderableItem<Konva.Shape>{
     super();
     this.location = location;
     this.width = width;
-    this.options = extend(LabelOptionsDefaults.Instance, options);
+    this.options = merge(cloneDeep(LabelOptionsDefaults.Instance), options);
 
     let self = this;
 

@@ -8,7 +8,6 @@ export class PlotDrawableElement {
   constructor(dataPoint: NumericPoint, konvaDrawable: Konva.Group | Konva.Shape) {
     this.dataPoint = dataPoint;
     this.konvaDrawable = konvaDrawable;
-    this.konvaDrawable.cache();
   }
 
   update(dataTransformation: DataTransformation, visible: DataRect, screen: DataRect): void {
@@ -24,5 +23,9 @@ export class PlotDrawableElement {
     let konvaRectSize = konvaRect.getSize();
     let newSize = dataTransformation.dataToScreenRegionXY(new NumericPoint(konvaRectSize.width, konvaRectSize.height), visible, screen);
     konvaRect.setSize(newSize);
+  }
+
+  destroy() {
+    this.konvaDrawable.destroy();
   }
 }

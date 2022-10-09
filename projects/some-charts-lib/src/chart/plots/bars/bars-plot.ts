@@ -1,5 +1,5 @@
 import Konva from "konva";
-import extend from "lodash-es/extend";
+import merge from "lodash-es/merge";
 import {
   BarsPlotOptions,
   BarsPlotOptionsDefaults,
@@ -20,6 +20,7 @@ import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {BarsPlotDrawableElement} from "./bars-plot-drawable-element";
+import {cloneDeep} from "lodash-es";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -34,7 +35,7 @@ export class BarsPlot<TItemType,
               private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     super(dataSet, dataTransformation, options);
 
-    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(extend(BarsPlotOptionsDefaults.Instance, options)) as BarsPlotOptionsClass;
+    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BarsPlotOptionsDefaults.Instance), options)) as BarsPlotOptionsClass;
   }
 
   protected create1DPlotElements(xDimension: DimensionValue<XDimensionType>[]): Array<PlotDrawableElement> {

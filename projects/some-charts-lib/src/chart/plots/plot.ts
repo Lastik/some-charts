@@ -82,8 +82,11 @@ export abstract class Plot<
   }
 
   private initPlotFromDataSet(){
-    this.plotElements = this.createPlotElements();
+    for(let plotElt of this.plotElements){
+      plotElt.destroy();
+    }
     this.shapesGroup.removeChildren();
+    this.plotElements = this.createPlotElements();
     for (let element of this.plotElements) {
       this.shapesGroup.add(element.konvaDrawable);
     }
