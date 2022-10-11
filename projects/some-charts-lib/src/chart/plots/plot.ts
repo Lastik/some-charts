@@ -65,7 +65,8 @@ export abstract class Plot<
           let screenSize = self.screen.getSize();
           context.rect(screenLocation.x + 0.5, screenLocation.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
         }
-      }
+      },
+      listening: false
     });
 
     this.konvaDrawables = [this.shapesGroup];
@@ -87,9 +88,9 @@ export abstract class Plot<
     }
     this.shapesGroup.removeChildren();
     this.plotElements = this.createPlotElements();
-    for (let element of this.plotElements) {
-      this.shapesGroup.add(element.konvaDrawable);
-    }
+    this.shapesGroup._shouldFireChangeEvents = false;
+    this.shapesGroup.add(...this.plotElements.map(el => el.konvaDrawable));
+    this.shapesGroup._shouldFireChangeEvents = true;
     if(this.visible && this.screen) {
       this.update(this.visible, this.screen);
     }

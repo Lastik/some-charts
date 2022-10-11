@@ -47,12 +47,22 @@ export class ChartDemoComponent implements OnInit {
       }
     );
 
-    setInterval(function (){
+    let requestAnimationFrame = window.requestAnimationFrame ||
+    function (callback: any) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+
+    let updateChartData = function(){
+
       data.shift()
       data.push(generateSinData(origin, 1)[0]);
       origin++;
       dataSet.replace(data);
-    }, 1000 / 60)
+
+      requestAnimationFrame(updateChartData);
+    }
+
+    updateChartData();
 
     let chart = new Chart<XY, number>(
       '#chart-element',

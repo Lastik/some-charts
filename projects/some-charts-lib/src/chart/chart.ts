@@ -68,7 +68,7 @@ export class Chart<TItemType = any,
 
   private legend: Legend | undefined;
 
-  private layersIds: Array<string>;
+  private layersConfigs: Array<Konva.LayerConfig>;
 
   private resizeSensor: ResizeSensor | undefined;
   private resizeSensorCallback: () => void;
@@ -139,9 +139,11 @@ export class Chart<TItemType = any,
 
     this._renderer = new Renderer(elementSelector, this.size, this.options!.renderer!);
 
-    this.layersIds = [];
+    this.layersConfigs = [];
 
-    this.layersIds.push(...Chart.getCommonLayersIds());
+    this.layersConfigs.push(...Chart.getCommonLayersIds().map(layerId => {
+      return {id: layerId, listening: false}
+    }));
 
     this._visibleRect = visibleRect ?? new DataRect(0, 0, 1, 1);
 
@@ -174,14 +176,14 @@ export class Chart<TItemType = any,
 
         let plotLayers = plot.getDependantLayers();
         for (let plotLayerId of plotLayers) {
-          if (this.layersIds.indexOf(plotLayerId) < 0) {
-            this.layersIds.push(plotLayerId);
+          if (this.layersConfigs.findIndex(config => config.id === plotLayerId) < 0) {
+            this.layersConfigs.push({id: plotLayerId});
           }
         }
       }
     }
 
-    Chart.createLayers(this.getRenderer(), this.layersIds);
+    Chart.createLayers(this.getRenderer(), this.layersConfigs);
 
     if (this.horizontalAxis) {
       this.horizontalAxis.placeOnChart(this as Chart);
@@ -410,8 +412,8 @@ export class Chart<TItemType = any,
     return Object.values(LayerId);
   }
 
-  private static createLayers(renderer: Renderer, layersIds: Array<string>) {
-    renderer.createLayers(layersIds);
+  private static createLayers(renderer: Renderer, layersConfigs: Array<Konva.LayerConfig>) {
+    renderer.createLayers(layersConfigs);
   }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {

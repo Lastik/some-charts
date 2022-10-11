@@ -449,7 +449,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     let attempt = 1;
     let ticks: Array<Tick<TickType>> = [];
 
-    while(layout != LabelsLayout.Good) {
+    while(layout != LabelsLayout.OK) {
       if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
         console.log('Axis major ticks generation failed');
         ticks = [];
@@ -463,7 +463,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
 
         if (ticks.length == prevTicksArrLength) {
-          layout = LabelsLayout.Good;
+          layout = LabelsLayout.OK;
         }
         else {
           prevTicksArrLength = ticks.length;
@@ -475,9 +475,9 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
           layout = this.evaluateLabelsLayout(this._size, labelsSizes, ticks, range);
 
           if (prevLayout == LabelsLayout.TooClose && layout == LabelsLayout.TooFar) {
-            layout = LabelsLayout.Good;
+            layout = LabelsLayout.OK;
           }
-          if (layout != LabelsLayout.Good) {
+          if (layout != LabelsLayout.OK) {
 
             let prevTicksCount = ticksCount;
 
@@ -488,7 +488,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
             }
             if (ticksCount == 0 || prevTicksCount == ticksCount) {
               ticksCount = prevTicksCount;
-              layout = LabelsLayout.Good;
+              layout = LabelsLayout.OK;
             }
           }
         }
@@ -520,7 +520,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       partialRight(sortBy, ((i: {coord: number, length: number}) => i.coord)))(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };}));
 
 
-    let res = LabelsLayout.Good;
+    let res = LabelsLayout.OK;
 
     for(let l = 0, r = 1; l < ticksRenderInfo.length, r < ticksRenderInfo.length - 1; l++, r++){
       let leftTick = ticksRenderInfo[l];

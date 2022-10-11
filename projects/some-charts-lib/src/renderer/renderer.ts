@@ -187,21 +187,21 @@ export class Renderer implements IDisposable{
 
   /**
    * Creates layer on renderer with specified name.
-   * @param {string} layerId - Ud of the layer.
+   * @param {Konva.LayerConfig} layerConfig - Config of the layer.
    */
-  createLayer(layerId: string) {
+  createLayer(layerConfig: Konva.LayerConfig) {
     let stage = this.stage;
-    let layer = new Konva.Layer({id: layerId});
+    let layer = new Konva.Layer(layerConfig);
     stage.add(layer);
   }
 
   /**
-   * Creates multiple layers on renderer with specified ids.
-   * @param {Array<string>} layersIds - Array of layers ids.
+   * Creates multiple layers on renderer with specified configs.
+   * @param {Array<Konva.LayerConfig>} layersConfigs - Array of layers configs.
    */
-  createLayers(layersIds: Array<string>) {
-    for (let layerId of layersIds) {
-      this.createLayer(layerId);
+  createLayers(layersConfigs: Array<Konva.LayerConfig>) {
+    for (let layerConfig of layersConfigs) {
+      this.createLayer(layerConfig);
     }
   }
 
