@@ -1,4 +1,4 @@
-export * from './labels-layout-validation';
+export * from './labels-layout';
 export * from './axis-types';
 export * from './axis-base';
 export * from './axis-orientation';

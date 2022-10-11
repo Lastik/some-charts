@@ -8,7 +8,7 @@ import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../..
 import zipWith from 'lodash-es/zipWith';
 import merge from "lodash-es/merge";
 import {AxisOrientation} from "./axis-orientation";
-import {LabelsLayoutValidation} from "./labels-layout-validation";
+import {LabelsLayout} from "./labels-layout";
 import {LayerId} from "../../layer-id";
 import {cloneDeep, drop, flow, partialRight} from "lodash-es";
 import sortBy from "lodash-es/sortBy";
@@ -55,8 +55,6 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   protected layerId: string;
   protected konvaDrawables: Konva.Shape[];
 
-  static readonly increaseTicksCountCoeff = 2;
-  static readonly decreaseTicksCountCoeff = 1.5;
   static readonly generateMajorTicksMaxAttempts = 12;
 
   protected constructor(location: NumericPoint,
@@ -444,14 +442,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @returns {Array<Tick>}
    * */
   protected generateMajorTicks(range: Range<TickType>, size: Size): Array<Tick<TickType>> {
-    let validation: LabelsLayoutValidation | undefined = undefined;
-    let prevValidation;
+    let layout: LabelsLayout | undefined = undefined;
+    let prevLayout;
     let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
     let attempt = 1;
     let ticks: Array<Tick<TickType>> = [];
 
-    while(validation != LabelsLayoutValidation.IsValid) {
+    while(layout != LabelsLayout.Good) {
       if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
         console.log('Axis major ticks generation failed');
         ticks = [];
@@ -465,32 +463,32 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
         ticks = this.majorTicksGenerator.generateTicks(this.range, ticksCount);
 
         if (ticks.length == prevTicksArrLength) {
-          validation = LabelsLayoutValidation.IsValid;
+          layout = LabelsLayout.Good;
         }
         else {
           prevTicksArrLength = ticks.length;
 
           let labelsSizes = this.measureLabelsSizesForMajorTicks(ticks);
 
-          prevValidation = validation;
+          prevLayout = layout;
 
-          validation = this.validateLabelsLayout(this._size, labelsSizes, ticks, range);
+          layout = this.evaluateLabelsLayout(this._size, labelsSizes, ticks, range);
 
-          if (prevValidation == LabelsLayoutValidation.TooClose && validation == LabelsLayoutValidation.TooFar) {
-            validation = LabelsLayoutValidation.IsValid;
+          if (prevLayout == LabelsLayout.TooClose && layout == LabelsLayout.TooFar) {
+            layout = LabelsLayout.Good;
           }
-          if (validation != LabelsLayoutValidation.IsValid) {
+          if (layout != LabelsLayout.Good) {
 
             let prevTicksCount = ticksCount;
 
-            if (validation == LabelsLayoutValidation.TooClose) {
+            if (layout == LabelsLayout.TooClose) {
               ticksCount = this.majorTicksGenerator.suggestDecreasedTickCount(ticksCount);
             } else {
               ticksCount = this.majorTicksGenerator.suggestIncreasedTicksCount(ticksCount);
             }
             if (ticksCount == 0 || prevTicksCount == ticksCount) {
               ticksCount = prevTicksCount;
-              validation = LabelsLayoutValidation.IsValid;
+              layout = LabelsLayout.Good;
             }
           }
         }
@@ -501,15 +499,15 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   }
 
   /**
-  * Validates labels layout for the axis (whether they overlap with each other or are too close).
-  * Returns the result of labels layout validation.
+  * Evaluates labels layout for the axis (whether they overlap with each other or are too close).
+  * Returns the result of labels layout evaluation.
   * @param {Size} axisSize - axis size;
   * @param {Array<Size>} ticksLabelsSizes - sizes of ticks labels;
   * @param {Array<Tick>} ticks - ticks.
   * @param {Range} range - axis range.
-  * @returns {LabelsLayoutValidation}
+  * @returns {LabelsLayout}
   * */
-  protected validateLabelsLayout(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<TickType>>, range: Range<TickType>): LabelsLayoutValidation {
+  protected evaluateLabelsLayout(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<TickType>>, range: Range<TickType>): LabelsLayout {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
     let ticksRenderInfo: Array<{coord: number, length: number }> = flow(
@@ -521,19 +519,23 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
       })),
       partialRight(sortBy, ((i: {coord: number, length: number}) => i.coord)))(zipWith(ticksLabelsSizes, ticks, (size, tick) => { return {tick: tick, labelSize: size };}));
 
+
+    let res = LabelsLayout.Good;
+
     for(let l = 0, r = 1; l < ticksRenderInfo.length, r < ticksRenderInfo.length - 1; l++, r++){
       let leftTick = ticksRenderInfo[l];
       let rightTick = ticksRenderInfo[r];
 
-      if ((rightTick.coord - leftTick.coord) < leftTick.length * AxisBase.decreaseTicksCountCoeff){
-        return LabelsLayoutValidation.TooClose;
+      if ((rightTick.coord - leftTick.coord) < (leftTick.length / 2 + rightTick.length / 2) * 2){
+        res = LabelsLayout.TooClose;
+        break;
       }
-      else if((rightTick.coord - leftTick.coord) > leftTick.length * AxisBase.increaseTicksCountCoeff){
-        return LabelsLayoutValidation.TooFar;
+      else if ((rightTick.coord - leftTick.coord) > (leftTick.length / 2 + rightTick.length / 2) * 1.5){
+        res = LabelsLayout.TooFar;
       }
     }
 
-    return LabelsLayoutValidation.IsValid;
+    return res;
   }
 
   /**
