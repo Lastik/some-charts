@@ -57,7 +57,13 @@ export class MathHelper {
   }
 
 
-  public static calcNiceNumber(number: number, round: boolean) {
+  /**
+   * find a “nice” number approximately equal to number.
+   * @param {number} number - Input number.
+   * @param {boolean} round - Round the number if round = true, take ceiling if round = false.
+   * @returns {number}
+   * */
+  public static calcNiceNumber(number: number, round: boolean): number {
     let exponent = Math.floor(Math.log10(number));
     let fraction = number / Math.pow(10, exponent);
 
