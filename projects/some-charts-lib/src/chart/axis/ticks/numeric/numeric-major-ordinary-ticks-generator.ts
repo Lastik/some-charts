@@ -13,47 +13,24 @@ export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<numb
   }
 
   generateTicks(range: Range<number>, ticksCount: number): Array<Tick<number>> {
+    let delta = range.max - range.min;
+    let niceDelta = MathHelper.calcNiceNumber(delta, false)
+    let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
+    let niceMin = Math.floor(range.min / tickSpacing) * tickSpacing;
+    let niceMax = Math.ceil(range.max / tickSpacing) * tickSpacing;
 
-    let start = range.min;
-    let finish = range.max;
-    let delta = finish - start;
+    let x = niceMin;
 
-    if (delta == 0)
-      return ([start, finish]).map((value, index) => {
-        return new Tick<number>(value, this.majorTickHeight, index);
-      });
-    else {
-      let log = Math.round(Math.log10(delta));
-      let newStart = MathHelper.round(start, log);
-      let newFinish = MathHelper.round(finish, log);
-      if (newStart == newFinish) {
-        log--;
-        newStart = MathHelper.round(start, log);
-        newFinish = MathHelper.round(finish, log);
-      }
+    let xArr = [];
 
-      let unroundedStep = (newFinish - newStart) / ticksCount;
-      let stepLog = log;
-      let step = MathHelper.floor(unroundedStep, stepLog);
-      if (step == 0) {
-        stepLog--;
-        step = MathHelper.floor(unroundedStep, stepLog);
-        if (step == 0)
-          step = unroundedStep;
-      }
+    do {
+      xArr.push(MathHelper.toFixed(x, 12));
+      x += tickSpacing;
+    } while (x <= niceMax);
 
-      let x = step * Math.floor(start / step);
-      let res = [];
-      let increasedFinish = finish + step;
-      while (x <= increasedFinish) {
-        res.push(MathHelper.round(x, log - 3));
-        x += step;
-      }
-
-      return res.map((value, index) => {
-        return new Tick<number>(value, this.majorTickHeight, index);
-      });
-    }
+    return xArr.map((value, index) => {
+      return new Tick<number>(value, this.majorTickHeight, index);
+    });
   }
 
   suggestDecreasedTickCount(ticksCount: number): number {

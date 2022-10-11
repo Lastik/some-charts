@@ -17,8 +17,7 @@ export class MathHelper {
       return new NumericPoint(
         MathHelper.optimizeValue(point.x),
         MathHelper.optimizeValue(point.y));
-    }
-    else {
+    } else {
       return point;
     }
   }
@@ -31,8 +30,7 @@ export class MathHelper {
   public static optimizeValue(value: number) {
     if (UagentUtils.isMsIE) {
       return MathHelper.truncateValue(value);
-    }
-    else {
+    } else {
       return value;
     }
   }
@@ -46,35 +44,45 @@ export class MathHelper {
     return (value + .5) | 0
   }
 
-  public static clamp(val: number, min: number, max: number) {
-    return Math.max(min, Math.min(val, max))
-  }
-
   public static toFixed(num: number, digits: number) {
     return Math.round(num * Math.pow(10, digits)) / Math.pow(10, digits);
-  }
-
-  public static floor(number: number, rem: number) {
-    if (rem <= 0)
-      rem = MathHelper.clamp(-rem, 0, 15);
-    let pow = Math.pow(10, rem - 1);
-    return pow * Math.floor(number / Math.pow(10, rem - 1));
-  }
-
-  public static round(number: number, rem: number) {
-    if (rem <= 0) {
-      rem = MathHelper.clamp(-rem, 0, 15);
-      return MathHelper.toFixed(number, rem);
-    }
-    let pow = Math.pow(10, rem - 1);
-    return pow * Math.round(number / Math.pow(10, rem - 1));
   }
 
   public static log10(number: number) {
     return Math.log(number) / 2.302585092994046;
   }
 
-  public static logByBase(logarithmBase: number, value: number): number{
+  public static logByBase(logarithmBase: number, value: number): number {
     return Math.log(value) / Math.log(logarithmBase);
+  }
+
+
+  public static calcNiceNumber(number: number, round: boolean) {
+    let exponent = Math.floor(Math.log10(number));
+    let fraction = number / Math.pow(10, exponent);
+
+    let niceFraction: number | undefined = undefined;
+
+    if (round) {
+      if (fraction < 1.5)
+        niceFraction = 1;
+      else if (fraction < 3)
+        niceFraction = 2;
+      else if (fraction < 7)
+        niceFraction = 5;
+      else
+        niceFraction = 10;
+    } else {
+      if (fraction <= 1)
+        niceFraction = 1;
+      else if (fraction <= 2)
+        niceFraction = 2;
+      else if (fraction <= 5)
+        niceFraction = 5;
+      else
+        niceFraction = 10;
+    }
+
+    return niceFraction * Math.pow(10, exponent);
   }
 }

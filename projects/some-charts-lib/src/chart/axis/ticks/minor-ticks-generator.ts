@@ -2,9 +2,6 @@ import {Range} from "../../../index";
 import { Tick } from "./tick";
 
 export interface MinorTicksGenerator<T> {
-
-  get defaultMinorTicksCount(): number;
-
   /**
    * Generates minor ticks in specified range.
    * @param {Range} range - data range.
