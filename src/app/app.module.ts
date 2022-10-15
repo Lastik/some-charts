@@ -4,11 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {ChartDemoComponent} from "./chart-demo/chart-demo.component";
+import {DateTimeAxisComponent} from "./date-time-axis/date-time-axis.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChartDemoComponent
+    ChartDemoComponent,
+    DateTimeAxisComponent
   ],
   imports: [
     BrowserModule,
