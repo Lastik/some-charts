@@ -39,7 +39,7 @@ export class MajorDateTicksGenerator extends MajorTicksGenerator<Date> {
   getSuitableTimeUnitTicksGenerator(range: Range<Date>): MajorTimeUnitTicksGenerator {
 
     let min = moment(range.min);
-    let max = moment(range.min);
+    let max = moment(range.max);
 
     if (max.diff(min, TimeUnit.Minutes) < 2) {
       return this.majorSecondsTicksGenerator;

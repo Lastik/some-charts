@@ -20,11 +20,13 @@ export class DateTimeAxisComponent implements OnInit {
     let width = 100;
     let height = 200;
 
+    let originDate = new Date();
+
     function generateSinData(origin: number, count: number): XY[]{
       return [...Array(count).keys()].map((val, idx) => {
         let x = (idx + origin);
         let y = height / 2 + amplitude * Math.sin(x / frequency);
-        return {x: new Date(x), y: y}
+        return {x: new Date(originDate.getTime() + x * 1000 * 60 * 60), y: y}
       })
     }
 

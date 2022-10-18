@@ -17,17 +17,17 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
 
   generateTicks(range: Range<Date>, ticksCount: number): Array<Tick<Date>> {
 
-    let zero = moment(new Date());
+    let zero = moment(new Date(0));
 
     let min = moment(range.min).startOf(this.timeUnit).subtract(1, this.timeUnit);
-    let max = moment(range.min).endOf(this.timeUnit).add(1, this.timeUnit);
+    let max = moment(range.max).endOf(this.timeUnit).add(1, this.timeUnit);
 
     let delta = max.diff(min, this.timeUnit);
 
     let niceDelta = MathHelper.calcNiceNumber(delta, false)
     let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
-    let niceMin = zero.clone().add(Math.floor(zero.diff(min, this.timeUnit) / tickSpacing) * tickSpacing);
-    let niceMax = zero.clone().add(Math.ceil(zero.diff(max, this.timeUnit) / tickSpacing) * tickSpacing);
+    let niceMin = zero.clone().add(Math.floor(min.diff(zero, this.timeUnit) / tickSpacing) * tickSpacing, this.timeUnit);
+    let niceMax = zero.clone().add(Math.ceil(max.diff(zero, this.timeUnit) / tickSpacing) * tickSpacing, this.timeUnit);
 
     let x = niceMin;
 

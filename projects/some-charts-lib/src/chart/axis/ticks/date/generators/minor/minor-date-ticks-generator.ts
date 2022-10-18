@@ -42,22 +42,19 @@ export class MinorDateTicksGenerator implements MinorTicksGenerator<Date> {
 
   getSuitableTimeUnitTicksGenerator(range: Range<Date>): MinorTimeUnitTicksGenerator | undefined {
 
-    let min = moment(range.min);
-    let max = moment(range.min);
+    let majorGeneratorTimeUnits = this.majorTicksGenerator.getSuitableTimeUnitTicksGenerator(range).timeUnit;
 
-    let secondaryUnit = this.majorTicksGenerator.getSuitableTimeUnitTicksGenerator(range).timeUnit;
-
-    if (secondaryUnit === TimeUnit.Years) {
+    if (majorGeneratorTimeUnits === TimeUnit.Years) {
       return undefined;
-    } else if (secondaryUnit === TimeUnit.Months) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Months) {
       return this.majorYearsTicksGenerator;
-    } else if (secondaryUnit === TimeUnit.Days) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Days) {
       return this.majorMonthsTicksGenerator;
-    } else if (secondaryUnit === TimeUnit.Hours) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Hours) {
       return this.majorDaysTicksGenerator;
-    } else if (secondaryUnit === TimeUnit.Minutes) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Minutes) {
       return this.majorHoursTicksGenerator;
-    } else if (secondaryUnit === TimeUnit.Seconds) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Seconds) {
       return this.majorMinutesTicksGenerator;
     } else {
       return this.majorSecondsTicksGenerator;

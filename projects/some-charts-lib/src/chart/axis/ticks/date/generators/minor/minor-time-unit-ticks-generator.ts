@@ -14,10 +14,10 @@ export abstract class MinorTimeUnitTicksGenerator implements MinorTicksGenerator
   }
 
   generateTicks(range: Range<Date>, majorTicks: Tick<Date>[]): Tick<Date>[] {
-    let zero = moment(new Date());
+    let zero = moment(new Date(0));
 
     let min = moment(range.min).startOf(this.timeUnit);
-    let max = moment(range.min).endOf(this.timeUnit);
+    let max = moment(range.max).endOf(this.timeUnit);
 
     let delta = max.diff(min, this.timeUnit, true);
 
