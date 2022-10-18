@@ -4,6 +4,7 @@ import {AxisOptions, DataTransformation, MathHelper, NumericPoint, Range, Size} 
 import {AxisOrientation} from "../axis-orientation";
 import {MajorDateTicksGenerator, MinorDateTicksGenerator} from "../ticks/date";
 import Konva from "konva";
+import {MinorDateTick} from "../ticks/date/minor-date-tick";
 
 export class DateAxis extends AxisBase<Date, AxisOptions> {
 
@@ -42,7 +43,7 @@ export class DateAxis extends AxisBase<Date, AxisOptions> {
     super.updateAxisSize();
 
     let renderHeight = this.size.height +
-      this.textMeasureUtils!.measureFontHeight(this.options?.font!) + 2 + DateAxis.paddingBetweenMajorAndMinorTicks;
+      2 * (this.textMeasureUtils!.measureFontHeight(this.options?.font!) + 2 + DateAxis.paddingBetweenMajorAndMinorTicks);
     this._size = new Size(this._size.width, renderHeight);
   }
 
@@ -53,18 +54,27 @@ export class DateAxis extends AxisBase<Date, AxisOptions> {
 
       let minorTicks = this.minorTicks!;
       for (let i = 0; i < minorTicksCount; i++) {
-        let tick = minorTicks[i];
+        let tick = minorTicks[i] as MinorDateTick;
         let ticksScreenXCoord = minorTicksScreenXCoords[i]
 
         let tickLabelSize = this.measureLabelSize(tick.toString());
 
         let xVal = MathHelper.optimizeValue(this.location.x + ticksScreenXCoord);
 
-        let yVal = MathHelper.optimizeValue(this.location.y +
-          DateAxis.paddingBetweenMajorAndMinorTicks + tickLabelSize.height);
+        let yVal: number;
+
+        if(tick.level === 1) {
+          yVal = MathHelper.optimizeValue(this.location.y +
+            DateAxis.paddingBetweenMajorAndMinorTicks + tickLabelSize.height);
+          xVal -= tickLabelSize.width / 2;
+        }
+        else {
+          yVal = MathHelper.optimizeValue(this.location.y +
+            2 * (DateAxis.paddingBetweenMajorAndMinorTicks + tickLabelSize.height));
+        }
 
         context.fillText(tick.toString(),
-          xVal - tickLabelSize.width,
+          xVal,
           yVal);
       }
     }
