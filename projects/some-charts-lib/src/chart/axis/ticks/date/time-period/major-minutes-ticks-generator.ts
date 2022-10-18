@@ -4,8 +4,10 @@ import {TimeUnit} from "../time-unit";
 
 export class MajorMinutesTicksGenerator extends MajorTimeUnitTicksGenerator {
 
-  constructor(majorTickHeight: number) {
-    super(majorTickHeight);
+  public static readonly TimeUnit: TimeUnit = TimeUnit.Minutes;
+
+  constructor(majorTickHeight: number, detailed: boolean) {
+    super(majorTickHeight, detailed);
   }
 
   protected getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string {
@@ -16,6 +18,6 @@ export class MajorMinutesTicksGenerator extends MajorTimeUnitTicksGenerator {
   }
 
   get timeUnit(): TimeUnit {
-    return 'minutes';
+    return MajorMinutesTicksGenerator.TimeUnit;
   }
 }

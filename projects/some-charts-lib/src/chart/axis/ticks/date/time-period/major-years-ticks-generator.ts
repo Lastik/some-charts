@@ -4,6 +4,8 @@ import {TimeUnit} from "../time-unit";
 
 export class MajorYearsTicksGenerator extends MajorTimeUnitTicksGenerator {
 
+  public static readonly TimeUnit: TimeUnit = TimeUnit.Years;
+
   constructor(majorTickHeight: number, detailed: boolean) {
     super(majorTickHeight, detailed);
   }
@@ -16,6 +18,6 @@ export class MajorYearsTicksGenerator extends MajorTimeUnitTicksGenerator {
   }
 
   get timeUnit(): TimeUnit {
-    return 'years';
+    return MajorYearsTicksGenerator.TimeUnit;
   }
 }

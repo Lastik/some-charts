@@ -4,6 +4,8 @@ import {TimeUnit} from "../time-unit";
 
 export class MajorDaysTicksGenerator extends MajorTimeUnitTicksGenerator {
 
+  public static readonly TimeUnit: TimeUnit = TimeUnit.Days;
+
   constructor(majorTickHeight: number, detailed: boolean) {
     super(majorTickHeight, detailed);
   }
@@ -16,6 +18,6 @@ export class MajorDaysTicksGenerator extends MajorTimeUnitTicksGenerator {
   }
 
   get timeUnit(): TimeUnit {
-    return 'days';
+    return MajorDaysTicksGenerator.TimeUnit;
   }
 }
