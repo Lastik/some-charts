@@ -2,37 +2,31 @@ import Konva from "konva";
 import merge from "lodash-es/merge";
 import {Grid} from "./grid";
 import {Plot, PlotFactory} from "./plots";
-import {DataSet, DataSetEventType, DimensionType} from "../data";
+import {DataSet, DataSetEventType, DimensionType, DimensionValue} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
-import {KeyboardNavigation, KeyboardNavigationsFactory} from "./navigation";
-import {MouseNavigation} from "./navigation";
-import {
-  NumericPoint,
-  Size,
-  DataRect,
-  DataTransformation,
-  CoordinateTransformationStatic,
-  Point
-} from "../geometry";
+import {KeyboardNavigation, KeyboardNavigationsFactory, MouseNavigation} from "./navigation";
+import {CoordinateTransformationStatic, DataRect, DataTransformation, NumericPoint, Point, Size} from "../geometry";
 
 import {
-  PlotOptionsClass, PlotOptionsClassFactory,
-  AxisOptions, ChartOptions, ChartOptionsDefaults,
-  NumericAxisOptions, PlotOptions
+  AxisOptions,
+  ChartOptions,
+  ChartOptionsDefaults,
+  NumericAxisOptions,
+  PlotOptions,
+  PlotOptionsClass,
+  PlotOptionsClassFactory
 } from "../options";
 
-import {
-  EventBase,
-  EventListener
-} from "../events";
+import {EventBase, EventListener} from "../events";
 
-import {AxisBase, AxisOrientation, AxisTypes, LabeledAxis, NumericAxis} from "./axis";
+import {AxisBase, AxisOrientation, AxisTypes, DateAxis, LabeledAxis, NumericAxis} from "./axis";
 import {LayerId} from "../layer-id";
 import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
 import {ResizeSensor} from "css-element-queries";
+import {Range} from '../geometry';
 
 import * as $ from 'jquery'
 import {cloneDeep} from "lodash-es";
@@ -405,6 +399,13 @@ export class Chart<TItemType = any,
       return new LabeledAxis(axisLocation, orientation, axisRange, dataTransformation, options as AxisOptions, axisWidth, axisHeight);
     } else if (options.axisType === AxisTypes.None) {
       return undefined;
+    } else if (options.axisType === AxisTypes.DateAxis && orientation === AxisOrientation.Horizontal) {
+
+      let axisDateRange = new Range<Date>(
+        DimensionValue.buildForDateFromPrimitive(axisRange.min).value,
+        DimensionValue.buildForDateFromPrimitive(axisRange.max).value)
+
+      return new DateAxis(axisLocation, orientation, axisDateRange, dataTransformation, options as AxisOptions, axisWidth, axisHeight);
     } else throw new Error("Specified axis type is not supported");
   }
 

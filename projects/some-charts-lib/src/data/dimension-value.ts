@@ -18,6 +18,10 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
     } else return value;
   }
 
+  public static buildForDateFromPrimitive(primitiveValue: number ): DimensionValue<Date> {
+    return new DimensionValue<Date>(new Date(primitiveValue));
+  }
+
   public withIndex(index: number): DimensionValue<XDimensionType> {
     return new DimensionValue<XDimensionType>(this.value, index);
   }
