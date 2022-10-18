@@ -33,9 +33,11 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
 
     let xArr = [];
 
+    let tickSpacingInUnits = moment.duration(tickSpacing, this.timeUnit);
+
     do {
       xArr.push(x.clone());
-      x.add(tickSpacing, this.timeUnit);
+      x.add(tickSpacingInUnits.asMilliseconds(), TimeUnit.Milliseconds);
     } while (x.isSameOrBefore(niceMax));
 
     return xArr.map((value, index) => {
