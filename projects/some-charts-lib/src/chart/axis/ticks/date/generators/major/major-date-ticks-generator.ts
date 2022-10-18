@@ -44,17 +44,17 @@ export class MajorDateTicksGenerator extends MajorTicksGenerator<Date> {
     let min = moment(range.min);
     let max = moment(range.max);
 
-    if (max.diff(min, TimeUnit.Seconds) < 2) {
+    if (max.diff(min, TimeUnit.Seconds) < 3) {
       return this.majorMillisecondsTicksGenerator;
-    } else if (max.diff(min, TimeUnit.Minutes) < 2) {
+    } else if (max.diff(min, TimeUnit.Minutes) < 3) {
       return this.majorSecondsTicksGenerator;
-    } else if (max.diff(min, TimeUnit.Hours) < 2) {
+    } else if (max.diff(min, TimeUnit.Hours) < 3) {
       return this.majorMinutesTicksGenerator;
-    } else if (max.diff(min, TimeUnit.Days) < 2) {
+    } else if (max.diff(min, TimeUnit.Days) < 3) {
       return this.majorHoursTicksGenerator;
-    } else if (max.diff(min, TimeUnit.Months, true) < 1) {
+    } else if (max.diff(min, TimeUnit.Months, true) < 3) {
       return this.majorDaysTicksGenerator;
-    } else if (max.diff(min, TimeUnit.Years, true) < 2) {
+    } else if (max.diff(min, TimeUnit.Years, true) < 3) {
       return this.majorMonthsTicksGenerator;
     } else {
       return this.majorYearsTicksGenerator;

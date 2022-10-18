@@ -24,7 +24,7 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
     let delta = max.diff(min, this.timeUnit);
 
     let niceDelta = MathHelper.calcNiceNumber(delta, false)
-    let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
+    let tickSpacing = Math.ceil(MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true));
 
     if(this.timeUnit === TimeUnit.Milliseconds && tickSpacing < 1){
       tickSpacing = 1;
