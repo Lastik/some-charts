@@ -3,10 +3,10 @@ import { Tick } from "./tick";
 
 export abstract class MajorTicksGenerator<T> {
 
-  protected majorTickHeight: number;
+  protected tickHeight: number;
 
-  constructor(majorTickHeight: number) {
-    this.majorTickHeight = majorTickHeight;
+  constructor(tickHeight: number) {
+    this.tickHeight = tickHeight;
   }
 
   get defaultTicksCount(): number{

@@ -6,14 +6,11 @@ export class MajorYearsTicksGenerator extends MajorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Years;
 
-  constructor(majorTickHeight: number, detailed: boolean) {
-    super(majorTickHeight, detailed);
+  constructor(majorTickHeight: number) {
+    super(majorTickHeight);
   }
 
-  protected getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string {
-    if (detailed) {
-      return date.format('YYYY [y]');
-    }
+  protected getTimeUnitValueAsString(date: moment.Moment): string {
     return date.format('YYYY');
   }
 

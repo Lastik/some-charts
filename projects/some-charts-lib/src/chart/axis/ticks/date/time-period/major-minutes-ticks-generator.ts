@@ -6,14 +6,11 @@ export class MajorMinutesTicksGenerator extends MajorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Minutes;
 
-  constructor(majorTickHeight: number, detailed: boolean) {
-    super(majorTickHeight, detailed);
+  constructor(majorTickHeight: number) {
+    super(majorTickHeight);
   }
 
-  protected getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string {
-    if (detailed) {
-      return date.format('MMMM Do YYYY, H:mm');
-    }
+  protected getTimeUnitValueAsString(date: moment.Moment): string {
     return date.hours().toString() + 'M';
   }
 

@@ -5,12 +5,9 @@ import * as moment from "moment";
 import {MathHelper} from "../../../../services";
 
 export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
-  protected readonly detailed: boolean;
 
-  constructor(majorTickHeight: number, detailed: boolean = false) {
-    super(majorTickHeight);
-
-    this.detailed = detailed;
+  constructor(tickHeight: number) {
+    super(tickHeight);
   }
 
   abstract get timeUnit(): TimeUnit;
@@ -39,9 +36,9 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
     } while (x.isSameOrBefore(niceMax));
 
     return xArr.map((value, index) => {
-      return new LabeledTick<Date>(value.toDate(), this.majorTickHeight, index, this.getTimeUnitValueAsString(value, this.detailed));
+      return new LabeledTick<Date>(value.toDate(), this.tickHeight, index, this.getTimeUnitValueAsString(value));
     });
   }
 
-  protected abstract getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string;
+  protected abstract getTimeUnitValueAsString(date: moment.Moment): string;
 }

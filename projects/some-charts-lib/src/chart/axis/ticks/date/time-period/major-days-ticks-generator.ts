@@ -6,14 +6,11 @@ export class MajorDaysTicksGenerator extends MajorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Days;
 
-  constructor(majorTickHeight: number, detailed: boolean) {
-    super(majorTickHeight, detailed);
+  constructor(majorTickHeight: number) {
+    super(majorTickHeight);
   }
 
-  protected getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string {
-    if (detailed) {
-      return date.format('MMMM Do');
-    }
+  protected getTimeUnitValueAsString(date: moment.Moment): string {
     return date.format('Do');
   }
 

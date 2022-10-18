@@ -26,7 +26,7 @@ export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<numb
     } while (x <= niceMax);
 
     return xArr.map((value, index) => {
-      return new Tick<number>(value, this.majorTickHeight, index);
+      return new Tick<number>(value, this.tickHeight, index);
     });
   }
 }

@@ -24,7 +24,7 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
         return label.y >= range.min && label.y <= range.max;
       })),
       partialRight(map, (label: Point<string>, index: number) => {
-          return new LabeledTick(label.y, this.majorTickHeight, index, label.x);
+          return new LabeledTick(label.y, this.tickHeight, index, label.x);
         }
       ))(this.labels);
   }
