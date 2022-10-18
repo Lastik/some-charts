@@ -2,7 +2,7 @@
  * Chart renderer options
  */
 import {AxisOptions, AxisOptionsDefaults} from "./axis-options";
-
+import {cloneDeep} from "lodash-es";
 
 export interface AxesOptions {
   /**
@@ -18,8 +18,8 @@ export interface AxesOptions {
 export class AxesOptionsDefaults
 {
   private static _instance: AxesOptions = {
-    horizontal: AxisOptionsDefaults.Instance,
-    vertical: AxisOptionsDefaults.Instance
+    horizontal: cloneDeep(AxisOptionsDefaults.Instance),
+    vertical: cloneDeep(AxisOptionsDefaults.Instance)
   }
 
   public static get Instance()

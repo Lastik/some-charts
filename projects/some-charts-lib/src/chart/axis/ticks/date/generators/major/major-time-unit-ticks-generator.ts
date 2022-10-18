@@ -26,16 +26,16 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
 
     let niceDelta = MathHelper.calcNiceNumber(delta, false)
     let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
-    let niceMin = zero.add(Math.floor(zero.diff(min, this.timeUnit) / tickSpacing) * tickSpacing);
-    let niceMax = zero.add(Math.ceil(zero.diff(max, this.timeUnit) / tickSpacing) * tickSpacing);
+    let niceMin = zero.clone().add(Math.floor(zero.diff(min, this.timeUnit) / tickSpacing) * tickSpacing);
+    let niceMax = zero.clone().add(Math.ceil(zero.diff(max, this.timeUnit) / tickSpacing) * tickSpacing);
 
     let x = niceMin;
 
     let xArr = [];
 
     do {
-      xArr.push(x);
-      x.add(tickSpacing);
+      xArr.push(x.clone());
+      x.add(tickSpacing, this.timeUnit);
     } while (x.isSameOrBefore(niceMax));
 
     return xArr.map((value, index) => {

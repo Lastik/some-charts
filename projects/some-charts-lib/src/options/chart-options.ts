@@ -5,6 +5,7 @@ import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
 import {AxesOptions, AxesOptionsDefaults} from "./axes";
 import {PlotOptions} from "./plot";
 import {NavigationOptions, NavigationOptionsDefaults} from "./navigation";
+import {cloneDeep} from "lodash-es";
 
 export interface ChartOptions {
 
@@ -42,11 +43,11 @@ export interface ChartOptions {
 export class ChartOptionsDefaults
 {
   private static _instance: ChartOptions = {
-    navigation: NavigationOptionsDefaults.Instance,
-    renderer: RendererOptionsDefaults.Instance,
-    axes: AxesOptionsDefaults.Instance,
-    grid: GridOptionsDefaults.Instance,
-    legend: LegendOptionsDefaults.Instance,
+    navigation: cloneDeep(NavigationOptionsDefaults.Instance),
+    renderer: cloneDeep(RendererOptionsDefaults.Instance),
+    axes: cloneDeep(AxesOptionsDefaults.Instance),
+    grid: cloneDeep(GridOptionsDefaults.Instance),
+    legend: cloneDeep(LegendOptionsDefaults.Instance),
     plots: []
   }
 

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Chart, DataRect, MarkerPlotOptions, NumericPoint, PlotKind, Size, DataSet} from "some-charts";
+import {AxisTypes, Chart, DataSet, MarkerPlotOptions, PlotKind} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 
@@ -74,7 +74,15 @@ export class DateTimeAxisComponent implements OnInit {
             },
             markerSize: 10
           } as MarkerPlotOptions
-        ]
+        ],
+        axes: {
+          horizontal: {
+            axisType: AxisTypes.DateAxis
+          },
+          vertical: {
+            axisType: AxisTypes.NumericAxis
+          }
+        }
       }
     )
   }

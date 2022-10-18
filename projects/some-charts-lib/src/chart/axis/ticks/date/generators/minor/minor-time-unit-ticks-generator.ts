@@ -28,13 +28,13 @@ export abstract class MinorTimeUnitTicksGenerator implements MinorTicksGenerator
     } else {
       let x = min;
 
-      let till = max.add(1, this.timeUnit);
+      let till = max.clone().add(1, this.timeUnit);
 
       let ticks = [];
 
       do {
         ticks.push(new LabeledTick<Date>(x.toDate(), this.tickHeight, 0, this.getTimeUnitValueAsString(max)));
-        x = x.add(1, this.timeUnit);
+        x.add(1, this.timeUnit);
       } while (x.isSameOrBefore(till));
 
       return ticks;
