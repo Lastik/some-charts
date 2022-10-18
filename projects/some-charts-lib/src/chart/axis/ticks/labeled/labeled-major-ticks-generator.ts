@@ -5,7 +5,7 @@ import {LabeledTick} from "../labeled-tick";
 import {filter, flow, partialRight} from "lodash-es";
 import map from "lodash-es/map";
 
-export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
+export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number, number> {
 
   private labels: Array<Point<string>>;
 

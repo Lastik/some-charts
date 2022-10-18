@@ -15,7 +15,7 @@ import sortBy from "lodash-es/sortBy";
 import map from "lodash-es/map";
 import { zip } from "rxjs/operators";
 
-export abstract class AxisBase<TickType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem<Konva.Shape> {
+export abstract class AxisBase<DataType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem<Konva.Shape> {
   /**
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
@@ -23,7 +23,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   public static readonly textVerticalOffsetMultiplier: number = 0.17;
 
   protected location: NumericPoint;
-  protected range: Range<TickType>;
+  protected range: Range<DataType>;
   protected initialWidth: number | undefined;
   protected initialHeight: number | undefined;
   protected orientation: AxisOrientation;
@@ -42,15 +42,15 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   private borderShape: Konva.Shape;
   private ticksShape: Konva.Shape;
 
-  protected majorTicks: Tick<TickType>[];
-  protected minorTicks?: Tick<TickType>[];
+  protected majorTicks: Tick<DataType>[];
+  protected minorTicks?: Tick<DataType>[];
 
   protected majorTicksLabelsSizes?: Size[];
   protected majorTicksScreenCoords: number[];
   protected minorTicksScreenCoords: number[];
 
-  protected readonly majorTicksGenerator: MajorTicksGenerator<TickType>;
-  protected readonly minorTicksGenerator?: MinorTicksGenerator<TickType>;
+  protected readonly majorTicksGenerator: MajorTicksGenerator<DataType>;
+  protected readonly minorTicksGenerator?: MinorTicksGenerator<DataType>;
 
   protected layerId: string;
   protected konvaDrawables: Konva.Shape[];
@@ -59,7 +59,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
 
   protected constructor(location: NumericPoint,
                         orientation: AxisOrientation,
-                        range: Range<TickType>,
+                        range: Range<DataType>,
                         dataTransformation: DataTransformation,
                         options: AxisOptionsType,
                         width?: number,
@@ -247,8 +247,8 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     }
   }
 
-  protected abstract createMajorTicksGenerator(): MajorTicksGenerator<TickType>;
-  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<TickType> | undefined;
+  protected abstract createMajorTicksGenerator(): MajorTicksGenerator<DataType>;
+  protected abstract createMinorTicksGenerator(): MinorTicksGenerator<DataType> | undefined;
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
@@ -278,7 +278,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * Returns tick's screen coordinate
    * @returns {number} Tick's screen coordinate.
    */
-  protected getTickScreenCoordinate(tick: Tick<TickType>, screenWidth: number, screenHeight: number, range: Range<TickType>): number {
+  protected getTickScreenCoordinate(tick: Tick<DataType>, screenWidth: number, screenHeight: number, range: Range<DataType>): number {
 
     let numericRange = new NumericRange(this.axisValueToNumber(range.min), this.axisValueToNumber(range.max));
 
@@ -291,14 +291,14 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   /**
    * Converts value from axis inits to number.
    * */
-  abstract axisValueToNumber(tickValue: TickType): number;
+  abstract axisValueToNumber(tickValue: DataType): number;
 
   /**
    * Measures labels sizes for an array of major ticks
    * @param { Array<Tick>} ticks - Array of ticks
    * @returns {Array<Size>}
    * */
-  protected measureLabelsSizesForMajorTicks(ticks: Array<Tick<TickType>>): Array<Size> {
+  protected measureLabelsSizesForMajorTicks(ticks: Array<Tick<DataType>>): Array<Size> {
 
     let labelsSizes = [];
 
@@ -314,7 +314,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @param {string} tick - Tick for which to generate label size.
    * @returns {Size} Label's size.
    */
-  protected measureLabelSizeForMajorTick(tick: Tick<TickType>): Size{
+  protected measureLabelSizeForMajorTick(tick: Tick<DataType>): Size{
     if (this.majorTicks != null) {
       let tickFromArr = this.majorTicks[tick.index];
       if (tickFromArr != null && tickFromArr.index === tick.index && this.majorTicksLabelsSizes) {
@@ -348,7 +348,7 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @param {number} height - axis height. May be undefined (for horizontal axis only)
    */
   public update(location: NumericPoint,
-                range: Range<TickType>,
+                range: Range<DataType>,
                 width?: number,
                 height?: number){
 
@@ -380,18 +380,18 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
     this.majorTicksLabelsSizes = undefined;
   }
 
-  protected updateMajorTicks(range: Range<TickType>,
+  protected updateMajorTicks(range: Range<DataType>,
                              size: Size){
     this.majorTicks = this.generateMajorTicks(range, size);
     this.majorTicksLabelsSizes = this.measureLabelsSizesForMajorTicks(this.majorTicks);
   }
 
-  protected updateMinorTicks(range: Range<TickType>){
+  protected updateMinorTicks(range: Range<DataType>){
     this.minorTicks = this.minorTicksGenerator?.generateMinorTicks(range, this.majorTicks);
   }
 
   protected updateTicksScreenCoords(location: NumericPoint,
-                                    range: Range<TickType>,
+                                    range: Range<DataType>,
                                     size: Size){
 
     let majorTicksScreenCoords = [];
@@ -441,13 +441,13 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
    * @param {Size} size - axis size;
    * @returns {Array<Tick>}
    * */
-  protected generateMajorTicks(range: Range<TickType>, size: Size): Array<Tick<TickType>> {
+  protected generateMajorTicks(range: Range<DataType>, size: Size): Array<Tick<DataType>> {
     let layout: LabelsLayout | undefined = undefined;
     let prevLayout;
     let prevTicksArrLength = -1;
     let ticksCount = this.majorTicksGenerator.defaultTicksCount;
     let attempt = 1;
-    let ticks: Array<Tick<TickType>> = [];
+    let ticks: Array<Tick<DataType>> = [];
 
     while(layout != LabelsLayout.OK) {
       if (attempt++ >= AxisBase.generateMajorTicksMaxAttempts){
@@ -507,11 +507,11 @@ export abstract class AxisBase<TickType extends Object, AxisOptionsType extends 
   * @param {Range} range - axis range.
   * @returns {LabelsLayout}
   * */
-  protected evaluateLabelsLayout(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<TickType>>, range: Range<TickType>): LabelsLayout {
+  protected evaluateLabelsLayout(axisSize: Size, ticksLabelsSizes: Array<Size>, ticks: Array<Tick<DataType>>, range: Range<DataType>): LabelsLayout {
     let isAxisHorizontal = this.orientation == AxisOrientation.Horizontal;
 
     let ticksRenderInfo: Array<{coord: number, length: number }> = flow(
-      partialRight(map, ((sizeTickTuple : {tick: Tick<TickType>, labelSize: Size})=>{
+      partialRight(map, ((sizeTickTuple : {tick: Tick<DataType>, labelSize: Size})=>{
         return {
           coord: this.getTickScreenCoordinate(sizeTickTuple.tick, axisSize.width, axisSize.height, range),
           length: isAxisHorizontal ? sizeTickTuple.labelSize.width : sizeTickTuple.labelSize.height

@@ -1,7 +1,7 @@
 import {Range} from "../../../index";
 import { Tick } from "./tick";
 
-export abstract class MajorTicksGenerator<T> {
+export abstract class MajorTicksGenerator<DataType, TickType = DataType> {
 
   protected majorTickHeight: number;
 
@@ -19,7 +19,7 @@ export abstract class MajorTicksGenerator<T> {
    * @param {number} ticksCount - amount of ticks in specified range
    * @return {Array<Tick>} - array of generated ticks
    * */
-  abstract generateTicks(range: Range<T>, ticksCount: number): Array<Tick<T>>;
+  abstract generateTicks(range: Range<DataType>, ticksCount: number): Array<Tick<TickType>>;
 
   /**
   * Suggests increased ticks count for specified ticks count.

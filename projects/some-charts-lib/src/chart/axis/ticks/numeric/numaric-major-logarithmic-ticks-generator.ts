@@ -3,7 +3,7 @@ import {Range} from "../../../../index"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 import {MathHelper} from "../../../../services";
 
-export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number> {
+export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<number, number> {
   private logarithmBase: number;
 
   constructor(logarithmBase: number, majorTickHeight: number) {
