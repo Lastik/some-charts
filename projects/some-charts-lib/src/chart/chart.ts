@@ -6,7 +6,15 @@ import {DataSet, DataSetEventType, DimensionType, DimensionValue} from "../data"
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {KeyboardNavigation, KeyboardNavigationsFactory, MouseNavigation} from "./navigation";
-import {CoordinateTransformationStatic, DataRect, DataTransformation, NumericPoint, Point, Size} from "../geometry";
+import {
+  CoordinateTransformationStatic,
+  DataRect,
+  DataTransformation,
+  NumericPoint, NumericRange,
+  Point,
+  Range,
+  Size
+} from "../geometry";
 
 import {
   AxisOptions,
@@ -26,7 +34,6 @@ import {Legend} from "./legend";
 import {IDisposable} from "../i-disposable";
 import {Label} from "./label";
 import {ResizeSensor} from "css-element-queries";
-import {Range} from '../geometry';
 
 import * as $ from 'jquery'
 import {cloneDeep} from "lodash-es";
@@ -281,10 +288,17 @@ export class Chart<TItemType = any,
     let verticalAxisSize = this.verticalAxis?.size;
 
     if (this.horizontalAxis) {
+
+      let axisRange = this.options.axes?.horizontal.axisType === AxisTypes.DateAxis ?
+        new Range<Date>(
+        DimensionValue.buildForDateFromPrimitive(horizontalRange.min).value,
+        DimensionValue.buildForDateFromPrimitive(horizontalRange.max).value) :
+        horizontalRange;
+
       this.horizontalAxis.update(
         new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0),
           this._location.y + (verticalAxisSize?.height ?? 0) + offsetYAfterHeader - (this.options.header?.verticalPadding ?? 0)),
-        horizontalRange,
+        axisRange,
         this._size.width - (verticalAxisSize?.width ?? 0), undefined);
     }
 
