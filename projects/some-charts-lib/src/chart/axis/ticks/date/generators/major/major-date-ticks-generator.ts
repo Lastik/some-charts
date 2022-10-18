@@ -11,9 +11,11 @@ import { MajorDaysTicksGenerator } from "./major-days-ticks-generator";
 import {MajorTimeUnitTicksGenerator} from "./major-time-unit-ticks-generator";
 import {MajorTicksGenerator} from "../../../major-ticks-generator";
 import {MajorYearsTicksGenerator} from "./major-years-ticks-generator";
+import {MajorMillisecondsTicksGenerator} from "./major-milliseconds-ticks-generator";
 
 export class MajorDateTicksGenerator extends MajorTicksGenerator<Date> {
 
+  private majorMillisecondsTicksGenerator: MajorMillisecondsTicksGenerator;
   private majorSecondsTicksGenerator: MajorSecondsTicksGenerator;
   private majorMinutesTicksGenerator: MajorMinutesTicksGenerator;
   private majorHoursTicksGenerator: MajorHoursTicksGenerator;
@@ -24,6 +26,7 @@ export class MajorDateTicksGenerator extends MajorTicksGenerator<Date> {
   constructor(tickHeight: number) {
     super(tickHeight);
 
+    this.majorMillisecondsTicksGenerator = new MajorMillisecondsTicksGenerator(tickHeight);
     this.majorSecondsTicksGenerator = new MajorSecondsTicksGenerator(tickHeight);
     this.majorMinutesTicksGenerator = new MajorMinutesTicksGenerator(tickHeight);
     this.majorHoursTicksGenerator = new MajorHoursTicksGenerator(tickHeight);
@@ -41,7 +44,9 @@ export class MajorDateTicksGenerator extends MajorTicksGenerator<Date> {
     let min = moment(range.min);
     let max = moment(range.max);
 
-    if (max.diff(min, TimeUnit.Minutes) < 2) {
+    if (max.diff(min, TimeUnit.Seconds) < 2) {
+      return this.majorMillisecondsTicksGenerator;
+    } else if (max.diff(min, TimeUnit.Minutes) < 2) {
       return this.majorSecondsTicksGenerator;
     } else if (max.diff(min, TimeUnit.Hours) < 2) {
       return this.majorMinutesTicksGenerator;

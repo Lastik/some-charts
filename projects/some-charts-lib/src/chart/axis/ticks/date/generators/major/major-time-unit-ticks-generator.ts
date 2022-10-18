@@ -1,11 +1,10 @@
-
 import {Range} from "../../../../../../geometry";
 import {TimeUnit} from "../../time-unit";
 import * as moment from "moment";
 import {MathHelper} from "../../../../../../services";
-import { MajorTicksGenerator } from "../../../major-ticks-generator";
+import {MajorTicksGenerator} from "../../../major-ticks-generator";
 import {Tick} from "../../../tick";
-import { LabeledTick } from "../../../labeled-tick";
+import {LabeledTick} from "../../../labeled-tick";
 
 export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
 
@@ -26,6 +25,11 @@ export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Da
 
     let niceDelta = MathHelper.calcNiceNumber(delta, false)
     let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
+
+    if(this.timeUnit === TimeUnit.Milliseconds && tickSpacing < 1){
+      tickSpacing = 1;
+    }
+
     let niceMin = zero.clone().add(Math.floor(min.diff(zero, this.timeUnit) / tickSpacing) * tickSpacing, this.timeUnit);
     let niceMax = zero.clone().add(Math.ceil(max.diff(zero, this.timeUnit) / tickSpacing) * tickSpacing, this.timeUnit);
 
