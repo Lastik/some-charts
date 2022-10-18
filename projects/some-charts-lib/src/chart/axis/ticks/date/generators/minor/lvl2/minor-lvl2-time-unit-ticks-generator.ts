@@ -21,26 +21,9 @@ export abstract class MinorLvl2TimeUnitTicksGenerator implements MinorTicksGener
     let min = moment(range.min).startOf(this.timeUnit);
     let max = moment(range.max).startOf(this.timeUnit).add(1, this.timeUnit);
 
-    let delta = max.diff(min, this.timeUnit, true);
-
-    if (delta <= 1) {
-      return [
-        new MinorDateTick(range.min, this.tickHeight, 0, this.getTimeUnitValueAsString(min), 2, 'left'),
-      ]
-    } else {
-      let x = min;
-
-      let till = max.clone().add(1, this.timeUnit);
-
-      let ticks = [];
-
-      do {
-        ticks.push(new MinorDateTick(x.toDate(), this.tickHeight, 0, this.getTimeUnitValueAsString(x), 2, 'left'));
-        x.add(1, this.timeUnit);
-      } while (x.isSameOrBefore(till));
-
-      return ticks;
-    }
+    return [
+      new MinorDateTick(range.min, this.tickHeight, 0, this.getTimeUnitValueAsString(min), 2, 'left'),
+    ]
   }
 
   abstract get timeUnit(): TimeUnit;
