@@ -1,10 +1,10 @@
-export enum TimeUnit {
-  Milliseconds = 0,
-  Seconds = 1,
-  Minutes = 2,
-  Hours = 3,
-  Days = 4,
-  Months = 5,
-  Years = 6,
-  Centuries = 7
-}
+export type TimeUnit = (
+  "year" | "years" | "y" |
+  "month" | "months" | "M" |
+  "week" | "weeks" | "w" |
+  "day" | "days" | "d" |
+  "hour" | "hours" | "h" |
+  "minute" | "minutes" | "m" |
+  "second" | "seconds" | "s" |
+  "millisecond" | "milliseconds" | "ms"
+  );

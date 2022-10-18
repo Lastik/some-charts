@@ -28,6 +28,7 @@
     "jquery": "^3.6.1",
     "konva": "^8.3.6",
     "lodash-es": "^4.17.21",
+    "moment": "^2.29.4",
     "reflect-metadata": "^0.1.13",
     "save": "^2.5.0",
     "some-charts": "dist/some-charts/some-charts-0.0.126.tgz",

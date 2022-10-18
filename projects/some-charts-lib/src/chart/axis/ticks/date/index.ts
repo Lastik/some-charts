@@ -1,2 +1,2 @@
-export * from './time-period';
-export * from './major-time-period-ticks-generator';
+export * from './major-time-unit-ticks-generator';
+export * from './time-unit';

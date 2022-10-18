@@ -1,32 +1,47 @@
-import {MajorTicksGenerator, NumericMajorOrdinaryTicksGenerator, Tick} from "../../../index";
-import {Range} from "../../../../geometry"
+import {LabeledTick, MajorTicksGenerator, Tick} from "../../../index";
+import {Range} from "../../../../geometry";
 import {TimeUnit} from "./time-unit";
+import * as moment from "moment";
+import {MathHelper} from "../../../../services";
 
-export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date, number> {
+export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
+  protected readonly detailed: boolean;
 
-  protected ticksCountToTicksValues: Map<number, Array<number>>;
-
-  constructor(majorTickHeight: number) {
+  constructor(majorTickHeight: number, detailed: boolean = false) {
     super(majorTickHeight);
 
-    this.ticksCountToTicksValues = this.generateTicksCountToTicksValuesMap();
+    this.detailed = detailed;
   }
 
   abstract get timeUnit(): TimeUnit;
 
-  generateTicks(range: Range<Date>, ticksCount: number): Array<Tick<number>> {
-    let numericRange = new Range<number>(
-      this.extractTimeUnit(range.min),
-      this.extractTimeUnit(range.max)
-    );
+  generateTicks(range: Range<Date>, ticksCount: number): Array<Tick<Date>> {
 
-    return this.generateTicksForNumericRange(numericRange, ticksCount);
+    let zero = moment(new Date());
+
+    let min = moment(range.min).startOf(this.timeUnit).subtract(1, this.timeUnit);
+    let max = moment(range.min).endOf(this.timeUnit).add(1, this.timeUnit);
+
+    let delta = max.diff(min, this.timeUnit);
+
+    let niceDelta = MathHelper.calcNiceNumber(delta, false)
+    let tickSpacing = MathHelper.calcNiceNumber(niceDelta / (ticksCount - 1), true);
+    let niceMin = zero.add(Math.floor(zero.diff(min, this.timeUnit) / tickSpacing) * tickSpacing);
+    let niceMax = zero.add(Math.ceil(zero.diff(max, this.timeUnit) / tickSpacing) * tickSpacing);
+
+    let x = niceMin;
+
+    let xArr = [];
+
+    do {
+      xArr.push(x);
+      x.add(tickSpacing);
+    } while (x.isSameOrBefore(niceMax));
+
+    return xArr.map((value, index) => {
+      return new LabeledTick<Date>(value.toDate(), this.majorTickHeight, index, this.getTimeUnitValueAsString(value, this.detailed));
+    });
   }
 
-  protected abstract generateTicksForNumericRange(numericRange: Range<number>, ticksCount: number): Array<Tick<number>>;
-
-  protected abstract extractTimeUnit(date: Date): number;
-
-  protected abstract generateTicksCountToTicksValuesMap(): Map<number, Array<number>>;
+  protected abstract getTimeUnitValueAsString(date: moment.Moment, detailed: boolean): string;
 }
-

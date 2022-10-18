@@ -1,9 +1,9 @@
 import {Tick} from "./tick";
 
-export class LabeledTick extends Tick<number>{
+export class LabeledTick<T = number> extends Tick<T>{
   label: string;
 
-  constructor(value: number, length: number, index: number, label: string) {
+  constructor(value: T, length: number, index: number, label: string) {
     super(value, length, index);
     this.label = label;
   }

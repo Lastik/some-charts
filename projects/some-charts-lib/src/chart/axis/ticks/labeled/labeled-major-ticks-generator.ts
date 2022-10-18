@@ -5,7 +5,7 @@ import {LabeledTick} from "../labeled-tick";
 import {filter, flow, partialRight} from "lodash-es";
 import map from "lodash-es/map";
 
-export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number, number> {
+export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number> {
 
   private labels: Array<Point<string>>;
 
@@ -29,11 +29,11 @@ export class LabeledMajorTicksGenerator extends MajorTicksGenerator<number, numb
       ))(this.labels);
   }
 
-  suggestDecreasedTickCount(ticksCount: number): number {
+  override suggestDecreasedTickCount(ticksCount: number): number {
     return ticksCount;
   }
 
-  suggestIncreasedTicksCount(ticksCount: number): number {
+  override suggestIncreasedTicksCount(ticksCount: number): number {
     return ticksCount;
   }
 

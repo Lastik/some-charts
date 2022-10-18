@@ -2,7 +2,7 @@ import {Tick} from "../tick";
 import {Range} from "../../../../index"
 import {MinorTicksGenerator} from "../minor-ticks-generator";
 
-export class NumericMinorTicksGenerator implements MinorTicksGenerator<number, number> {
+export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
 
   protected readonly stepsCount: number;
   protected minorTickHeight: number;

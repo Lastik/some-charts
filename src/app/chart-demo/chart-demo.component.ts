@@ -65,21 +65,21 @@ export class ChartDemoComponent implements OnInit {
     updateChartData();
 
     let chart = new Chart<XY, number>(
-      '#chart-element',
+      "#chart-element",
       dataSet,
       {
         navigation: {
           isFitToViewModeEnabled: true
         },
         header: {
-          text: 'Заголовок графика'
+          text: "Заголовок графика"
         },
         plots: [
           {
             kind: PlotKind.Marker,
             metric: {
-              name: 'y',
-              caption: 'Y',
+              name: "y",
+              caption: "Y",
               color: new Color("#AA0000")
             },
             markerSize: 10

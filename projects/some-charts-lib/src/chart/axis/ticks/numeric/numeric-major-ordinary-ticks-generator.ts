@@ -3,7 +3,7 @@ import {Range} from "../../../../index"
 import {MajorTicksGenerator} from "../major-ticks-generator";
 import {MathHelper} from "../../../../services";
 
-export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<number, number> {
+export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<number> {
 
   constructor(majorTickHeight: number) {
     super(majorTickHeight);
@@ -28,27 +28,5 @@ export class NumericMajorOrdinaryTicksGenerator extends MajorTicksGenerator<numb
     return xArr.map((value, index) => {
       return new Tick<number>(value, this.majorTickHeight, index);
     });
-  }
-
-  suggestDecreasedTickCount(ticksCount: number): number {
-    if (ticksCount == 1) {
-      return ticksCount;
-    } else if (ticksCount <= 5) {
-      return ticksCount - 1;
-    } else if (ticksCount == 10) {
-      return 5;
-    } else {
-      return ticksCount / 2;
-    }
-  }
-
-  suggestIncreasedTicksCount(ticksCount: number): number {
-    if (ticksCount < 5) {
-      return ticksCount + 1;
-    } else if (ticksCount == 5) {
-      return 10;
-    } else {
-      return ticksCount * 2;
-    }
   }
 }
