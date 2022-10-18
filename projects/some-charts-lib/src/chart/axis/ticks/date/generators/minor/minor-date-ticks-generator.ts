@@ -10,7 +10,6 @@ import { MinorMonthsTicksGenerator } from "./minor-months-ticks-generator";
 import { MinorDaysTicksGenerator } from "./minor-days-ticks-generator";
 import {MinorYearsTicksGenerator} from "./minor-years-ticks-generator";
 import {MinorTimeUnitTicksGenerator} from "./minor-time-unit-ticks-generator";
-import {MajorTicksGenerator} from "../../../major-ticks-generator";
 import {MajorDateTicksGenerator} from "../major";
 import {MinorTicksGenerator} from "../../../minor-ticks-generator";
 

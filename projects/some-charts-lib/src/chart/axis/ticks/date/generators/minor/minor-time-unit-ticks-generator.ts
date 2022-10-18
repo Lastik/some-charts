@@ -1,7 +1,9 @@
-import {LabeledTick, MinorTicksGenerator, Tick} from "../../../../../index";
 import {Range} from "../../../../../../geometry";
 import {TimeUnit} from "../../time-unit";
 import * as moment from "moment";
+import { MinorTicksGenerator } from "../../../minor-ticks-generator";
+import { Tick } from "../../../tick";
+import {LabeledTick} from "../../../labeled-tick";
 
 export abstract class MinorTimeUnitTicksGenerator implements MinorTicksGenerator<Date> {
 

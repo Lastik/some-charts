@@ -1,8 +1,11 @@
-import {LabeledTick, MajorTicksGenerator, Tick} from "../../../../../index";
+
 import {Range} from "../../../../../../geometry";
 import {TimeUnit} from "../../time-unit";
 import * as moment from "moment";
 import {MathHelper} from "../../../../../../services";
+import { MajorTicksGenerator } from "../../../major-ticks-generator";
+import {Tick} from "../../../tick";
+import { LabeledTick } from "../../../labeled-tick";
 
 export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
 
