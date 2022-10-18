@@ -11,7 +11,7 @@ export class MinorHoursTicksGenerator extends MinorTimeUnitTicksGenerator {
   }
 
   protected getTimeUnitValueAsString(date: moment.Moment): string {
-    return date.format('MMMM Do YYYY, H[H]');
+    return date.format('HH:00');
   }
 
   get timeUnit(): TimeUnit {
