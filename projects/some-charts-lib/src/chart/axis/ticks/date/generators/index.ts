@@ -1,2 +1,2 @@
-export * from './secondary';
-export * from './primary';
+export * from './major';
+export * from './minor';

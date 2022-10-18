@@ -1,4 +1,3 @@
-export * from './minor-date-tick';
 export * from './minor-time-unit-ticks-generator';
 export * from './minor-days-ticks-generator';
 export * from './minor-hours-ticks-generator';
