@@ -1,15 +1,14 @@
 ﻿import {AxisBase} from "../axis-base";
-import {
-  MajorTicksGenerator,
-  MinorTicksGenerator
-} from "../ticks";
-import {DataTransformation, Range, NumericPoint} from "../../../index";
-import {AxisOptions} from "../../../index";
+import {MajorTicksGenerator, MinorTicksGenerator} from "../ticks";
+import {AxisOptions, DataTransformation, MathHelper, NumericPoint, Range, Size} from "../../../index";
 import {AxisOrientation} from "../axis-orientation";
-import {MajorDateTicksGenerator} from "../ticks/date/generators/major";
-import {MinorDateTicksGenerator} from "../ticks/date/generators/minor";
+import {MajorDateTicksGenerator, MinorDateTicksGenerator} from "../ticks/date";
+import Konva from "konva";
 
 export class DateAxis extends AxisBase<Date, AxisOptions> {
+
+  protected static readonly paddingBetweenMajorAndMinorTicks = 4;
+
   /**
    * Creates axis with numbers and ticks on it.
    * @param {NumericPoint} location - Axis location.
@@ -22,6 +21,9 @@ export class DateAxis extends AxisBase<Date, AxisOptions> {
    */
   constructor(location: NumericPoint, orientation: AxisOrientation, range: Range<Date>, dataTransformation: DataTransformation, options: AxisOptions, width?: number, height?: number) {
     super(location, orientation, range, dataTransformation, options, width, height);
+
+    if(orientation == AxisOrientation.Vertical)
+      throw new Error('Vertical Date Axis is not implemented yet');
   }
 
   protected createMajorTicksGenerator(): MajorTicksGenerator<Date> {
@@ -34,5 +36,37 @@ export class DateAxis extends AxisBase<Date, AxisOptions> {
 
   axisValueToNumber(tickValue: Date): number {
     return tickValue.getTime();
+  }
+
+  override updateAxisSize(){
+    super.updateAxisSize();
+
+    let renderHeight = this.size.height +
+      this.textMeasureUtils!.measureFontHeight(this.options?.font!) + 2 + DateAxis.paddingBetweenMajorAndMinorTicks;
+    this._size = new Size(this._size.width, renderHeight);
+  }
+
+  protected override renderHorizontalMinorTicks(context: Konva.Context) {
+    if (this.minorTicks !== undefined) {
+      let minorTicksCount = this.minorTicks?.length ?? 0;
+      let minorTicksScreenXCoords = this.minorTicksScreenCoords;
+
+      let minorTicks = this.minorTicks!;
+      for (let i = 0; i < minorTicksCount; i++) {
+        let tick = minorTicks[i];
+        let ticksScreenXCoord = minorTicksScreenXCoords[i]
+
+        let tickLabelSize = this.measureLabelSize(tick.toString());
+
+        let xVal = MathHelper.optimizeValue(this.location.x + ticksScreenXCoord);
+
+        let yVal = MathHelper.optimizeValue(this.location.y +
+          DateAxis.paddingBetweenMajorAndMinorTicks + tickLabelSize.height);
+
+        context.fillText(tick.toString(),
+          xVal - tickLabelSize.width,
+          yVal);
+      }
+    }
   }
 }

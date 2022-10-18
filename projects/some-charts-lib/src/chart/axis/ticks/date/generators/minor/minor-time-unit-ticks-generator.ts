@@ -33,7 +33,7 @@ export abstract class MinorTimeUnitTicksGenerator implements MinorTicksGenerator
       let ticks = [];
 
       do {
-        ticks.push(new LabeledTick<Date>(x.toDate(), this.tickHeight, 0, this.getTimeUnitValueAsString(max)));
+        ticks.push(new LabeledTick<Date>(x.toDate(), this.tickHeight, 0, this.getTimeUnitValueAsString(x)));
         x.add(1, this.timeUnit);
       } while (x.isSameOrBefore(till));
 
