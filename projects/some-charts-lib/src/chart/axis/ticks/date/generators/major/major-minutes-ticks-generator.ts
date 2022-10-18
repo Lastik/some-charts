@@ -11,7 +11,7 @@ export class MajorMinutesTicksGenerator extends MajorTimeUnitTicksGenerator {
   }
 
   protected getTimeUnitValueAsString(date: moment.Moment): string {
-    return date.hours().toString() + 'M';
+    return date.minutes().toString() + 'M';
   }
 
   get timeUnit(): TimeUnit {
