@@ -1,8 +1,8 @@
 import * as moment from "moment";
-import {MajorPrimaryTimeUnitTicksGenerator} from "./major-primary-time-unit-ticks-generator";
+import {MajorTimeUnitTicksGenerator} from "./major-time-unit-ticks-generator";
 import {TimeUnit} from "../../time-unit";
 
-export class MajorPrimaryHoursTicksGenerator extends MajorPrimaryTimeUnitTicksGenerator {
+export class MajorHoursTicksGenerator extends MajorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Hours;
 
@@ -11,10 +11,10 @@ export class MajorPrimaryHoursTicksGenerator extends MajorPrimaryTimeUnitTicksGe
   }
 
   protected getTimeUnitValueAsString(date: moment.Moment): string {
-    return date.format('MMMM Do YYYY, H[H]');
+    return date.hours().toString() + 'H';
   }
 
   get timeUnit(): TimeUnit {
-    return MajorPrimaryHoursTicksGenerator.TimeUnit;
+    return MajorHoursTicksGenerator.TimeUnit;
   }
 }

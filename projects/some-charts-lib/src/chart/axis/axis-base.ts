@@ -387,7 +387,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
   }
 
   protected updateMinorTicks(range: Range<DataType>){
-    this.minorTicks = this.minorTicksGenerator?.generateMinorTicks(range, this.majorTicks);
+    this.minorTicks = this.minorTicksGenerator?.generateTicks(range, this.majorTicks);
   }
 
   protected updateTicksScreenCoords(location: NumericPoint,

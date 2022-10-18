@@ -1,3 +1,4 @@
+
 export class Tick<T extends Object> {
   value: T;
   length: number;
@@ -6,7 +7,7 @@ export class Tick<T extends Object> {
   constructor(value: T, length: number, index: number) {
     this.value = value;
     this.length = length;
-    this.index = index
+    this.index = index;
   }
 
   toString(): string{

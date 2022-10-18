@@ -8,5 +8,5 @@ export interface MinorTicksGenerator<T> {
    * @param {Array<Tick>} majorTicks - array of major ticks in specified range.
    * @return {Array<Tick>} - array of generated ticks
    * */
-  generateMinorTicks(range: Range<T>, majorTicks: Array<Tick<T>>): Array<Tick<T>>;
+  generateTicks(range: Range<T>, majorTicks: Array<Tick<T>>): Array<Tick<T>>;
 }

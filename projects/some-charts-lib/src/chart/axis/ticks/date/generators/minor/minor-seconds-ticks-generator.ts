@@ -1,8 +1,8 @@
 import * as moment from "moment";
-import {MajorPrimaryTimeUnitTicksGenerator} from "./major-primary-time-unit-ticks-generator";
+import {MinorTimeUnitTicksGenerator} from "./minor-time-unit-ticks-generator";
 import {TimeUnit} from "../../time-unit";
 
-export class MajorPrimarySecondsTicksGenerator extends MajorPrimaryTimeUnitTicksGenerator {
+export class MinorSecondsTicksGenerator extends MinorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Seconds;
 
@@ -15,6 +15,6 @@ export class MajorPrimarySecondsTicksGenerator extends MajorPrimaryTimeUnitTicks
   }
 
   get timeUnit(): TimeUnit {
-    return MajorPrimarySecondsTicksGenerator.TimeUnit;
+    return MinorSecondsTicksGenerator.TimeUnit;
   }
 }

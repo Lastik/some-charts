@@ -1,8 +1,8 @@
 import * as moment from "moment";
-import {MajorPrimaryTimeUnitTicksGenerator} from "./major-primary-time-unit-ticks-generator";
+import {MajorTimeUnitTicksGenerator} from "./major-time-unit-ticks-generator";
 import {TimeUnit} from "../../time-unit";
 
-export class MajorPrimaryDaysTicksGenerator extends MajorPrimaryTimeUnitTicksGenerator {
+export class MajorDaysTicksGenerator extends MajorTimeUnitTicksGenerator {
 
   public static readonly TimeUnit: TimeUnit = TimeUnit.Days;
 
@@ -11,10 +11,10 @@ export class MajorPrimaryDaysTicksGenerator extends MajorPrimaryTimeUnitTicksGen
   }
 
   protected getTimeUnitValueAsString(date: moment.Moment): string {
-    return date.format('MMMM Do YYYY');
+    return date.format('Do');
   }
 
   get timeUnit(): TimeUnit {
-    return MajorPrimaryDaysTicksGenerator.TimeUnit;
+    return MajorDaysTicksGenerator.TimeUnit;
   }
 }

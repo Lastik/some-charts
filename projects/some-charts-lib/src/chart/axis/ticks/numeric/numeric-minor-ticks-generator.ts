@@ -5,14 +5,14 @@ import {MinorTicksGenerator} from "../minor-ticks-generator";
 export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
 
   protected readonly stepsCount: number;
-  protected minorTickHeight: number;
+  protected tickHeight: number;
 
   constructor(minorTickHeight: number, stepsCount?: number) {
     this.stepsCount = stepsCount ?? 5;
-    this.minorTickHeight = minorTickHeight;
+    this.tickHeight = minorTickHeight;
   }
 
-  generateMinorTicks(range: Range<number>, majorTicks: Array<Tick<number>>): Array<Tick<number>> {
+  generateTicks(range: Range<number>, majorTicks: Array<Tick<number>>): Array<Tick<number>> {
     if (majorTicks.length < 2) {
       return [];
     } else {
@@ -29,13 +29,13 @@ export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
       let x = majorTicks[1].value - step;
       let tickIndex = 0;
       while (x >= minBound) {
-        res.push(new Tick<number>(x, this.minorTickHeight, tickIndex++));
+        res.push(new Tick<number>(x, this.tickHeight, tickIndex++));
         x -= step;
       }
 
       x = majorTicks[majorTicks.length - 2].value + step;
       while (x <= maxBound) {
-        res.push(new Tick<number>(x, this.minorTickHeight, tickIndex++));
+        res.push(new Tick<number>(x, this.tickHeight, tickIndex++));
         x += step;
       }
 
@@ -43,7 +43,7 @@ export class NumericMinorTicksGenerator implements MinorTicksGenerator<number> {
         x = majorTicks[i].value + step;
 
         for (let j = 0; j < this.stepsCount; j++) {
-          res.push(new Tick<number>(x, this.minorTickHeight, tickIndex++));
+          res.push(new Tick<number>(x, this.tickHeight, tickIndex++));
           x += step;
         }
       }

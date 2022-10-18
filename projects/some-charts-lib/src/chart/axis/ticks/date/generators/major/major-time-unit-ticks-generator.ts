@@ -4,7 +4,7 @@ import {TimeUnit} from "../../time-unit";
 import * as moment from "moment";
 import {MathHelper} from "../../../../../../services";
 
-export abstract class MajorSecondaryTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
+export abstract class MajorTimeUnitTicksGenerator extends MajorTicksGenerator<Date> {
 
   constructor(tickHeight: number) {
     super(tickHeight);
