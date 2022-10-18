@@ -12,7 +12,16 @@ export abstract class MajorPrimaryTimeUnitTicksGenerator extends MajorTicksGener
   abstract get timeUnit(): TimeUnit;
 
   generateTicks(range: Range<Date>, ticksCount: number): Array<Tick<Date>> {
+
   }
 
   protected abstract getTimeUnitValueAsString(date: moment.Moment): string;
+
+  override suggestIncreasedTicksCount(ticksCount: number): number {
+    return ticksCount;
+  }
+
+  override suggestDecreasedTickCount(ticksCount: number): number {
+    return ticksCount;
+  }
 }
