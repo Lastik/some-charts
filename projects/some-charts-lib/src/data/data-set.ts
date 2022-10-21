@@ -1,6 +1,6 @@
 import {DimensionValue} from "./dimension-value";
 import {ACEventTarget} from "../events";
-import {DataRect, Range} from "../geometry";
+import {NumericDataRect, Range} from "../geometry";
 import {DataSetChangedEvent, DataSetEventType} from "./event";
 import {DimensionType} from "./dimension-type";
 import {Sorting} from "../sorting";
@@ -332,16 +332,73 @@ export class DataSet<TItemType,
   }
 
   /**
+   * Convert value on X axis to it's numeric counterpart
+   * @template XDimensionType
+   * @param {XDimensionType} value - value of X dimension
+   * @returns number
+   * */
+  xDimensionValueToNumeric(value: XDimensionType): number | undefined {
+    return value ?
+      new DimensionValue(value, this.indexByXDimension?.get(DimensionValue.makePrimitive(value))).toNumericValue() :
+      undefined;
+  }
+
+  /**
+   * Convert value on Y axis to it's numeric counterpart
+   * @template YDimensionType
+   * @param {YDimensionType} value - value of Y dimension
+   * @returns number
+   * */
+  yDimensionValueToNumeric(value: YDimensionType): number | undefined {
+    return value ?
+      new DimensionValue(value, this.indexByYDimension?.get(DimensionValue.makePrimitive(value))).toNumericValue() :
+      undefined;
+  }
+
+
+  /**
+   * Convert numeric value to value on X axis
+   * @template XDimensionType
+   * @param {number} value - value of X dimension
+   * @returns XDimensionType
+   * */
+  numericToXDimensionValue(value: number): XDimensionType | undefined {
+    if (this._dimensionXType === DimensionType.Date) {
+      return DimensionValue.buildForDateFromPrimitive(value).value as XDimensionType;
+    } else if (this._dimensionXType === DimensionType.Number) {
+      return value as XDimensionType;
+    } else {
+      return this._dimensionXValues.find(v => v.index === value)?.value;
+    }
+  }
+
+  /**
+   * Convert numeric value to value on X axis
+   * @template YDimensionType
+   * @param {number} value - value of X dimension
+   * @returns YDimensionType
+   * */
+  numericToYDimensionValue(value: number): YDimensionType | undefined {
+    if (this._dimensionYType === DimensionType.Date) {
+      return DimensionValue.buildForDateFromPrimitive(value).value as YDimensionType;
+    } else if (this._dimensionYType === DimensionType.Number) {
+      return value as YDimensionType;
+    } else {
+      return this._dimensionYValues?.find(v => v.index === value)?.value;
+    }
+  }
+
+  /**
    * Calculates bounding rectangle for the specified metrics of this DataSet.
    * @param {Array<string>} metricsNames - names of metrics to take into consideration.
-   * @returns {DataRect}
+   * @returns {NumericDataRect}
    */
-  getBoundingRectangle(metricsNames: Array<string>): DataRect | undefined {
-    let boundingRect: DataRect | undefined = undefined;
+  getBoundingRectangle(metricsNames: Array<string>): NumericDataRect | undefined {
+    let boundingRect: NumericDataRect | undefined = undefined;
 
     for (let metricName of metricsNames) {
 
-      let curMetricBoundingRect: DataRect | undefined = undefined;
+      let curMetricBoundingRect: NumericDataRect | undefined = undefined;
 
       if (this.dimensionXValues.length) {
         let minX = this.dimensionXValues[0].toNumericValue();
@@ -355,7 +412,7 @@ export class DataSet<TItemType,
           let maxY = max(yValues);
 
           if (!isUndefined(minY) && !isUndefined(maxY)) {
-            curMetricBoundingRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
+            curMetricBoundingRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
           }
         } else {
           if (this.dimensionYValues && this.dimensionYValues.length) {
@@ -366,7 +423,7 @@ export class DataSet<TItemType,
             let maxY = max(dimensionYNumericValues);
 
             if (!isUndefined(minY) && !isUndefined(maxY)) {
-              curMetricBoundingRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
+              curMetricBoundingRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
             }
           }
         }

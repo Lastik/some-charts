@@ -1,7 +1,7 @@
 ﻿import {KeyboardNavigationsFactory} from "./keyboard";
 import {ChartContent} from "../chart-content";
 import {Chart} from "../chart";
-import {DataRect, NumericPoint, NumericRange, Size} from "../../index";
+import {DataRect, NumericDataRect, NumericPoint, NumericRange, Size} from "../../index";
 import {Renderer} from "../../renderer";
 import * as $ from 'jquery'
 
@@ -169,7 +169,7 @@ export class MouseNavigation extends ChartContent(Object) {
           let maxX = Math.max(prevTouch1.x, prevTouch2.x);
           let maxY = Math.max(prevTouch1.y, prevTouch2.y);
 
-          let prevRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
+          let prevRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
 
           minX = Math.min(curTouch1.x, curTouch2.x);
           minY = Math.min(curTouch1.y, curTouch2.y);
@@ -177,7 +177,7 @@ export class MouseNavigation extends ChartContent(Object) {
           maxX = Math.max(curTouch1.x, curTouch2.x);
           maxY = Math.max(curTouch1.y, curTouch2.y);
 
-          let curRect = new DataRect(minX, minY, maxX - minX, maxY - minY);
+          let curRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
 
           this.handleMultitouchZooming(prevRect, curRect);
         }
@@ -212,8 +212,8 @@ export class MouseNavigation extends ChartContent(Object) {
 
   private handleDragging(pixelDeltaX: number, pixelDeltaY: number) {
     if (this.chart) {
-      let horizontalRange = this.chart.visibleRect.getHorizontalRange();
-      let verticalRange = this.chart.visibleRect.getVerticalRange();
+      let horizontalRange = this.chart.visibleRectAsNumeric.getHorizontalRange();
+      let verticalRange = this.chart.visibleRectAsNumeric.getVerticalRange();
 
       let plotSize = this.chart.getPlotSize();
 
@@ -224,7 +224,7 @@ export class MouseNavigation extends ChartContent(Object) {
       let newVerticalRange = verticalRange.withShift(dataDeltaY);
 
       this.chart.update(
-        new DataRect(
+        new NumericDataRect(
           newHorizontalRange.min, newVerticalRange.min,
           newHorizontalRange.getLength(), newVerticalRange.getLength()),
         true
@@ -232,12 +232,12 @@ export class MouseNavigation extends ChartContent(Object) {
     }
   }
 
-  private handleMultitouchZooming(prevPixRect: DataRect, curPixRect: DataRect) {
+  private handleMultitouchZooming(prevPixRect: NumericDataRect, curPixRect: NumericDataRect) {
     if(this.chart) {
       let plotSize = this.chart.getPlotSize();
 
-      let horizontalRange = this.chart.visibleRect.getHorizontalRange();
-      let verticalRange = this.chart.visibleRect.getVerticalRange();
+      let horizontalRange = this.chart.visibleRectAsNumeric.getHorizontalRange();
+      let verticalRange = this.chart.visibleRectAsNumeric.getVerticalRange();
 
       let propX = horizontalRange.getLength() / plotSize.width;
       let propY = verticalRange.getLength() / plotSize.height
@@ -251,7 +251,7 @@ export class MouseNavigation extends ChartContent(Object) {
       let newHorizontalRange = new NumericRange(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX);
       let newVerticalRange = new NumericRange(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY);
 
-      let dataRange = new DataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
+      let dataRange = new NumericDataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
 
       this.chart.update(dataRange, true);
     }
@@ -259,8 +259,8 @@ export class MouseNavigation extends ChartContent(Object) {
 
   private handleScrollEvent(delta: number){
     if(this.chart) {
-      let horRange = this.chart.visibleRect.getHorizontalRange();
-      let verRange = this.chart.visibleRect.getVerticalRange();
+      let horRange = this.chart.visibleRectAsNumeric.getHorizontalRange();
+      let verRange = this.chart.visibleRectAsNumeric.getVerticalRange();
 
       let zoomCoeff = 0.015;
       let sign = delta > 0 ? 1 : -1;
@@ -273,7 +273,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
       if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
         this.chart.update(
-          new DataRect(newHorRange.min, newVerRange.min,
+          new NumericDataRect(newHorRange.min, newVerRange.min,
             newHorRange.max - newHorRange.min, newVerRange.max - newVerRange.min),
           true);
       }

@@ -2,7 +2,7 @@ import Konva from "konva";
 import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
 import {FontInUnits} from "../../font"
 import {ChartRenderableItem} from "../chart-renderable-item";
-import {DataRect, DataTransformation, NumericPoint} from "../../geometry";
+import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 import {DataSet, DataSetEventType, DimensionValue} from "../../data";
 import * as Color from "color";
 import {MetricDependantValue, Palette} from "./metric";
@@ -24,8 +24,8 @@ export abstract class Plot<
 
   protected plotElements: PlotDrawableElement[];
 
-  protected visible: DataRect | undefined;
-  protected screen: DataRect | undefined;
+  protected visible: NumericDataRect | undefined;
+  protected screen: NumericDataRect | undefined;
 
   protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
   protected readonly dataTransformation: DataTransformation;
@@ -115,7 +115,7 @@ export abstract class Plot<
    * @param {DataRect} visible - Visible rectangle of plot.
    * @param {DataRect} screen - Screen rectangle of plot.
    */
-  update(visible: DataRect, screen: DataRect) {
+  update(visible: NumericDataRect, screen: NumericDataRect) {
     this.visible = visible;
     this.screen = screen;
     this.updatePlotElements();
@@ -182,7 +182,7 @@ export abstract class Plot<
   /**
    * Calculates bounding rectangle of this plot.
    * */
-  getBoundingRectangle(): DataRect | undefined {
+  getBoundingRectangle(): NumericDataRect | undefined {
     return this.dataSet.getBoundingRectangle(this.plotOptions.metricsOptions.map(o => o.name));
   }
 

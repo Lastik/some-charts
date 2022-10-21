@@ -12,7 +12,7 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
     this.index = index;
   }
 
-  private static makePrimitive(value: number | string | Date): number | string {
+  public static makePrimitive(value: number | string | Date): number | string {
     if (value instanceof Date) {
       return value.getTime();
     } else return value;

@@ -1,5 +1,5 @@
 export * from './point';
-export * from './data-rect';
+export * from './rect';
 export * from './numeric-range';
 export * from './range';
 export * from './transformation';

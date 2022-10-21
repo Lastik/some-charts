@@ -1,6 +1,6 @@
 import {ChartContent} from "../../chart-content";
 import {Chart} from "../../chart";
-import {DataRect, IDisposable, NumericRange} from "../../../index";
+import {DataRect, IDisposable, NumericDataRect, NumericRange} from "../../../index";
 import {KeyboardNavigationsFactory} from "./keyboard-navigations-factory";
 import * as $ from 'jquery'
 
@@ -67,8 +67,8 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
   protected onKeyDown(e: JQuery.Event) {
     if(this.chart && this.host && this.isHostFocused){
 
-      let horizontalRange = this.chart!.visibleRect.getHorizontalRange();
-      let verticalRange = this.chart!.visibleRect.getVerticalRange();
+      let horizontalRange = this.chart!.visibleRectAsNumeric.getHorizontalRange();
+      let verticalRange = this.chart!.visibleRectAsNumeric.getVerticalRange();
 
       let horizontalDelta = horizontalRange.max - horizontalRange.min;
       let verticalDelta = verticalRange.max - verticalRange.min;
@@ -114,7 +114,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
       }
 
       if (horizontalRange.max - horizontalRange.min >= this.chart.minZoomLevel && verticalRange.max - verticalRange.min >= this.chart.minZoomLevel) {
-        let newChartDataRect = new DataRect(horizontalRange.min, verticalRange.min, horizontalRange.max - horizontalRange.min, verticalRange.max - verticalRange.min);
+        let newChartDataRect = new NumericDataRect(horizontalRange.min, verticalRange.min, horizontalRange.max - horizontalRange.min, verticalRange.max - verticalRange.min);
         this.chart.update(newChartDataRect,
           true);
       }

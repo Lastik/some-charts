@@ -1,9 +1,9 @@
 ﻿import {CoordinateTransformation} from "./coordinate-transformation";
 import {Size} from "../size";
 import {Range} from "../range";
-import {DataRect} from "../data-rect";
 import {NumericPoint} from "../point";
 import {NumericRange} from "../numeric-range";
+import {NumericDataRect} from "../rect";
 
 export class DataTransformation {
   public coordinateTransformation?: CoordinateTransformation;
@@ -72,11 +72,11 @@ export class DataTransformation {
   /**
    * Transforms point from XY coordinates in specified screen region to data XY coordinate.
    * @param {NumericPoint} value - Point in specified screen region coords.
-   * @param {DataRect} visible - Visible data rectangle.
-   * @param {DataRect} screenRegion - Screen region.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public screenRegionToDataXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+  public screenRegionToDataXY(value: NumericPoint, visible: NumericDataRect, screenRegion: NumericDataRect): NumericPoint {
     const x = value.x;
     const y = value.y;
 
@@ -91,19 +91,19 @@ export class DataTransformation {
 
   /**
    * Transforms rectangle from XY coordinates in specified screen region to data coordinates.
-   * @param {NumericPoint} rect - DataRect in specified screen region coords.
-   * @param {DataRect} visible - Visible data rectangle.
-   * @param {DataRect} screenRegion - Screen region.
-   * @returns {DataRect}
+   * @param {NumericPoint} rect - NumericDataRect in specified screen region coords.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
+   * @returns {NumericDataRect}
    */
-  public screenRegionToDataForRect(rect: DataRect, visible: DataRect, screenRegion: DataRect): DataRect {
+  public screenRegionToDataForRect(rect: NumericDataRect, visible: NumericDataRect, screenRegion: NumericDataRect): NumericDataRect {
     const leftTop = rect.getMinXMinY();
     const rightBottom = rect.getMaxXMaxY();
 
     const leftTopTransformed = this.screenRegionToDataXY(leftTop, visible, screenRegion);
     const rightBottomTransformed = this.screenRegionToDataXY(rightBottom, visible, screenRegion);
 
-    return new DataRect(
+    return new NumericDataRect(
       leftTopTransformed.x, leftTopTransformed.y,
       rightBottomTransformed.x - leftTopTransformed.x,
       rightBottomTransformed.y - leftTopTransformed.y);
@@ -112,11 +112,11 @@ export class DataTransformation {
   /**
    * Transforms point from data XY coordinates to screen XY coordinates.
    * @param {NumericPoint} value - Point in data coordinates.
-   * @param {DataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} visible - Visible data rectangle.
    * @param {Size} screenSize - Screen size.
    * @returns {NumericPoint}
    */
-  public dataToScreenXY(value: NumericPoint, visible: DataRect, screenSize: Size): NumericPoint {
+  public dataToScreenXY(value: NumericPoint, visible: NumericDataRect, screenSize: Size): NumericPoint {
     const x = value.x;
     const y = value.y;
 
@@ -129,11 +129,11 @@ export class DataTransformation {
   /**
    * Transforms point in data XY coordinates to XY coordinates in specified screen region.
    * @param {NumericPoint} value - Point in data coordinates.
-   * @param {DataRect} visible - Visible data rectangle.
-   * @param {DataRect} screenRegion - Screen region.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public dataToScreenRegionXY(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+  public dataToScreenRegionXY(value: NumericPoint, visible: NumericDataRect, screenRegion: NumericDataRect): NumericPoint {
     const x = value.x;
     const y = value.y;
 
@@ -148,11 +148,11 @@ export class DataTransformation {
   /**
    * Transforms point in data XY coordinates to XY coordinates in specified screen region without inverting y coordinate..
    * @param {NumericPoint} value - Point in data coordinates.
-   * @param {DataRect} visible - Visible data rectangle.
-   * @param {DataRect} screenRegion - Screen region.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
    * @returns {NumericPoint}
    */
-  public dataToScreenRegionXYwithoutYinvert(value: NumericPoint, visible: DataRect, screenRegion: DataRect): NumericPoint {
+  public dataToScreenRegionXYwithoutYinvert(value: NumericPoint, visible: NumericDataRect, screenRegion: NumericDataRect): NumericPoint {
     let res = this.dataToScreenRegionXY(value, visible, screenRegion);
     res.y = screenRegion.getVerticalRange().getLength() - res.y;
     return res;
