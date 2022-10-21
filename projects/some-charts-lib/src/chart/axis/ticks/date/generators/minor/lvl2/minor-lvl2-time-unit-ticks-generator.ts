@@ -16,10 +16,8 @@ export abstract class MinorLvl2TimeUnitTicksGenerator implements MinorTicksGener
   }
 
   generateTicks(range: Range<Date>, majorTicks: Tick<Date>[]): Tick<Date>[] {
-    let zero = moment(new Date(0));
 
     let min = moment(range.min).startOf(this.timeUnit);
-    let max = moment(range.max).startOf(this.timeUnit).add(1, this.timeUnit);
 
     return [
       new MinorDateTick(range.min, this.tickHeight, 0, this.getTimeUnitValueAsString(min), 2, 'left'),

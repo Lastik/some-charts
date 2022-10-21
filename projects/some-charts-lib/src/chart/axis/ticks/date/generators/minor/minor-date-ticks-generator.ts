@@ -15,6 +15,7 @@ import {
   MinorLvl2MinutesTicksGenerator, MinorLvl2MonthsTicksGenerator,
   MinorLvl2TimeUnitTicksGenerator, MinorLvl2YearsTicksGenerator
 } from "./lvl2";
+import * as moment from "moment";
 
 export class MinorDateTicksGenerator implements MinorTicksGenerator<Date> {
 
@@ -80,16 +81,37 @@ export class MinorDateTicksGenerator implements MinorTicksGenerator<Date> {
 
     let majorGeneratorTimeUnits = this.majorTicksGenerator.getSuitableTimeUnitTicksGenerator(range).timeUnit;
 
+    let min = moment(range.min);
+    let max = moment(range.max);
+
     if (majorGeneratorTimeUnits === TimeUnit.Years) {
       return undefined;
-    } else if (majorGeneratorTimeUnits === TimeUnit.Months || majorGeneratorTimeUnits === TimeUnit.Days) {
+    } else if (majorGeneratorTimeUnits === TimeUnit.Months) {
       return this.minorLvl2YearsTicksGenerator;
+    } else if (majorGeneratorTimeUnits === TimeUnit.Days) {
+      if (Math.abs(max.get(TimeUnit.Months) - min.get(TimeUnit.Months)) >= 1) {
+        return this.minorLvl2YearsTicksGenerator;
+      } else {
+        return this.minorLvl2MonthsTicksGenerator;
+      }
     } else if (majorGeneratorTimeUnits === TimeUnit.Hours) {
-      return this.minorLvl2MonthsTicksGenerator;
+      if (Math.abs(max.get(TimeUnit.Days) - min.get(TimeUnit.Days)) >= 1) {
+        return this.minorLvl2MonthsTicksGenerator;
+      } else {
+        return this.minorLvl2DaysTicksGenerator;
+      }
     } else if (majorGeneratorTimeUnits === TimeUnit.Minutes) {
-      return this.minorLvl2DaysTicksGenerator;
+      if (Math.abs(max.get(TimeUnit.Hours) - min.get(TimeUnit.Hours)) >= 1) {
+        return this.minorLvl2DaysTicksGenerator;
+      } else {
+        return this.minorLvl2HoursTicksGenerator;
+      }
     } else if (majorGeneratorTimeUnits === TimeUnit.Seconds) {
-      return this.minorLvl2HoursTicksGenerator;
+      if (Math.abs(max.get(TimeUnit.Minutes) - min.get(TimeUnit.Minutes)) >= 1) {
+        return this.minorLvl2HoursTicksGenerator;
+      } else {
+        return this.minorLvl2MinutesTicksGenerator;
+      }
     } else {
       return this.minorLvl2MinutesTicksGenerator;
     }
