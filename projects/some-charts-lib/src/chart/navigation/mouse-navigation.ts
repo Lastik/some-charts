@@ -169,7 +169,7 @@ export class MouseNavigation extends ChartContent(Object) {
           let maxX = Math.max(prevTouch1.x, prevTouch2.x);
           let maxY = Math.max(prevTouch1.y, prevTouch2.y);
 
-          let prevRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
+          let prevRect = new NumericDataRect(minX, maxX, minY, maxY);
 
           minX = Math.min(curTouch1.x, curTouch2.x);
           minY = Math.min(curTouch1.y, curTouch2.y);
@@ -177,7 +177,7 @@ export class MouseNavigation extends ChartContent(Object) {
           maxX = Math.max(curTouch1.x, curTouch2.x);
           maxY = Math.max(curTouch1.y, curTouch2.y);
 
-          let curRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
+          let curRect = new NumericDataRect(minX, maxX, minY, maxY);
 
           this.handleMultitouchZooming(prevRect, curRect);
         }
@@ -223,10 +223,8 @@ export class MouseNavigation extends ChartContent(Object) {
       let newHorizontalRange = horizontalRange.withShift(-dataDeltaX);
       let newVerticalRange = verticalRange.withShift(dataDeltaY);
 
-      this.chart.update(
-        new NumericDataRect(
-          newHorizontalRange.min, newVerticalRange.min,
-          newHorizontalRange.getLength(), newVerticalRange.getLength()),
+      this.chart.updateNumeric(
+        new NumericDataRect(newHorizontalRange.min, newHorizontalRange.max, newVerticalRange.min, newVerticalRange.max),
         true
       );
     }
@@ -251,9 +249,9 @@ export class MouseNavigation extends ChartContent(Object) {
       let newHorizontalRange = new NumericRange(horizontalRange.min + leftTopDeltaX, horizontalRange.max + rightBottomDeltaX);
       let newVerticalRange = new NumericRange(verticalRange.min + rightBottomDeltaY, verticalRange.max + leftTopDeltaY);
 
-      let dataRange = new NumericDataRect(newHorizontalRange.min, newVerticalRange.min, newHorizontalRange.getLength(), newVerticalRange.getLength());
+      let dataRange = new NumericDataRect(newHorizontalRange.min, newHorizontalRange.max, newVerticalRange.min, newVerticalRange.max);
 
-      this.chart.update(dataRange, true);
+      this.chart.updateNumeric(dataRange, true);
     }
   };
 
@@ -272,9 +270,8 @@ export class MouseNavigation extends ChartContent(Object) {
       let newVerRange = new NumericRange(verRange.min + deltaY, verRange.max - deltaY);
 
       if (newHorRange.max - newHorRange.min >= 1e-8 && newVerRange.max - newVerRange.min >= 1e-8) {
-        this.chart.update(
-          new NumericDataRect(newHorRange.min, newVerRange.min,
-            newHorRange.max - newHorRange.min, newVerRange.max - newVerRange.min),
+        this.chart.updateNumeric(
+          new NumericDataRect(newHorRange.min, newHorRange.max, newVerRange.min, newVerRange.max),
           true);
       }
     }

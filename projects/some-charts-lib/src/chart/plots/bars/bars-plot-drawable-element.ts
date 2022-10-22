@@ -1,6 +1,6 @@
 import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
-import {DataRect, DataTransformation, NumericPoint} from "../../../geometry";
+import {NumericDataRect, DataTransformation, NumericPoint} from "../../../geometry";
 
 export class BarsPlotDrawableElement extends PlotDrawableElement{
 
@@ -13,7 +13,7 @@ export class BarsPlotDrawableElement extends PlotDrawableElement{
     this.textShape = textShape;
   }
 
-  override update(dataTransformation: DataTransformation, visible: DataRect, screen: DataRect) {
+  override update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
     super.update(dataTransformation, visible, screen);
     PlotDrawableElement.scaleKonvaRect(this.rectShape, dataTransformation, visible, screen);
   }

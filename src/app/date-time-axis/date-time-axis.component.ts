@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, Chart, DataSet, MarkerPlotOptions, PlotKind} from "some-charts";
+import {AxisTypes, Chart, DataRect, DataSet, MarkerPlotOptions, PlotKind} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 
@@ -60,9 +60,6 @@ export class DateTimeAxisComponent implements OnInit {
       '#chart-element',
       dataSet,
       {
-        navigation: {
-          isFitToViewModeEnabled: true
-        },
         header: {
           text: 'Заголовок графика'
         },
@@ -86,6 +83,6 @@ export class DateTimeAxisComponent implements OnInit {
           }
         }
       }
-    )
+    );
   }
 }

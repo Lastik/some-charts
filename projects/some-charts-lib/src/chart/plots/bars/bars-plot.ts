@@ -7,8 +7,7 @@ import {
 } from "../../../options";
 
 import {
-  DataRect,
-  DataTransformation,
+  DataTransformation, NumericDataRect,
   NumericPoint,
   Range
 } from "../../../geometry";
@@ -283,8 +282,8 @@ export class BarsPlot<TItemType,
         let visibleHorizontalRange = this.visible.getHorizontalRange();
         let screenHorizontalMargin = this.dataTransformation.screenToDataX(horizontalMargin, visibleHorizontalRange, this.screen.getHorizontalRange().getLength()) - visibleHorizontalRange.min;
 
-        boundingRect = new DataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.minY, boundingRect.width + screenHorizontalMargin, boundingRect.height);
-        boundingRect = boundingRect.merge(new DataRect(boundingRect.minX, 0, boundingRect.width, 0));
+        boundingRect = new NumericDataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.maxX + screenHorizontalMargin / 2, boundingRect.minY, boundingRect.maxY);
+        boundingRect = boundingRect.merge(new NumericDataRect(boundingRect.minX, boundingRect.maxX, 0, 0));
       }
     }
     return boundingRect;

@@ -151,10 +151,11 @@ export class Chart<TItemType = any,
       return {id: layerId, listening: false}
     }));
 
-    this._visibleRect = visibleRect;
-    this._visibleRectAsNumeric = visibleRect ? this.dimensionalVisibleRectToNumeric(visibleRect) : new NumericDataRect(0, 0, 1, 1)
-
     this.dataSet = dataSet;
+
+    this._visibleRect = visibleRect;
+    this._visibleRectAsNumeric = visibleRect ? this.dimensionalVisibleRectToNumeric(visibleRect) : new NumericDataRect(0, 1, 0, 1)
+
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
     let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes!));
@@ -351,7 +352,7 @@ export class Chart<TItemType = any,
     for (let plot of this.plots) {
       plot.update(
         this._visibleRectAsNumeric,
-        new NumericDataRect(gridLocation.x, gridLocation.y, gridSize.width, gridSize.height)
+        new NumericDataRect(gridLocation.x, gridLocation.x + gridSize.width, gridLocation.y, gridLocation.y + gridSize.height)
       );
     }
 
@@ -387,11 +388,7 @@ export class Chart<TItemType = any,
         let offsetX = horSize * coeff;
         let offsetY = verSize * coeff;
 
-        chartBoundingRect = new NumericDataRect(
-          chartBoundingRect.minX - offsetX / 2,
-          chartBoundingRect.minY - offsetY / 2,
-          chartBoundingRect.width + offsetX,
-          chartBoundingRect.height + offsetY);
+        chartBoundingRect = new NumericDataRect(chartBoundingRect.minX - offsetX / 2, chartBoundingRect.maxX + offsetX / 2, chartBoundingRect.minY - offsetY / 2, chartBoundingRect.maxY + offsetY / 2);
 
         if (this.options.navigation!.fixedTopBound) {
           chartBoundingRect = chartBoundingRect.withHeight((this.options.navigation!.fixedTopBound - chartBoundingRect.minY) * (1 + coeff));
@@ -512,10 +509,9 @@ export class Chart<TItemType = any,
   protected dimensionalVisibleRectToNumeric(visibleRect: DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>>): NumericDataRect {
     return new NumericDataRect(
       this.dataSet.xDimensionValueToNumeric(visibleRect.minX) ?? 0,
-      this.dataSet.yDimensionValueToNumeric(visibleRect.minY as YDimensionType) ?? 0,
       this.dataSet.xDimensionValueToNumeric(visibleRect.maxX) ?? 1,
-      this.dataSet.yDimensionValueToNumeric(visibleRect.maxY as YDimensionType) ?? 1,
-    )
+      this.dataSet.yDimensionValueToNumeric(visibleRect.minY as YDimensionType) ?? 0,
+      this.dataSet.yDimensionValueToNumeric(visibleRect.maxY as YDimensionType) ?? 1)
   }
 
   protected numericVisibleRectToDimensional(visibleRectAsNumeric: NumericDataRect): DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>> | undefined {
@@ -525,10 +521,6 @@ export class Chart<TItemType = any,
     let maxYasDimVal = this.dataSet.numericToYDimensionValue(visibleRectAsNumeric.maxY);
 
     return (minXasDimVal !== undefined && minYasDimVal !== undefined && maxXasDimVal !== undefined && maxYasDimVal !== undefined) ?
-      new DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>>(
-        minXasDimVal,
-        minYasDimVal as YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>,
-        maxXasDimVal,
-        maxYasDimVal as YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>) : undefined;
+      new DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>>(minXasDimVal, maxXasDimVal, minYasDimVal as YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>, maxYasDimVal as YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>) : undefined;
   }
 }

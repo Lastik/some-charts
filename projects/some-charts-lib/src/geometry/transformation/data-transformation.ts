@@ -103,10 +103,7 @@ export class DataTransformation {
     const leftTopTransformed = this.screenRegionToDataXY(leftTop, visible, screenRegion);
     const rightBottomTransformed = this.screenRegionToDataXY(rightBottom, visible, screenRegion);
 
-    return new NumericDataRect(
-      leftTopTransformed.x, leftTopTransformed.y,
-      rightBottomTransformed.x - leftTopTransformed.x,
-      rightBottomTransformed.y - leftTopTransformed.y);
+    return new NumericDataRect(leftTopTransformed.x, rightBottomTransformed.x, leftTopTransformed.y, rightBottomTransformed.y);
   }
 
   /**

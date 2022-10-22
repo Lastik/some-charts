@@ -13,11 +13,11 @@ export class DataRect<XType extends number | string | Date, YType extends  numbe
    * @template XType
    * @template YType
    * @param {XType} minX - Left corner of rectangle coordinate.
-   * @param {YType} minY - Top corner of rectangle coordinate.
    * @param {XType} maxX - Right corner of rectangle coordinate.
+   * @param {YType} minY - Top corner of rectangle coordinate.
    * @param {YType} maxY - Bottom corner of rectangle coordinate.
    */
-  constructor(minX: XType, minY: YType, maxX: XType, maxY: YType) {
+  constructor(minX: XType, maxX: XType, minY: YType, maxY: YType) {
     this.minX = minX;
     this.minY = minY;
     this.maxX = maxX;

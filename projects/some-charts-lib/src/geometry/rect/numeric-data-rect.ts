@@ -17,12 +17,12 @@ export class NumericDataRect extends DataRect<number, number> {
   /**
    * Creates numeric data rectangle.
    * @param {number} minX - Left corner of rectangle coordinate.
-   * @param {number} minY - Top corner of rectangle coordinate.
    * @param {number} maxX - Right corner of rectangle coordinate.
+   * @param {number} minY - Top corner of rectangle coordinate.
    * @param {number} maxY - Bottom corner of rectangle coordinate.
    */
-  constructor(minX: number, minY: number, maxX: number, maxY: number) {
-    super(minX, minY, maxX, maxY);
+  constructor(minX: number, maxX: number, minY: number, maxY: number) {
+    super(minX, maxX, minY, maxY);
   }
 
   /**
@@ -63,7 +63,7 @@ export class NumericDataRect extends DataRect<number, number> {
    * @returns NumericDataRect
    * */
   withWidth(width: number): NumericDataRect {
-    return new NumericDataRect(this.minX, this.minY, this.maxX, this.minY + this.height);
+    return new NumericDataRect(this.minX, this.maxX, this.minY + width, this.minY);
   }
 
   /**
@@ -72,7 +72,7 @@ export class NumericDataRect extends DataRect<number, number> {
    * @returns NumericDataRect
    * */
   withHeight(height: number): NumericDataRect{
-    return new NumericDataRect(this.minX, this.minY, this.maxX, this.minY + height);
+    return new NumericDataRect(this.minX, this.maxX, this.minY, this.minY + height);
   }
 
   /**
@@ -94,7 +94,7 @@ export class NumericDataRect extends DataRect<number, number> {
     let maxY = Math.max(thisMaxXmaxY.y, otherMinXminY.y);
 
 
-    return new NumericDataRect(minX, minY, maxX, maxY);
+    return new NumericDataRect(minX, maxX, minY, maxY);
   }
 
   /**

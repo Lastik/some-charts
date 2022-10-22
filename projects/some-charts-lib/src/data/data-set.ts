@@ -367,8 +367,10 @@ export class DataSet<TItemType,
       return DimensionValue.buildForDateFromPrimitive(value).value as XDimensionType;
     } else if (this._dimensionXType === DimensionType.Number) {
       return value as XDimensionType;
-    } else {
+    } else if (this._dimensionYType === DimensionType.String) {
       return this._dimensionXValues.find(v => v.index === value)?.value;
+    } else {
+      return value as XDimensionType;
     }
   }
 
@@ -383,8 +385,10 @@ export class DataSet<TItemType,
       return DimensionValue.buildForDateFromPrimitive(value).value as YDimensionType;
     } else if (this._dimensionYType === DimensionType.Number) {
       return value as YDimensionType;
-    } else {
+    } else if (this._dimensionYType === DimensionType.String) {
       return this._dimensionYValues?.find(v => v.index === value)?.value;
+    } else {
+      return value as YDimensionType;
     }
   }
 
@@ -412,7 +416,7 @@ export class DataSet<TItemType,
           let maxY = max(yValues);
 
           if (!isUndefined(minY) && !isUndefined(maxY)) {
-            curMetricBoundingRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
+            curMetricBoundingRect = new NumericDataRect(minX, maxX, minY, maxY);
           }
         } else {
           if (this.dimensionYValues && this.dimensionYValues.length) {
@@ -423,7 +427,7 @@ export class DataSet<TItemType,
             let maxY = max(dimensionYNumericValues);
 
             if (!isUndefined(minY) && !isUndefined(maxY)) {
-              curMetricBoundingRect = new NumericDataRect(minX, minY, maxX - minX, maxY - minY);
+              curMetricBoundingRect = new NumericDataRect(minX, maxX, minY, maxY);
             }
           }
         }

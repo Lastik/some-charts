@@ -1,5 +1,5 @@
 import Konva from "konva";
-import {DataRect, DataTransformation, NumericPoint, Size} from "../../geometry";
+import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 
 export class PlotDrawableElement {
   public readonly dataPoint: NumericPoint;
@@ -10,16 +10,16 @@ export class PlotDrawableElement {
     this.konvaDrawable = konvaDrawable;
   }
 
-  update(dataTransformation: DataTransformation, visible: DataRect, screen: DataRect): void {
+  update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
     PlotDrawableElement.updateKonvaDrawableLocation(this.konvaDrawable, this.dataPoint, dataTransformation, visible, screen)
   }
 
-  protected static updateKonvaDrawableLocation(konvaDrawable: Konva.Group | Konva.Shape, dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: DataRect, screen: DataRect): void {
+  protected static updateKonvaDrawableLocation(konvaDrawable: Konva.Group | Konva.Shape, dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
     let screenLocation = dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
     konvaDrawable.setPosition(screenLocation);
   }
 
-  protected static scaleKonvaRect(konvaRect: Konva.Rect, dataTransformation: DataTransformation, visible: DataRect, screen: DataRect): void {
+  protected static scaleKonvaRect(konvaRect: Konva.Rect, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
     let konvaRectSize = konvaRect.getSize();
     let newSize = dataTransformation.dataToScreenRegionXY(new NumericPoint(konvaRectSize.width, konvaRectSize.height), visible, screen);
     konvaRect.setSize(newSize);
