@@ -57,7 +57,7 @@ export class ChartDemoComponent implements OnInit {
       data.shift()
       data.push(generateSinData(origin, 1)[0]);
       origin++;
-      dataSet.replace(data);
+      dataSet.update(data);
 
       requestAnimationFrame(updateChartData);
     }

@@ -178,7 +178,7 @@ export class DataSet<TItemType,
    * override the existing values.
    * For string dimensions, there is no such rule.
    * */
-  public update(elements: Array<TItemType>){
+  public update(elements: Array<TItemType>) {
 
     this.metricsRanges.clear();
 
@@ -188,12 +188,12 @@ export class DataSet<TItemType,
     let dimensionYPrevMaxNumeric: number | undefined = undefined;
 
     this.dimensionXValues.forEach(dimXVal => {
-      if(typeof dimXVal.primitiveValue === 'number' && (!dimensionXPrevMaxNumeric || dimXVal.primitiveValue > dimensionXPrevMaxNumeric)){
+      if (typeof dimXVal.primitiveValue === 'number' && (!dimensionXPrevMaxNumeric || dimXVal.primitiveValue > dimensionXPrevMaxNumeric)) {
         dimensionXPrevMaxNumeric = dimXVal.primitiveValue;
       }
     });
 
-    if(this.dimensionYValues) {
+    if (this.dimensionYValues) {
       this.dimensionYValues.forEach(dimYVal => {
         if (typeof dimYVal.primitiveValue === 'number' && (!dimensionYPrevMaxNumeric || dimYVal.primitiveValue > dimensionYPrevMaxNumeric)) {
           dimensionYPrevMaxNumeric = dimYVal.primitiveValue;
@@ -217,47 +217,68 @@ export class DataSet<TItemType,
 
       let errorTxt = 'For numeric or Date dimensions, update operation can only add values larger than those already inside DataSet (e.g. extend time series data) or override existing data.';
 
-      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && !isUndefined(dimensionXPrevMaxNumeric) && dimXValue.primitiveValue < dimensionXPrevMaxNumeric){
+      if (!dimensionXValuesMap.has(dimXValue.primitiveValue) && !isUndefined(dimensionXPrevMaxNumeric) && dimXValue.primitiveValue < dimensionXPrevMaxNumeric) {
         throw new Error(errorTxt)
       }
 
-      if(!dimensionXNewMinNumeric || dimensionXNewMinNumeric)
+      if (typeof dimXValue.primitiveValue === 'number' && (!dimensionXNewMinNumeric || dimensionXNewMinNumeric > dimXValue.primitiveValue)) {
+        dimensionXNewMinNumeric = dimXValue.primitiveValue;
+      }
 
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
       if (dimYValue) {
 
-        if(!isUndefined(dimensionXPrevMaxNumeric) && dimensionYValuesMap &&
-          !dimensionYValuesMap.has(dimYValue.primitiveValue) && dimensionYPrevMaxNumeric && dimYValue.primitiveValue < dimensionXPrevMaxNumeric){
+        if (!isUndefined(dimensionXPrevMaxNumeric) && dimensionYValuesMap &&
+          !dimensionYValuesMap.has(dimYValue.primitiveValue) && dimensionYPrevMaxNumeric && dimYValue.primitiveValue < dimensionXPrevMaxNumeric) {
           throw new Error(errorTxt)
+        }
+
+        if (typeof dimYValue.primitiveValue === 'number' && (!dimensionYNewMinNumeric || dimensionYNewMinNumeric > dimYValue.primitiveValue)) {
+          dimensionYNewMinNumeric = dimYValue.primitiveValue;
         }
 
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
     });
 
-    this._dimensionXValues = Array.from(dimensionXValuesMap.values()).
-      sort(DimensionValue.getCompareFunc(this.dimensionXSorting)).
-      map((dv, i) => dv.withIndex(i));
+    this._dimensionXValues = Array.from(dimensionXValuesMap.values())
+      .filter(v => (dimensionXNewMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionXNewMinNumeric))
+      .sort(DimensionValue.getCompareFunc(this.dimensionXSorting))
+      .map((dv, i) => dv.withIndex(i));
     this._dimensionYValues = dimensionYValuesMap ?
-      Array.from(dimensionYValuesMap.values()).
-        sort(DimensionValue.getCompareFunc()).
-        map((dv, i) => dv.withIndex(i)) :
+      Array.from(dimensionYValuesMap.values())
+        .filter(v => (dimensionYNewMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionYNewMinNumeric))
+        .sort(DimensionValue.getCompareFunc())
+        .map((dv, i) => dv.withIndex(i)) :
       undefined;
 
     this.indexByXDimension = new Map(this._dimensionXValues.map((dv) => [dv.primitiveValue, dv.index]));
     this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((dv) => [dv.primitiveValue, dv.index])) : undefined;
 
+    let indexXDelta = dimensionXValuesMap.size - this._dimensionXValues.length;
+    let indexYDelta = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
+
     for (let metricName in this.metricsFuncs) {
 
       let metricValues: Array<number | Array<number>> = this.metricsValues.get(metricName) ?? Array(this._dimensionXValues.length);
 
-      if(!this.metricsValues.has(metricName)){
+      if (!this.metricsValues.has(metricName)) {
         if (this._dimensionYValues) {
           for (let i = 0; i < this._dimensionXValues.length; i++) {
             metricValues[i] = Array(this._dimensionYValues.length)
           }
         }
         this.metricsValues.set(metricName, metricValues);
+      } else {
+        metricValues.splice(0, indexXDelta);
+        if (indexYDelta) {
+          for (let i = 0; i < metricValues.length; i++) {
+            if (Array.isArray(metricValues[i])) {
+              let metricValuesInnerArr = (metricValues[i] as Array<number>);
+              metricValuesInnerArr.splice(0, indexYDelta)
+            }
+          }
+        }
       }
 
       let metricFunc = this.metricsFuncs[metricName];
@@ -271,9 +292,9 @@ export class DataSet<TItemType,
 
         let metricValue = metricFunc(element);
 
-        if (!isUndefined(xIdx)  && !isUndefined(yIdx) && Array.isArray(metricValues[xIdx])) {
+        if (!isUndefined(xIdx) && !isUndefined(yIdx) && Array.isArray(metricValues[xIdx])) {
           let twoDMetricValues = (metricValues as Array<Array<number>>);
-          if(!twoDMetricValues[xIdx]) {
+          if (!twoDMetricValues[xIdx]) {
             twoDMetricValues[xIdx] = [];
           }
           twoDMetricValues[xIdx][yIdx] = metricValue;
