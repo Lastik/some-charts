@@ -184,22 +184,25 @@ export class DataSet<TItemType,
 
     this._elements = [...this._elements, ...elements];
 
-    let maxDimensionXPrimitiveValue: number | undefined = undefined;
-    let maxDimensionYPrimitiveValue: number | undefined = undefined;
+    let dimensionXPrevMaxNumeric: number | undefined = undefined;
+    let dimensionYPrevMaxNumeric: number | undefined = undefined;
 
     this.dimensionXValues.forEach(dimXVal => {
-      if(typeof dimXVal.primitiveValue === 'number' && (!maxDimensionXPrimitiveValue || dimXVal.primitiveValue > maxDimensionXPrimitiveValue)){
-        maxDimensionXPrimitiveValue = dimXVal.primitiveValue;
+      if(typeof dimXVal.primitiveValue === 'number' && (!dimensionXPrevMaxNumeric || dimXVal.primitiveValue > dimensionXPrevMaxNumeric)){
+        dimensionXPrevMaxNumeric = dimXVal.primitiveValue;
       }
     });
 
     if(this.dimensionYValues) {
       this.dimensionYValues.forEach(dimYVal => {
-        if (typeof dimYVal.primitiveValue === 'number' && (!maxDimensionYPrimitiveValue || dimYVal.primitiveValue > maxDimensionYPrimitiveValue)) {
-          maxDimensionYPrimitiveValue = dimYVal.primitiveValue;
+        if (typeof dimYVal.primitiveValue === 'number' && (!dimensionYPrevMaxNumeric || dimYVal.primitiveValue > dimensionYPrevMaxNumeric)) {
+          dimensionYPrevMaxNumeric = dimYVal.primitiveValue;
         }
       });
     }
+
+    let dimensionXNewMinNumeric: number | undefined = undefined;
+    let dimensionYNewMinNumeric: number | undefined = undefined;
 
     let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>(
       this.dimensionXValues.map(v => [v.primitiveValue, v])
@@ -214,15 +217,17 @@ export class DataSet<TItemType,
 
       let errorTxt = 'For numeric or Date dimensions, update operation can only add values larger than those already inside DataSet (e.g. extend time series data) or override existing data.';
 
-      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && !isUndefined(maxDimensionXPrimitiveValue) && dimXValue.primitiveValue < maxDimensionXPrimitiveValue){
+      if(!dimensionXValuesMap.has(dimXValue.primitiveValue) && !isUndefined(dimensionXPrevMaxNumeric) && dimXValue.primitiveValue < dimensionXPrevMaxNumeric){
         throw new Error(errorTxt)
       }
+
+      if(!dimensionXNewMinNumeric || dimensionXNewMinNumeric)
 
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
       if (dimYValue) {
 
-        if(!isUndefined(maxDimensionXPrimitiveValue) && dimensionYValuesMap &&
-          !dimensionYValuesMap.has(dimYValue.primitiveValue) && maxDimensionYPrimitiveValue && dimYValue.primitiveValue < maxDimensionXPrimitiveValue){
+        if(!isUndefined(dimensionXPrevMaxNumeric) && dimensionYValuesMap &&
+          !dimensionYValuesMap.has(dimYValue.primitiveValue) && dimensionYPrevMaxNumeric && dimYValue.primitiveValue < dimensionXPrevMaxNumeric){
           throw new Error(errorTxt)
         }
 

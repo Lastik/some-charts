@@ -224,13 +224,6 @@ export class Renderer implements IDisposable{
   }
 
   /**
-   * Forces renderer to redraw the entire scene.
-   */
-  forceRedraw() {
-    Renderer.redraw(this);
-  }
-
-  /**
    * Returns layer by its id
    * */
   public getLayer(layerId: string) {
@@ -260,7 +253,7 @@ export class Renderer implements IDisposable{
     }
 
     if (!renderer.isDisposed) {
-      Renderer.requestAnimFrame(() => Renderer.redraw((renderer)));
+      Renderer.requestAnimFrame(() => Renderer.redraw(renderer));
     }
   }
 }

@@ -16,12 +16,14 @@ export class MarkerPlotDrawableElement extends PlotDrawableElement {
   }
 
   private static createMarkerShape( markerColor: Color, markerSize: number){
-    return new Konva.Circle({
+    let circle = new Konva.Circle({
       radius: markerSize,
       fill: markerColor.toString(),
       stroke: 'black',
       strokeWidth: 1,
       perfectDrawEnabled: false
     });
+    circle._shouldFireChangeEvents = false;
+    return circle;
   }
 }
