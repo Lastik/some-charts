@@ -10,7 +10,7 @@ import {
   CoordinateTransformationStatic,
   DataRect, NumericDataRect,
   DataTransformation,
-  NumericPoint, NumericRange,
+  NumericPoint,
   Point,
   Range,
   Size
@@ -191,7 +191,7 @@ export class Chart<TItemType = any,
       }
     }
 
-    Chart.createLayers(this.getRenderer(), this.layersConfigs);
+    Chart.createLayers(this.renderer, this.layersConfigs);
 
     if (this.horizontalAxis) {
       this.horizontalAxis.placeOnChart(this as Chart);
@@ -240,12 +240,12 @@ export class Chart<TItemType = any,
     }
   }
 
-  getRenderer(): Renderer{
+  get renderer(): Renderer{
     return this._renderer;
   }
 
   getLayer(layerId: string): Konva.Layer | undefined {
-    let renderer = this.getRenderer();
+    let renderer = this.renderer;
     return renderer ? <Konva.Layer>renderer.getLayer(layerId): undefined;
   }
 

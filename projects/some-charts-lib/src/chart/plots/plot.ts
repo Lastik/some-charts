@@ -13,6 +13,7 @@ import {IDisposable} from "../../i-disposable";
 
 import {EventBase, EventListener} from "../../events";
 import {PlotDrawableElement} from "./plot-drawable-element";
+import {PlotElementsUpdate} from "./plot-elements-update";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -68,6 +69,7 @@ export abstract class Plot<
       },
       listening: false
     });
+    this.shapesGroup._shouldFireChangeEvents = false;
 
     this.konvaDrawables = [this.shapesGroup];
 
@@ -84,31 +86,68 @@ export abstract class Plot<
   }
 
   private updatePlotFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>){
-    for(let plotElt of this.plotElements){
+    let updateResult = this.updatePlotElements(dataSetChange);
+
+    for(let plotElt of updateResult.deleted){
       plotElt.destroy();
+      plotElt.konvaDrawable.remove();
     }
-    this.shapesGroup.removeChildren();
-    this.plotElements = this.createPlotElements();
-    this.shapesGroup._shouldFireChangeEvents = false;
-    this.shapesGroup.add(...this.plotElements.map(el => el.konvaDrawable));
-    this.shapesGroup._shouldFireChangeEvents = true;
+
+    for(let plotElt of updateResult.added){
+      this.shapesGroup.add(plotElt.konvaDrawable);
+    }
+
     if(this.visible && this.screen) {
       this.update(this.visible, this.screen);
     }
     this.isDirty = true;
   }
 
-  private createPlotElements(): Array<PlotDrawableElement> {
-    let xDimension = this.dataSet.dimensionXValues;
-    let yDimension = this.dataSet.dimensionYValues;
-
+  private updatePlotElements(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): PlotElementsUpdate {
     let is2D = this.dataSet.is2D;
 
+    let deleted: Array<PlotDrawableElement> = [];
+    let updated: Array<PlotDrawableElement> = [];
+    let added: Array<PlotDrawableElement> = [];
+
     if (is2D) {
-      return this.create2DPlotElements(xDimension, yDimension!);
+
+      let deletedX = new Map(dataSetChange.deletedDimensionXValues.map(v => [v.toNumericValue(), v]));
+      let deletedY = new Map(dataSetChange.deletedDimensionYValues!.map(v => [v.toNumericValue(), v]));
+
+      let updatedX = new Map(dataSetChange.updatedDimensionXValues.map(v => [v.toNumericValue(), v]));
+      let updatedY = new Map(dataSetChange.updatedDimensionYValues!.map(v => [v.toNumericValue(), v]));
+
+      let addedX = new Map(dataSetChange.addedDimensionXValues.map(v => [v.toNumericValue(), v]));
+      let addedY = new Map(dataSetChange.addedDimensionYValues!.map(v => [v.toNumericValue(), v]));
+
+      for (let plotElt of this.plotElements) {
+        if (deletedX.has(plotElt.dataPoint.x) && deletedY.has(plotElt.dataPoint.y)) {
+          deleted.push(plotElt);
+        } else if (updatedX.has(plotElt.dataPoint.x) && updatedY.has(plotElt.dataPoint.y)) {
+          updated.push(this.update2DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!, updatedY.get(plotElt.dataPoint.y)!));
+        } else if (addedX.has(plotElt.dataPoint.x) && addedY.has(plotElt.dataPoint.y)) {
+          added.push(this.add2DPlotElement(addedX.get(plotElt.dataPoint.x)!, addedY.get(plotElt.dataPoint.y)!));
+        }
+      }
+
     } else {
-      return this.create1DPlotElements(xDimension);
+      let deletedX = new Map(dataSetChange.deletedDimensionXValues.map(v => [v.toNumericValue(), v]));
+      let updatedX = new Map(dataSetChange.updatedDimensionXValues.map(v => [v.toNumericValue(), v]));
+      let addedX = new Map(dataSetChange.addedDimensionXValues.map(v => [v.toNumericValue(), v]));
+
+      for (let plotElt of this.plotElements) {
+        if (deletedX.has(plotElt.dataPoint.x)) {
+          deleted.push(plotElt);
+        } else if (updatedX.has(plotElt.dataPoint.x)) {
+          updated.push(this.update1DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!));
+        } else if (addedX.has(plotElt.dataPoint.x)) {
+          added.push(this.add1DPlotElement(addedX.get(plotElt.dataPoint.x)!));
+        }
+      }
     }
+
+    return {deleted: deleted, updated: updated, added: added};
   }
 
   /**
@@ -119,22 +158,27 @@ export abstract class Plot<
   update(visible: NumericDataRect, screen: NumericDataRect) {
     this.visible = visible;
     this.screen = screen;
-    this.updatePlotElements();
-    this.markDirty();
-  }
-
-  private updatePlotElements() {
     if(this.visible && this.screen){
       for(let plotElement of this.plotElements){
         plotElement.update(this.dataTransformation, this.visible, this.screen);
       }
     }
+    this.markDirty();
   }
 
-  protected abstract create1DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[]): Array<PlotDrawableElement>;
+  protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
+                                         xDimension: DimensionValue<XDimensionType>,
+                                         yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
 
-  protected abstract create2DPlotElements(xDimension: readonly DimensionValue<XDimensionType>[],
-                                          yDimension: readonly DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement>;
+  protected abstract add2DPlotElement(xDimension: DimensionValue<XDimensionType>,
+                                      yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
+
+
+  protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
+                                         xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
+
+  protected abstract add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
+
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
@@ -158,22 +202,6 @@ export abstract class Plot<
     return metricValue ?
       new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue) :
       undefined;
-  }
-
-  protected getMetricPoints1D(metricName: string): Array<NumericPoint> | undefined {
-
-    if (!this.metricPoints1DMap.has(metricName) && this.visible && this.screen) {
-      let dimensionXValues = this.dataSet.dimensionXValues;
-
-      if (this.dataSet.is1D) {
-        let metricValues = this.dataSet.getMetricValues(metricName) as number[];
-        let points = dimensionXValues.map((dimXVal, index) => {
-          return new NumericPoint(dimXVal.toNumericValue(), metricValues[index])
-        });
-        this.metricPoints1DMap.set(metricName, points);
-      } else throw new Error("DataSet is not 1-Dimensional!");
-    }
-    return this.metricPoints1DMap.get(metricName);
   }
 
   protected setContextFont(context: Konva.Context, font: FontInUnits) {
