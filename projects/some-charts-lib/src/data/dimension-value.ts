@@ -43,6 +43,35 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
     }
   }
 
+  public static getCompareFunc2D<
+    XDimensionType extends number | string | Date,
+    YDimensionType extends number | string | Date>(sorting: Sorting = Sorting.Asc) {
+    return function (left: [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>],
+                     right: [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>]) {
+      let leftXPrimitive = left[0].primitiveValue;
+      let leftYPrimitive = left[1].primitiveValue;
+
+      let rightXPrimitive = right[0].primitiveValue;
+      let rightYPrimitive = right[0].primitiveValue;
+
+      if (sorting === Sorting.None) {
+        return -1;
+      } else {
+        if (leftXPrimitive > rightXPrimitive) {
+          return sorting === Sorting.Asc ? 1 : -1;
+        } else if (leftXPrimitive < rightXPrimitive) {
+          return sorting === Sorting.Asc ? -1 : 1;
+        } else {
+          if (leftYPrimitive > rightYPrimitive) {
+            return sorting === Sorting.Asc ? 1 : -1;
+          } else if (leftYPrimitive < rightYPrimitive) {
+            return sorting === Sorting.Asc ? -1 : 1;
+          } else return 0;
+        }
+      }
+    }
+  }
+
   public toPoint(): Point<number | string> {
     return new Point<number | string>(this.primitiveValue, this.index)
   }

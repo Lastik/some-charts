@@ -2,7 +2,9 @@ import Konva from "konva";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 
 export class PlotDrawableElement {
-  public readonly dataPoint: NumericPoint;
+
+  public dataPoint: NumericPoint;
+
   public readonly konvaDrawable: Konva.Group | Konva.Shape;
 
   constructor(dataPoint: NumericPoint, konvaDrawable: Konva.Group | Konva.Shape) {

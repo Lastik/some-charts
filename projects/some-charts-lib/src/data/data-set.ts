@@ -24,10 +24,11 @@ export class DataSet<TItemType,
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => Exclude<YDimensionType, undefined>) | undefined;
-  private readonly dimensionXSorting: Sorting;
+  private readonly dimensionsSorting: Sorting;
 
   private _dimensionXValues: DimensionValue<XDimensionType>[];
   private _dimensionYValues?: DimensionValue<Exclude<YDimensionType, undefined>>[];
+  private _dimensionsValues: DimensionValue<XDimensionType>[] | [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][];
 
   public get dimensionXValues(): readonly DimensionValue<XDimensionType>[] {
     return this._dimensionXValues;
@@ -35,6 +36,10 @@ export class DataSet<TItemType,
 
   public get dimensionYValues(): readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined {
     return this._dimensionYValues;
+  }
+
+  public get dimensionsValues(): readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][] {
+    return this._dimensionsValues;
   }
 
   private metricsRanges: Map<string, Range<number>> = new Map<string, Range<number>>();
@@ -61,7 +66,7 @@ export class DataSet<TItemType,
               metricsFuncs: { [name: string]: (item: TItemType) => number },
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => Exclude<YDimensionType, undefined>,
-              dimensionXSorting: Sorting = Sorting.Asc
+              dimensionsSorting: Sorting = Sorting.Asc
   ) {
 
     this.eventTarget = new ACEventTarget<DataSetEventType>();
@@ -69,7 +74,7 @@ export class DataSet<TItemType,
     this.metricsFuncs = metricsFuncs;
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
-    this.dimensionXSorting = dimensionXSorting;
+    this.dimensionsSorting = dimensionsSorting;
 
     this.metricsNames = Object.keys(metricsFuncs);
 
@@ -77,6 +82,7 @@ export class DataSet<TItemType,
 
     this._dimensionXValues = [];
     this._dimensionYValues = dimensionYFunc ? []: undefined;
+    this._dimensionsValues = [];
 
     this.metricsValues = new Map<string, Array<number | Array<number>>>();
 
@@ -212,6 +218,8 @@ export class DataSet<TItemType,
       this.dimensionYValues!.map(v => [v.primitiveValue, v])
     ) : undefined;
 
+    let dimensionsValues: [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][] | undefined = this.dimensionYFunc ? []: undefined;
+
     elements.forEach((element, index) => {
       let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
       let dimYValue = this.dimensionYFunc ? new DimensionValue(this.dimensionYFunc!(element), index) : undefined;
@@ -240,6 +248,10 @@ export class DataSet<TItemType,
 
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
+
+      if(this.dimensionYFunc && dimensionsValues) {
+        dimensionsValues.push([dimXValue, dimYValue!]);
+      }
     });
 
     let prevDimensionXValues = this._dimensionXValues;
@@ -247,7 +259,7 @@ export class DataSet<TItemType,
 
     this._dimensionXValues = Array.from(dimensionXValuesMap.values())
       .filter(v => (dimensionXMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionXMinNumeric))
-      .sort(DimensionValue.getCompareFunc(this.dimensionXSorting))
+      .sort(DimensionValue.getCompareFunc(this.dimensionsSorting))
       .map((dv, i) => dv.withIndex(i));
     this._dimensionYValues = dimensionYValuesMap ?
       Array.from(dimensionYValuesMap.values())
@@ -258,6 +270,20 @@ export class DataSet<TItemType,
 
     this.indexByXDimension = new Map(this._dimensionXValues.map((dv) => [dv.primitiveValue, dv.index]));
     this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((dv) => [dv.primitiveValue, dv.index])) : undefined;
+
+
+    if(this.dimensionYFunc && dimensionsValues) {
+      dimensionsValues = dimensionsValues.
+      filter(dv => {
+        return (dimensionXMinNumeric === undefined || typeof dv[0].primitiveValue !== 'number' || dv[0].primitiveValue >= dimensionXMinNumeric) &&
+          (dimensionYMinNumeric === undefined || typeof dv[1].primitiveValue !== 'number' || dv[1].primitiveValue >= dimensionYMinNumeric)
+      }).
+      sort(DimensionValue.getCompareFunc2D(this.dimensionsSorting)).
+      map((dv, i) => dv.withIndex(i)) :
+    }
+    else{
+
+    }
 
     let indexXOffset = dimensionXValuesMap.size - this._dimensionXValues.length;
     let indexYOffset = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;

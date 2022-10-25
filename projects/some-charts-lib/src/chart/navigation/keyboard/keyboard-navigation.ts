@@ -40,7 +40,7 @@ export class KeyboardNavigation extends ChartContent(Object) implements IDisposa
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
     if(chart) {
-      let chartRenderer = chart.getRenderer();
+      let chartRenderer = chart.renderer;
       if (!chartRenderer) {
         throw new Error(`Chart has no attached renderer!`);
       }

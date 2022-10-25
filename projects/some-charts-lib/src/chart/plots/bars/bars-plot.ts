@@ -36,7 +36,7 @@ export class BarsPlot<TItemType,
 
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BarsPlotOptionsDefaults.Instance), options)) as BarsPlotOptionsClass;
   }
-
+/*
   protected create1DPlotElements(xDimension: DimensionValue<XDimensionType>[]): Array<PlotDrawableElement> {
 
     let drawableElements: Array<PlotDrawableElement> = [];
@@ -197,95 +197,115 @@ export class BarsPlot<TItemType,
 
     return drawableElements;
   }
-
+*/
   /**
    * Calculates bar available width for metric name.
    * @param {string} metricName - metric name
    * */
-  private calculateBarMaxWidth(metricName: string): number | undefined {
+/*
+private calculateBarMaxWidth(metricName: string): number | undefined {
 
-    let transformedPts = this.getMetricPoints1D(metricName);
+  let transformedPts = this.getMetricPoints1D(metricName);
 
-    if(transformedPts){
-      if(transformedPts.length >= 2) {
+  if(transformedPts){
+    if(transformedPts.length >= 2) {
 
-        let minDelta = Number.MAX_VALUE;
+      let minDelta = Number.MAX_VALUE;
 
-        transformedPts.forEach((point, index) => {
-          if (index != 0) {
-            let prevPoint = transformedPts![index - 1];
-            let delta = point.x - prevPoint.x;
-            if (delta < minDelta) {
-              minDelta = delta;
-            }
+      transformedPts.forEach((point, index) => {
+        if (index != 0) {
+          let prevPoint = transformedPts![index - 1];
+          let delta = point.x - prevPoint.x;
+          if (delta < minDelta) {
+            minDelta = delta;
           }
-        });
+        }
+      });
 
-        return minDelta;
-      }
-      else if(this.visible && this.screen) {
-        let xMin = this.dataTransformation.dataToScreenRegionXY(this.visible.getMinXMinY(), this.visible, this.screen);
-        let xMax = this.dataTransformation.dataToScreenRegionXY(this.visible.getMaxXMaxY(), this.visible, this.screen);
-        return  xMax.x - xMin.x;
-      }
-      else return undefined;
+      return minDelta;
+    }
+    else if(this.visible && this.screen) {
+      let xMin = this.dataTransformation.dataToScreenRegionXY(this.visible.getMinXMinY(), this.visible, this.screen);
+      let xMax = this.dataTransformation.dataToScreenRegionXY(this.visible.getMaxXMaxY(), this.visible, this.screen);
+      return  xMax.x - xMin.x;
     }
     else return undefined;
   }
+  else return undefined;
+}*/
 
-  private getBarsColoring(fill: Color): BarsColoring {
+private getBarsColoring(fill: Color): BarsColoring {
 
-    let maxColorComponent = Math.max(Math.max(fill.red(), fill.green()), fill.blue());
-    let offset = maxColorComponent * 0.3;
+  let maxColorComponent = Math.max(Math.max(fill.red(), fill.green()), fill.blue());
+  let offset = maxColorComponent * 0.3;
 
-    let fromFillColor: Color = Color.rgb(
-      Math.min(Math.round(fill.red() + offset), 255),
-      Math.min(Math.round(fill.green() + offset), 255),
-      Math.min(Math.round(fill.blue() + offset), 255)
-    );
+  let fromFillColor: Color = Color.rgb(
+    Math.min(Math.round(fill.red() + offset), 255),
+    Math.min(Math.round(fill.green() + offset), 255),
+    Math.min(Math.round(fill.blue() + offset), 255)
+  );
 
-    let toFillColor: Color = fill;
+  let toFillColor: Color = fill;
 
-    if (!this.plotOptions.useDarkerBorder)
-      offset = -maxColorComponent * 0.2;
-    else
-      offset = -maxColorComponent * 0.78;
+  if (!this.plotOptions.useDarkerBorder)
+    offset = -maxColorComponent * 0.2;
+  else
+    offset = -maxColorComponent * 0.78;
 
 
-    let strokeColor: Color = Color.rgb(
-      Math.min(Math.round(fill.red() + offset), 255),
-      Math.min(Math.round(fill.green() + offset), 255),
-      Math.min(Math.round(fill.blue() + offset), 255)
-    );
+  let strokeColor: Color = Color.rgb(
+    Math.min(Math.round(fill.red() + offset), 255),
+    Math.min(Math.round(fill.green() + offset), 255),
+    Math.min(Math.round(fill.blue() + offset), 255)
+  );
 
-    return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
+  return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
+}
+
+protected create2DPlotElements(xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement> {
+  throw new Error(Plot.errors.doesntSupport2DData);
+}
+
+  protected add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement {
+    throw new Error('');
   }
 
-  protected create2DPlotElements(xDimension: DimensionValue<XDimensionType>[], yDimension: DimensionValue<Exclude<YDimensionType, undefined>>[]): Array<PlotDrawableElement> {
-    throw new Error(Plot.errors.doesntSupport2DData);
+  protected add2DPlotElement(xDimension: DimensionValue<XDimensionType>, yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
+    throw new Error('');
   }
 
-  override getBoundingRectangle() {
-    let boundingRect = super.getBoundingRectangle();
+  protected update1DPlotElement(plotElt: PlotDrawableElement, xDimension: DimensionValue<XDimensionType>): PlotDrawableElement {
+    throw new Error('');
+  }
 
-    if(boundingRect && this.visible && this.screen && this.plotOptions.metrics.length) {
-      let horizontalMargin: number | undefined = undefined;
-      for (let metric of this.plotOptions.metrics) {
-        let barAvailWidth = this.calculateBarMaxWidth(metric.name);
-        if(barAvailWidth) {
-          horizontalMargin = Math.min(horizontalMargin ?? Number.MAX_VALUE, barAvailWidth);
-        }
-      }
+  protected update2DPlotElement(plotElt: PlotDrawableElement, xDimension: DimensionValue<XDimensionType>, yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
+    throw new Error('');
+  }
 
-      if(horizontalMargin) {
+/*
+override getBoundingRectangle() {
+  let boundingRect = super.getBoundingRectangle();
 
-        let visibleHorizontalRange = this.visible.getHorizontalRange();
-        let screenHorizontalMargin = this.dataTransformation.screenToDataX(horizontalMargin, visibleHorizontalRange, this.screen.getHorizontalRange().getLength()) - visibleHorizontalRange.min;
-
-        boundingRect = new NumericDataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.maxX + screenHorizontalMargin / 2, boundingRect.minY, boundingRect.maxY);
-        boundingRect = boundingRect.merge(new NumericDataRect(boundingRect.minX, boundingRect.maxX, 0, 0));
+  if(boundingRect && this.visible && this.screen && this.plotOptions.metrics.length) {
+    let horizontalMargin: number | undefined = undefined;
+    for (let metric of this.plotOptions.metrics) {
+      let barAvailWidth = this.calculateBarMaxWidth(metric.name);
+      if(barAvailWidth) {
+        horizontalMargin = Math.min(horizontalMargin ?? Number.MAX_VALUE, barAvailWidth);
       }
     }
-    return boundingRect;
+
+    if(horizontalMargin) {
+
+      let visibleHorizontalRange = this.visible.getHorizontalRange();
+      let screenHorizontalMargin = this.dataTransformation.screenToDataX(horizontalMargin, visibleHorizontalRange, this.screen.getHorizontalRange().getLength()) - visibleHorizontalRange.min;
+
+      boundingRect = new NumericDataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.maxX + screenHorizontalMargin / 2, boundingRect.minY, boundingRect.maxY);
+      boundingRect = boundingRect.merge(new NumericDataRect(boundingRect.minX, boundingRect.maxX, 0, 0));
+    }
   }
+  return boundingRect;
+}*/
+
+
 }

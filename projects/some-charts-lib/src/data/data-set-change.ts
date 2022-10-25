@@ -4,27 +4,16 @@ import {DataSet} from "./data-set";
 export class DataSetChange<XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> {
 
-  readonly deletedDimensionXValues: readonly DimensionValue<XDimensionType>[];
-  readonly deletedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined;
+  readonly deleted: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][];
+  readonly updated: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][];
+  readonly added: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][];
 
-  readonly updatedDimensionXValues: readonly DimensionValue<XDimensionType>[];
-  readonly updatedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined;
-
-  readonly addedDimensionXValues: readonly DimensionValue<XDimensionType>[];
-  readonly addedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined;
-
-  constructor(deletedDimensionXValues: readonly DimensionValue<XDimensionType>[],
-              deletedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined,
-              updatedDimensionXValues: readonly DimensionValue<XDimensionType>[],
-              updatedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined,
-              addedDimensionXValues: readonly DimensionValue<XDimensionType>[],
-              addedDimensionYValues: readonly DimensionValue<Exclude<YDimensionType, undefined>>[] | undefined) {
-    this.deletedDimensionXValues = deletedDimensionXValues;
-    this.deletedDimensionYValues = deletedDimensionYValues;
-    this.updatedDimensionXValues = updatedDimensionXValues;
-    this.updatedDimensionYValues = updatedDimensionYValues;
-    this.addedDimensionXValues = addedDimensionXValues;
-    this.addedDimensionYValues = addedDimensionYValues;
+  constructor(deleted: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][],
+              updated: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][],
+              added: readonly DimensionValue<XDimensionType>[] | readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][]) {
+    this.deleted = deleted;
+    this.updated = updated;
+    this.added = added;
   }
 
   static fromDataSet<XDimensionType extends number | string | Date,
@@ -32,10 +21,7 @@ export class DataSetChange<XDimensionType extends number | string | Date,
     return new DataSetChange<XDimensionType, YDimensionType>(
       [],
       [],
-      [],
-      [],
-      dataSet.dimensionXValues,
-      dataSet.dimensionYValues
+      dataSet.dimensionXValues
     )
   }
 }

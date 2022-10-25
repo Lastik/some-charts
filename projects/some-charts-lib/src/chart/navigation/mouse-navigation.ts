@@ -284,7 +284,7 @@ export class MouseNavigation extends ChartContent(Object) {
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
     if(chart) {
-      this.renderer = chart.getRenderer();
+      this.renderer = chart.renderer;
       this.container = $(this.renderer!.getContainer());
 
       this.container.on('mousedown touchstart', this.onMouseDownTouchStartHandler);

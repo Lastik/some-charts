@@ -127,7 +127,11 @@ export abstract class Plot<
         } else if (updatedX.has(plotElt.dataPoint.x) && updatedY.has(plotElt.dataPoint.y)) {
           updated.push(this.update2DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!, updatedY.get(plotElt.dataPoint.y)!));
         } else if (addedX.has(plotElt.dataPoint.x) && addedY.has(plotElt.dataPoint.y)) {
-          added.push(this.add2DPlotElement(addedX.get(plotElt.dataPoint.x)!, addedY.get(plotElt.dataPoint.y)!));
+          let elt = this.add2DPlotElement(addedX.get(plotElt.dataPoint.x)!, addedY.get(plotElt.dataPoint.y)!);
+
+          if(elt){
+            added.push(elt);
+          }
         }
       }
 
@@ -142,7 +146,10 @@ export abstract class Plot<
         } else if (updatedX.has(plotElt.dataPoint.x)) {
           updated.push(this.update1DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!));
         } else if (addedX.has(plotElt.dataPoint.x)) {
-          added.push(this.add1DPlotElement(addedX.get(plotElt.dataPoint.x)!));
+          let elt = this.add1DPlotElement(addedX.get(plotElt.dataPoint.x)!);
+          if(elt){
+            added.push(elt);
+          }
         }
       }
     }
@@ -166,30 +173,26 @@ export abstract class Plot<
     this.markDirty();
   }
 
-  protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
-                                         xDimension: DimensionValue<XDimensionType>,
-                                         yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
-
-  protected abstract add2DPlotElement(xDimension: DimensionValue<XDimensionType>,
-                                      yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
-
+  protected abstract add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
 
   protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
                                          xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
 
-  protected abstract add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
+  protected abstract add2DPlotElement(xDimension: DimensionValue<XDimensionType>,
+                                      yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
 
+  protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
+                                         xDimension: DimensionValue<XDimensionType>,
+                                         yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
-                     yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color | undefined {
+                     yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color {
     return color instanceof Color ?
       color :
       (() => {
-        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, yDimVal);
-        return metricValue ?
-          new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), metricValue) :
-          undefined;
+        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, yDimVal)!;
+        return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), metricValue)
       })();
   }
 
