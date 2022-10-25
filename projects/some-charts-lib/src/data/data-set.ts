@@ -7,6 +7,7 @@ import {Sorting} from "../sorting";
 import isUndefined from "lodash-es/isUndefined";
 import min from "lodash-es/min";
 import max from "lodash-es/max";
+import {DataSetChange} from "./data-set-change";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
@@ -201,8 +202,8 @@ export class DataSet<TItemType,
       });
     }
 
-    let dimensionXNewMinNumeric: number | undefined = undefined;
-    let dimensionYNewMinNumeric: number | undefined = undefined;
+    let dimensionXMinNumeric: number | undefined = undefined;
+    let dimensionYMinNumeric: number | undefined = undefined;
 
     let dimensionXValuesMap = new Map<number | string, DimensionValue<XDimensionType>>(
       this.dimensionXValues.map(v => [v.primitiveValue, v])
@@ -221,8 +222,8 @@ export class DataSet<TItemType,
         throw new Error(errorTxt)
       }
 
-      if (typeof dimXValue.primitiveValue === 'number' && (!dimensionXNewMinNumeric || dimensionXNewMinNumeric > dimXValue.primitiveValue)) {
-        dimensionXNewMinNumeric = dimXValue.primitiveValue;
+      if (typeof dimXValue.primitiveValue === 'number' && (!dimensionXMinNumeric || dimensionXMinNumeric > dimXValue.primitiveValue)) {
+        dimensionXMinNumeric = dimXValue.primitiveValue;
       }
 
       dimensionXValuesMap.set(dimXValue.primitiveValue, dimXValue);
@@ -233,21 +234,24 @@ export class DataSet<TItemType,
           throw new Error(errorTxt)
         }
 
-        if (typeof dimYValue.primitiveValue === 'number' && (!dimensionYNewMinNumeric || dimensionYNewMinNumeric > dimYValue.primitiveValue)) {
-          dimensionYNewMinNumeric = dimYValue.primitiveValue;
+        if (typeof dimYValue.primitiveValue === 'number' && (!dimensionYMinNumeric || dimensionYMinNumeric > dimYValue.primitiveValue)) {
+          dimensionYMinNumeric = dimYValue.primitiveValue;
         }
 
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
     });
 
+    let prevDimensionXValues = this._dimensionXValues;
+    let prevDimensionYValues = this._dimensionYValues;
+
     this._dimensionXValues = Array.from(dimensionXValuesMap.values())
-      .filter(v => (dimensionXNewMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionXNewMinNumeric))
+      .filter(v => (dimensionXMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionXMinNumeric))
       .sort(DimensionValue.getCompareFunc(this.dimensionXSorting))
       .map((dv, i) => dv.withIndex(i));
     this._dimensionYValues = dimensionYValuesMap ?
       Array.from(dimensionYValuesMap.values())
-        .filter(v => (dimensionYNewMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionYNewMinNumeric))
+        .filter(v => (dimensionYMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionYMinNumeric))
         .sort(DimensionValue.getCompareFunc())
         .map((dv, i) => dv.withIndex(i)) :
       undefined;
@@ -255,8 +259,17 @@ export class DataSet<TItemType,
     this.indexByXDimension = new Map(this._dimensionXValues.map((dv) => [dv.primitiveValue, dv.index]));
     this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((dv) => [dv.primitiveValue, dv.index])) : undefined;
 
-    let indexXDelta = dimensionXValuesMap.size - this._dimensionXValues.length;
-    let indexYDelta = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
+    let indexXOffset = dimensionXValuesMap.size - this._dimensionXValues.length;
+    let indexYOffset = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
+
+    let deletedDimensionXValues = prevDimensionXValues.slice(0, indexXOffset);
+    let deletedDimensionYValues = prevDimensionYValues?.slice(0, indexYOffset);
+
+    let updatedDimensionXValues = prevDimensionXValues.slice(indexXOffset, prevDimensionXValues.length);
+    let updatedDimensionYValues = prevDimensionYValues?.slice(indexYOffset, prevDimensionYValues?.length);
+
+    let addedDimensionXValues = this._dimensionXValues.slice(updatedDimensionXValues.length)
+    let addedDimensionYValues = this._dimensionYValues?.slice(updatedDimensionYValues?.length)
 
     for (let metricName in this.metricsFuncs) {
 
@@ -270,12 +283,12 @@ export class DataSet<TItemType,
         }
         this.metricsValues.set(metricName, metricValues);
       } else {
-        metricValues.splice(0, indexXDelta);
-        if (indexYDelta) {
+        metricValues.splice(0, indexXOffset);
+        if (indexYOffset) {
           for (let i = 0; i < metricValues.length; i++) {
             if (Array.isArray(metricValues[i])) {
               let metricValuesInnerArr = (metricValues[i] as Array<number>);
-              metricValuesInnerArr.splice(0, indexYDelta)
+              metricValuesInnerArr.splice(0, indexYOffset)
             }
           }
         }
@@ -311,7 +324,14 @@ export class DataSet<TItemType,
     let secondDimXValue = this.dimensionYValues && this.dimensionYValues.length ? this.dimensionYValues[0].value : undefined;
     this._dimensionYType = this.getDimensionType(secondDimXValue);
 
-    this.eventTarget.fireEvent(new DataSetChangedEvent());
+    this.eventTarget.fireEvent(new DataSetChangedEvent(
+      new DataSetChange<XDimensionType, YDimensionType>(
+        deletedDimensionXValues,
+        deletedDimensionYValues,
+        updatedDimensionXValues,
+        updatedDimensionYValues,
+        addedDimensionXValues,
+        addedDimensionYValues)));
   }
 
   /**
@@ -329,8 +349,12 @@ export class DataSet<TItemType,
     this.update(elements);
   }
 
-  private clearInternal(triggerChange: boolean){
+  private clearInternal(triggerChange: boolean) {
     this._elements = [];
+
+    let deletedDimensionXValues = this._dimensionXValues;
+    let deletedDimensionYValues = this._dimensionYValues;
+
 
     this._dimensionXValues = [];
     this._dimensionYValues = this.dimensionYFunc ? [] : undefined;
@@ -339,8 +363,16 @@ export class DataSet<TItemType,
 
     this.indexByXDimension = new Map<number | string, number>();
     this.indexByYDimension = this.dimensionYFunc ? new Map<number | string, number>() : undefined;
-    if(triggerChange){
-      this.eventTarget.fireEvent(new DataSetChangedEvent());
+    if (triggerChange) {
+      this.eventTarget.fireEvent(new DataSetChangedEvent(
+        new DataSetChange<XDimensionType, YDimensionType>(
+          deletedDimensionXValues,
+          deletedDimensionYValues,
+          [],
+          [],
+          [],
+          []
+        )));
     }
   }
 

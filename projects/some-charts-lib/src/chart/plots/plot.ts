@@ -3,7 +3,7 @@ import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../opti
 import {FontInUnits} from "../../font"
 import {ChartRenderableItem} from "../chart-renderable-item";
 import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
-import {DataSet, DataSetEventType, DimensionValue} from "../../data";
+import {DataSet, DataSetChange, DataSetChangedEvent, DataSetEventType, DimensionValue} from "../../data";
 import * as Color from "color";
 import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
@@ -73,16 +73,17 @@ export abstract class Plot<
 
     this.plotElements = [];
 
-    this.initPlotFromDataSet();
+    this.updatePlotFromDataSet(DataSetChange.fromDataSet(this.dataSet));
   }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
     if (event.type === DataSetEventType.Changed) {
-      this.initPlotFromDataSet();
+      let changedEvent = event as DataSetChangedEvent<XDimensionType, YDimensionType>;
+      this.updatePlotFromDataSet(changedEvent.change);
     }
   }
 
-  private initPlotFromDataSet(){
+  private updatePlotFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>){
     for(let plotElt of this.plotElements){
       plotElt.destroy();
     }
