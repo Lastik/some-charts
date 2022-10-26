@@ -13,7 +13,6 @@ import {LayerId} from "../../layer-id";
 import {cloneDeep, drop, flow, partialRight} from "lodash-es";
 import sortBy from "lodash-es/sortBy";
 import map from "lodash-es/map";
-import { zip } from "rxjs/operators";
 
 export abstract class AxisBase<DataType extends Object, AxisOptionsType extends AxisOptions> extends ChartRenderableItem<Konva.Shape> {
   /**
@@ -32,8 +31,6 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
   private dataTransformation: DataTransformation;
 
   protected _size: Size;
-  private isBorderShapeDirty: boolean;
-  private isTicksShapeDirty: boolean;
 
   public get size(): Size{
     return this._size;
@@ -53,7 +50,6 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
   protected readonly minorTicksGenerator?: MinorTicksGenerator<DataType>;
 
   protected layerId: string;
-  protected konvaDrawables: Konva.Shape[];
 
   static readonly generateMajorTicksMaxAttempts = 12;
 
@@ -82,10 +78,6 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
 
     this._size = new Size(width ?? 0, height ?? 0);
 
-    this.isBorderShapeDirty = true;
-    this.isTicksShapeDirty = true;
-    this.markDirty();
-
     this.majorTicks = [];
     this.minorTicks = [];
 
@@ -99,7 +91,10 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
 
     let self = this;
 
+
     this.borderShape = new Konva.Shape({
+      location: this.location,
+      size: this.size,
       sceneFunc: function (context, shape) {
 
         context.save();
@@ -120,13 +115,19 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
           context.strokeRect(roundedX, roundedY, roundedWidth, roundedHeight);
         }
         context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
-        self.isBorderShapeDirty = false;
 
         context.restore();
       }
     });
 
     this.ticksShape = new Konva.Shape({
+      location: this.location,
+      size: this.size,
+      orientation: this.orientation,
+      majorTicks: this.majorTicks,
+      minorTicks: this.minorTicks,
+      majorTicksScreenCoords: this.majorTicksScreenCoords,
+      minorTicksScreenCoords: this.minorTicksScreenCoords,
       sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
         let majorTicks = self.majorTicks;
 
@@ -202,7 +203,6 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
         }
         context.stroke();
         context.restore();
-        self.isTicksShapeDirty = false;
       }
     });
 
@@ -385,7 +385,8 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
 
     this.updateTicksScreenCoords(this.location, this.range, this._size);
 
-    this.markDirty();
+    this.updateBorderShape();
+    this.updateTicksShape();
   }
 
   protected cleanMajorTicks(){
@@ -559,12 +560,22 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
     return this.majorTicksScreenCoords;
   }
 
-  override get isDirty(){
-    return this.isBorderShapeDirty || this.isTicksShapeDirty;
+  private updateBorderShape() {
+    this.borderShape.setAttrs({
+      location: this.location,
+      size: this.size
+    });
   }
 
-  override set isDirty(value: boolean){
-    this.isBorderShapeDirty = value;
-    this.isTicksShapeDirty = value;
+  protected updateTicksShape() {
+    this.ticksShape.setAttrs({
+      location: this.location,
+      size: this.size,
+      orientation: this.orientation,
+      majorTicks: this.majorTicks,
+      minorTicks: this.minorTicks,
+      majorTicksScreenCoords: this.majorTicksScreenCoords,
+      minorTicksScreenCoords: this.minorTicksScreenCoords
+    });
   }
 }

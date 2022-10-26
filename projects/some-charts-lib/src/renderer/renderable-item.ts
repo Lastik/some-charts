@@ -13,16 +13,6 @@ export abstract class RenderableItem {
     this.id = RenderableItem.currentPlotID++;
   }
 
-  private _isDirty: boolean = true;
-
-  protected set isDirty(value: boolean) {
-    this._isDirty = value;
-  }
-
-  protected get isDirty(){
-    return this._isDirty;
-  }
-
   private renderer?: Renderer = undefined;
 
   /**
@@ -47,34 +37,8 @@ export abstract class RenderableItem {
   }
 
   /**
-   * Returns true, if this item has layers, which must be redrawn. Otherwise, returns false.
-   * @returns {boolean}.
-   */
-  hasDirtyLayers(): boolean {
-    return this.isDirty;
-  }
-
-  /**
-   * Returns array of names of the layers, which must be redrawn for specified renderable item.
-   * @returns {Array<string>}.
-   */
-  getDirtyLayers(): Array<string> {
-    if (this.isDirty)
-      return this.getDependantLayers();
-    else
-      return [];
-  }
-
-  /**
    * Returns array of names of dependant layers. The layer is called dependant if this item is drawn on it.
    * @returns {Array<string>}.
    */
   abstract getDependantLayers(): Array<string>;
-
-  /**
-   * Marks specified renderable item as dirty.
-   */
-  markDirty() {
-    this.isDirty = true;
-  }
 }

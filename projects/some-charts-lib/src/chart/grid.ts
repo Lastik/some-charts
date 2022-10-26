@@ -1,5 +1,4 @@
-﻿import {Chart} from "./chart";
-import Konva from "konva";
+﻿import Konva from "konva";
 import merge from "lodash-es/merge";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {NumericPoint, Size} from "../geometry";
@@ -18,14 +17,10 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
   protected horizontalLinesCoords: number[];
   protected verticalLinesCoords: number[];
 
-  protected konvaDrawables: Konva.Shape[];
-
   private compositeShape: Konva.Shape;
   private borderShape: Konva.Shape;
 
   private options: GridOptions;
-  private isBorderShapeDirty: boolean;
-  private isCompositeShapeDirty: boolean;
 
   /**
    * Creates new instance of grid. Grid is grid net on chart's plot area.
@@ -40,15 +35,16 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
 
     this.options = merge(cloneDeep(GridOptionsDefaults.Instance), options);
 
-    this.isBorderShapeDirty = true;
-    this.isCompositeShapeDirty = true;
-
     this.horizontalLinesCoords = [];
     this.verticalLinesCoords = [];
 
     let grid = this;
 
     this.compositeShape = new Konva.Shape({
+      location: grid.location,
+      size: grid.size,
+      horizontalLinesCoords: grid.horizontalLinesCoords,
+      verticalLinesCoords: grid.verticalLinesCoords,
       sceneFunc: function (context, shape) {
 
         context.save();
@@ -107,12 +103,12 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
 
         context.stroke();
         context.restore();
-
-        grid.isCompositeShapeDirty = false;
       }
     });
 
     this.borderShape = new Konva.Shape({
+      location: grid.location,
+      size: grid.size,
       sceneFunc: function (context, shape) {
 
         context.save();
@@ -125,7 +121,6 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
         let size = grid.size;
         context.strokeRect(location.x, location.y, size.width, size.height);
         context.fillRect(location.x, location.y, size.width, size.height);
-        grid.isBorderShapeDirty = false;
 
         context.restore();
       }
@@ -143,7 +138,7 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
   update(location: NumericPoint, size: Size) {
     this.location = location;
     this.size = size;
-    this.markDirty();
+    this.updateGridShapes();
   }
 
   /**
@@ -155,15 +150,20 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
                  verticalLinesCoords: Array<number>) {
     this.horizontalLinesCoords = horizontalLinesCoords;
     this.verticalLinesCoords = verticalLinesCoords;
-    this.markDirty();
+    this.updateGridShapes();
   }
 
-  override get isDirty(){
-    return this.isCompositeShapeDirty || this.isBorderShapeDirty;
-  }
+  private updateGridShapes() {
+    this.compositeShape.setAttrs({
+      location: this.location,
+      size: this.size,
+      horizontalLinesCoords: this.horizontalLinesCoords,
+      verticalLinesCoords: this.verticalLinesCoords
+    });
 
-  override set isDirty(value: boolean){
-    this.isBorderShapeDirty = value;
-    this.isCompositeShapeDirty = value;
+    this.borderShape.setAttrs({
+      location: this.location,
+      size: this.size
+    });
   }
 }

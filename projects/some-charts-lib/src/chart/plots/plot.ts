@@ -41,7 +41,6 @@ export abstract class Plot<
   protected layerId: string;
 
   protected shapesGroup: Konva.Group;
-  protected konvaDrawables: Konva.Group[];
 
   protected constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -100,7 +99,6 @@ export abstract class Plot<
     if(this.visible && this.screen) {
       this.update(this.visible, this.screen);
     }
-    this.isDirty = true;
   }
 
   private updatePlotElements(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): PlotElementsUpdate {
@@ -170,7 +168,6 @@ export abstract class Plot<
         plotElement.update(this.dataTransformation, this.visible, this.screen);
       }
     }
-    this.markDirty();
   }
 
   protected abstract add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;

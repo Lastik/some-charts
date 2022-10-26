@@ -14,7 +14,6 @@ export class Renderer implements IDisposable{
   private options: RendererOptions;
 
   private readonly stage: Konva.Stage;
-  private handle: number;
   private renderableItems: RenderableItem[];
 
   private size: Size;
@@ -84,10 +83,6 @@ export class Renderer implements IDisposable{
     this.backgroundElt = backDiv;
 
     let self = this;
-
-    this.handle = Renderer.requestAnimFrame(() => {
-      Renderer.redraw(self)
-    });
 
     this.renderableItems = [];
   }
@@ -228,32 +223,5 @@ export class Renderer implements IDisposable{
    * */
   public getLayer(layerId: string) {
     return this.stage.findOne(`#${layerId}`);
-  }
-
-  protected static requestAnimFrame: (callback: FrameRequestCallback) => number = (function () {
-    return window.requestAnimationFrame ||
-      function (callback) {
-        window.setTimeout(callback, 1000 / 60);
-      };
-  })();
-
-  protected static redraw(renderer: Renderer) {
-    let dirtyLayersIds: Array<string> = [];
-    for (let item of renderer.renderableItems) {
-      if (item.hasDirtyLayers()) {
-        let objectDirtyLayers = item.getDirtyLayers();
-        dirtyLayersIds = dirtyLayersIds.concat(objectDirtyLayers);
-      }
-    }
-
-    dirtyLayersIds = [...new Set(dirtyLayersIds)];
-
-    for (let layerId of dirtyLayersIds) {
-      renderer.getLayer(layerId).draw();
-    }
-
-    if (!renderer.isDisposed) {
-      Renderer.requestAnimFrame(() => Renderer.redraw(renderer));
-    }
   }
 }

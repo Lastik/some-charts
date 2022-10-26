@@ -38,6 +38,6 @@ export class LabeledAxis extends AxisBase<number, AxisOptions> {
   public updateLabels(labels: Array<Point<string>>){
     this.labels = labels;
     (this.majorTicksGenerator as LabeledMajorTicksGenerator).setLabels(labels);
-    this.markDirty();
+    this.updateTicksShape();
   }
 }

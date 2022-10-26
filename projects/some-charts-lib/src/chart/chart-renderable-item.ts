@@ -9,7 +9,7 @@ import Konva from "konva";
 export abstract class ChartRenderableItem<ShapeType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> extends ChartContent(RenderableItem) {
 
   protected abstract layerId: string;
-  protected abstract konvaDrawables: ShapeType[];
+  protected konvaDrawables: ShapeType[];
 
   override placeOnChart(chart?: Chart) {
     super.placeOnChart(chart);
@@ -33,5 +33,10 @@ export abstract class ChartRenderableItem<ShapeType extends Konva.Group | Konva.
 
   getDependantLayers(): string[] {
     return [this.layerId];
+  }
+
+  constructor() {
+    super();
+    this.konvaDrawables = [];
   }
 }
