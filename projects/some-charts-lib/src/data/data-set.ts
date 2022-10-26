@@ -218,7 +218,7 @@ export class DataSet<TItemType,
       this.dimensionYValues!.map(v => [v.primitiveValue, v])
     ) : undefined;
 
-    let dimensionsValues: [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][] | undefined = this.dimensionYFunc ? []: undefined;
+    let dimensionsXYValues: [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][] = [];
 
     elements.forEach((element, index) => {
       let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
@@ -249,13 +249,10 @@ export class DataSet<TItemType,
         dimensionYValuesMap?.set(dimYValue.primitiveValue, dimYValue);
       }
 
-      if(this.dimensionYFunc && dimensionsValues) {
-        dimensionsValues.push([dimXValue, dimYValue!]);
+      if(this.dimensionYFunc) {
+        dimensionsXYValues.push([dimXValue, dimYValue!]);
       }
     });
-
-    let prevDimensionXValues = this._dimensionXValues;
-    let prevDimensionYValues = this._dimensionYValues;
 
     this._dimensionXValues = Array.from(dimensionXValuesMap.values())
       .filter(v => (dimensionXMinNumeric === undefined || typeof v.primitiveValue !== 'number' || v.primitiveValue >= dimensionXMinNumeric))
@@ -271,31 +268,31 @@ export class DataSet<TItemType,
     this.indexByXDimension = new Map(this._dimensionXValues.map((dv) => [dv.primitiveValue, dv.index]));
     this.indexByYDimension = this._dimensionYValues ? new Map(this._dimensionYValues.map((dv) => [dv.primitiveValue, dv.index])) : undefined;
 
+    let prevDimensionsValues = this._dimensionsValues;
 
-    if(this.dimensionYFunc && dimensionsValues) {
-      dimensionsValues = dimensionsValues.
+    if(this.dimensionYFunc) {
+      dimensionsXYValues = dimensionsXYValues.
       filter(dv => {
         return (dimensionXMinNumeric === undefined || typeof dv[0].primitiveValue !== 'number' || dv[0].primitiveValue >= dimensionXMinNumeric) &&
           (dimensionYMinNumeric === undefined || typeof dv[1].primitiveValue !== 'number' || dv[1].primitiveValue >= dimensionYMinNumeric)
       }).
       sort(DimensionValue.getCompareFunc2D(this.dimensionsSorting)).
-      map((dv, i) => dv.withIndex(i)) :
+      map((dv, i) => {
+        return [
+          dv[0].primitiveValue ? dv[0].withIndex(this.indexByXDimension.get(dv[0].primitiveValue)!) : dv[0],
+          dv[1].primitiveValue ? dv[1].withIndex(this.indexByXDimension.get(dv[1].primitiveValue)!) : dv[1]
+        ];
+      });
+      this._dimensionsValues = dimensionsXYValues;
     }
-    else{
+    else {
+      this._dimensionsValues = this._dimensionXValues;
+    }
 
-    }
+    let dataSetChange: DataSetChange<XDimensionType, YDimensionType> = DataSetChange.fromDataSetDimensionsUpdate(prevDimensionsValues, this._dimensionsValues);
 
     let indexXOffset = dimensionXValuesMap.size - this._dimensionXValues.length;
     let indexYOffset = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
-
-    let deletedDimensionXValues = prevDimensionXValues.slice(0, indexXOffset);
-    let deletedDimensionYValues = prevDimensionYValues?.slice(0, indexYOffset);
-
-    let updatedDimensionXValues = prevDimensionXValues.slice(indexXOffset, prevDimensionXValues.length);
-    let updatedDimensionYValues = prevDimensionYValues?.slice(indexYOffset, prevDimensionYValues?.length);
-
-    let addedDimensionXValues = this._dimensionXValues.slice(updatedDimensionXValues.length)
-    let addedDimensionYValues = this._dimensionYValues?.slice(updatedDimensionYValues?.length)
 
     for (let metricName in this.metricsFuncs) {
 
@@ -351,13 +348,7 @@ export class DataSet<TItemType,
     this._dimensionYType = this.getDimensionType(secondDimXValue);
 
     this.eventTarget.fireEvent(new DataSetChangedEvent(
-      new DataSetChange<XDimensionType, YDimensionType>(
-        deletedDimensionXValues,
-        deletedDimensionYValues,
-        updatedDimensionXValues,
-        updatedDimensionYValues,
-        addedDimensionXValues,
-        addedDimensionYValues)));
+      dataSetChange));
   }
 
   /**
@@ -392,10 +383,7 @@ export class DataSet<TItemType,
     if (triggerChange) {
       this.eventTarget.fireEvent(new DataSetChangedEvent(
         new DataSetChange<XDimensionType, YDimensionType>(
-          deletedDimensionXValues,
-          deletedDimensionYValues,
-          [],
-          [],
+          this.dimensionsValues,
           [],
           []
         )));
