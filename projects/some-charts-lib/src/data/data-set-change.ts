@@ -32,18 +32,20 @@ export class DataSetChange<XDimensionType extends number | string | Date,
       dimensionsValues: DimensionValue<XDimensionType>[] | [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][]):
     DataSetChange<XDimensionType, YDimensionType> {
 
-    let id1D = Array.isArray(
+    let id1D =
       prevDimensionsValues.length !== 0 && !Array.isArray(prevDimensionsValues[0]) ||
-      dimensionsValues.length !== 0 && !Array.isArray(dimensionsValues[0]));
+      dimensionsValues.length !== 0 && !Array.isArray(dimensionsValues[0]);
 
     if (id1D) {
       return DataSetChange.fromDataSetDimensionsUpdate1D(
         prevDimensionsValues as DimensionValue<XDimensionType>[],
         dimensionsValues as DimensionValue<XDimensionType>[]);
     }
-    return DataSetChange.fromDataSetDimensionsUpdate2D(
-      prevDimensionsValues as [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][],
-      dimensionsValues as [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][]);
+    else {
+      return DataSetChange.fromDataSetDimensionsUpdate2D(
+        prevDimensionsValues as [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][],
+        dimensionsValues as [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][]);
+    }
   }
 
   private static fromDataSetDimensionsUpdate1D<

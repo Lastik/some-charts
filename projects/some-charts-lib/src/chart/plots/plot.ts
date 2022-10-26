@@ -108,6 +108,7 @@ export abstract class Plot<
     let updated: Array<PlotDrawableElement> = [];
     let added: Array<PlotDrawableElement> = [];
 
+    /*
     if (is2D) {
 
       let deletedX = new Map(dataSetChange.deletedDimensionXValues.map(v => [v.toNumericValue(), v]));
@@ -150,7 +151,7 @@ export abstract class Plot<
           }
         }
       }
-    }
+    }*/
 
     return {deleted: deleted, updated: updated, added: added};
   }
