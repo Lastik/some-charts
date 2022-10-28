@@ -3,12 +3,18 @@ import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../opti
 import {FontInUnits} from "../../font"
 import {ChartRenderableItem} from "../chart-renderable-item";
 import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
-import {DataSet, DataSetChange, DataSetChangedEvent, DataSetEventType, DimensionValue} from "../../data";
+import {
+  DataSet,
+  DataSetChange,
+  DataSetChange1D, DataSetChange2D,
+  DataSetChangedEvent,
+  DataSetEventType,
+  DimensionValue
+} from "../../data";
 import * as Color from "color";
 import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
 import {FontHelper} from "../../services";
-import {Chart} from "../chart";
 import {IDisposable} from "../../i-disposable";
 
 import {EventBase, EventListener} from "../../events";
@@ -102,56 +108,49 @@ export abstract class Plot<
   }
 
   private updatePlotElements(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): PlotElementsUpdate {
-    let is2D = this.dataSet.is2D;
+    let is2D = dataSetChange.is2D;
 
     let deleted: Array<PlotDrawableElement> = [];
     let updated: Array<PlotDrawableElement> = [];
     let added: Array<PlotDrawableElement> = [];
 
-    /*
+
     if (is2D) {
 
-      let deletedX = new Map(dataSetChange.deletedDimensionXValues.map(v => [v.toNumericValue(), v]));
-      let deletedY = new Map(dataSetChange.deletedDimensionYValues!.map(v => [v.toNumericValue(), v]));
-
-      let updatedX = new Map(dataSetChange.updatedDimensionXValues.map(v => [v.toNumericValue(), v]));
-      let updatedY = new Map(dataSetChange.updatedDimensionYValues!.map(v => [v.toNumericValue(), v]));
-
-      let addedX = new Map(dataSetChange.addedDimensionXValues.map(v => [v.toNumericValue(), v]));
-      let addedY = new Map(dataSetChange.addedDimensionYValues!.map(v => [v.toNumericValue(), v]));
+      let dataSetChange2D = dataSetChange as DataSetChange2D<XDimensionType, YDimensionType>;
 
       for (let plotElt of this.plotElements) {
-        if (deletedX.has(plotElt.dataPoint.x) && deletedY.has(plotElt.dataPoint.y)) {
+        if (dataSetChange2D.isDeleted(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
           deleted.push(plotElt);
-        } else if (updatedX.has(plotElt.dataPoint.x) && updatedY.has(plotElt.dataPoint.y)) {
-          updated.push(this.update2DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!, updatedY.get(plotElt.dataPoint.y)!));
-        } else if (addedX.has(plotElt.dataPoint.x) && addedY.has(plotElt.dataPoint.y)) {
-          let elt = this.add2DPlotElement(addedX.get(plotElt.dataPoint.x)!, addedY.get(plotElt.dataPoint.y)!);
+        } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
+          let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
+          updated.push(this.update2DPlotElement(plotElt, xy[0], xy[1]));
+        } else if (dataSetChange2D.isAdded(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
+          let xy = dataSetChange2D.getAdded(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
+          let elt = this.add2DPlotElement(xy[0], xy[1]);
 
-          if(elt){
+          if (elt) {
             added.push(elt);
           }
         }
       }
-
     } else {
-      let deletedX = new Map(dataSetChange.deletedDimensionXValues.map(v => [v.toNumericValue(), v]));
-      let updatedX = new Map(dataSetChange.updatedDimensionXValues.map(v => [v.toNumericValue(), v]));
-      let addedX = new Map(dataSetChange.addedDimensionXValues.map(v => [v.toNumericValue(), v]));
+
+      let dataSetChange1D = dataSetChange as DataSetChange1D<XDimensionType>;
 
       for (let plotElt of this.plotElements) {
-        if (deletedX.has(plotElt.dataPoint.x)) {
+        if (dataSetChange1D.isDeleted(plotElt.dataPoint.x)) {
           deleted.push(plotElt);
-        } else if (updatedX.has(plotElt.dataPoint.x)) {
-          updated.push(this.update1DPlotElement(plotElt, updatedX.get(plotElt.dataPoint.x)!));
-        } else if (addedX.has(plotElt.dataPoint.x)) {
-          let elt = this.add1DPlotElement(addedX.get(plotElt.dataPoint.x)!);
-          if(elt){
+        } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.x)) {
+          updated.push(this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.x)!));
+        } else if (dataSetChange1D.isAdded(plotElt.dataPoint.x)) {
+          let elt = this.add1DPlotElement(dataSetChange1D.getAdded(plotElt.dataPoint.x)!);
+          if (elt) {
             added.push(elt);
           }
         }
       }
-    }*/
+    }
 
     return {deleted: deleted, updated: updated, added: added};
   }

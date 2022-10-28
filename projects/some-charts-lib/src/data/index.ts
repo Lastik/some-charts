@@ -3,3 +3,4 @@ export * from './dimension-value';
 export * from './data-set-change';
 export * from './event';
 export * from './dimension-type';
+export * from './map2-d';
