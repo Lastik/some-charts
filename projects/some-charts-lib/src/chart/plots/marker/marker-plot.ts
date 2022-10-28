@@ -46,7 +46,7 @@ export class MarkerPlot<TItemType,
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimension, yDimension);
     let markerSize =  this.getMarkerSize(xDimension, yDimension);
 
-    let point = new NumericPoint(xDimension.toNumericValue(), yDimension.toNumericValue())!;
+    let point = new NumericPoint(xDimension.toNumericValue(), yDimension.toNumericValue());
     return MarkerPlot.createElementForMarker(point, markerColor, markerSize);
   }
 
@@ -70,7 +70,7 @@ export class MarkerPlot<TItemType,
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimension, yDimension);
     let markerSize =  this.getMarkerSize(xDimension, yDimension);
 
-    let point = new NumericPoint(xDimension.toNumericValue(), yDimension.toNumericValue())!;
+    let point = new NumericPoint(xDimension.toNumericValue(), yDimension.toNumericValue());
 
     let markerPlotElt = plotElt as MarkerPlotDrawableElement;
     markerPlotElt.dataPoint = point;

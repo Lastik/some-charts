@@ -7,7 +7,7 @@ import {Sorting} from "../sorting";
 import isUndefined from "lodash-es/isUndefined";
 import min from "lodash-es/min";
 import max from "lodash-es/max";
-import {DataSetChange} from "./data-set-change";
+import {DataSetChange, DataSetChange1D, DataSetChange2D} from "./data-set-change";
 
 export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
@@ -381,12 +381,11 @@ export class DataSet<TItemType,
     this.indexByXDimension = new Map<number | string, number>();
     this.indexByYDimension = this.dimensionYFunc ? new Map<number | string, number>() : undefined;
     if (triggerChange) {
-      this.eventTarget.fireEvent(new DataSetChangedEvent(
-        new DataSetChange<XDimensionType, YDimensionType>(
-          this.dimensionsValues,
-          [],
-          []
-        )));
+      let dataSetChange = this.is1D?
+        new DataSetChange1D(this.dimensionXValues, [], []):
+        new DataSetChange2D(this.dimensionsValues as readonly [DimensionValue<XDimensionType>, DimensionValue<Exclude<YDimensionType, undefined>>][], [], [])
+
+      this.eventTarget.fireEvent(new DataSetChangedEvent(dataSetChange));
     }
   }
 
