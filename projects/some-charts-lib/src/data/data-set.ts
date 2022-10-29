@@ -13,13 +13,8 @@ export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> {
 
-  private _elements: Array<TItemType>;
 
   public readonly eventTarget: ACEventTarget<DataSetEventType>;
-
-  public get elements(): ReadonlyArray<TItemType> {
-    return this._elements;
-  }
 
   private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
@@ -77,8 +72,6 @@ export class DataSet<TItemType,
     this.dimensionsSorting = dimensionsSorting;
 
     this.metricsNames = Object.keys(metricsFuncs);
-
-    this._elements = [];
 
     this._dimensionXValues = [];
     this._dimensionYValues = dimensionYFunc ? []: undefined;
@@ -188,8 +181,6 @@ export class DataSet<TItemType,
   public update(elements: Array<TItemType>) {
 
     this.metricsRanges.clear();
-
-    this._elements = [...this._elements, ...elements];
 
     let dimensionXPrevMaxNumeric: number | undefined = undefined;
     let dimensionYPrevMaxNumeric: number | undefined = undefined;
@@ -367,11 +358,6 @@ export class DataSet<TItemType,
   }
 
   private clearInternal(triggerChange: boolean) {
-    this._elements = [];
-
-    let deletedDimensionXValues = this._dimensionXValues;
-    let deletedDimensionYValues = this._dimensionYValues;
-
 
     this._dimensionXValues = [];
     this._dimensionYValues = this.dimensionYFunc ? [] : undefined;

@@ -37,15 +37,13 @@ export class MarkerPlotDrawableElement extends PlotDrawableElement {
   }
 
   private static createMarkerShape(markerColor: Color, markerSize: number){
-    let circle = new Konva.Circle({
+    return new Konva.Circle({
       radius: markerSize,
       fill: markerColor.toString(),
       stroke: 'black',
       strokeWidth: 1,
       perfectDrawEnabled: false
     });
-    circle._shouldFireChangeEvents = false;
-    return circle;
   }
 
   private static updateMarkerColor(shape: Konva.Shape, markerColor: Color){

@@ -29,7 +29,7 @@ export class ChartDemoComponent implements OnInit {
     }
 
     let origin = 0;
-    let count = 300;
+    let count = 1000;
 
     let data = generateSinData(0, count);
 

@@ -19,7 +19,7 @@ import {IDisposable} from "../../i-disposable";
 
 import {EventBase, EventListener} from "../../events";
 import {PlotDrawableElement} from "./plot-drawable-element";
-import {PlotElementsUpdate} from "./plot-elements-update";
+import {pullAt} from "lodash-es";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -74,8 +74,6 @@ export abstract class Plot<
       },
       listening: false
     });
-    this.shapesGroup._shouldFireChangeEvents = false;
-
     this.konvaDrawables = [this.shapesGroup];
 
     this.plotElements = [];
@@ -98,6 +96,8 @@ export abstract class Plot<
       plotElt.konvaDrawable.remove();
     }
 
+    pullAt(this.plotElements, updateResult.deletedIndexes);
+
     for(let plotElt of updateResult.added){
       this.shapesGroup.add(plotElt.konvaDrawable);
     }
@@ -113,46 +113,50 @@ export abstract class Plot<
     let deleted: Array<PlotDrawableElement> = [];
     let updated: Array<PlotDrawableElement> = [];
     let added: Array<PlotDrawableElement> = [];
-
+    let deletedIndexes: Array<number> = [];
 
     if (is2D) {
 
       let dataSetChange2D = dataSetChange as DataSetChange2D<XDimensionType, YDimensionType>;
 
-      for (let plotElt of this.plotElements) {
+      for (let i = 0; i < this.plotElements.length; i++) {
+        let plotElt = this.plotElements[i];
         if (dataSetChange2D.isDeleted(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
           deleted.push(plotElt);
+          deletedIndexes.push(i);
         } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
           let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
           updated.push(this.update2DPlotElement(plotElt, xy[0], xy[1]));
-        } else if (dataSetChange2D.isAdded(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
-          let xy = dataSetChange2D.getAdded(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
-          let elt = this.add2DPlotElement(xy[0], xy[1]);
-
-          if (elt) {
-            added.push(elt);
-          }
         }
+      }
+
+      for(let tuple of dataSetChange2D.added){
+        let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
+        this.plotElements.push(plotElt);
+        added.push(plotElt);
       }
     } else {
 
       let dataSetChange1D = dataSetChange as DataSetChange1D<XDimensionType>;
 
-      for (let plotElt of this.plotElements) {
+      for (let i = 0; i < this.plotElements.length; i++) {
+        let plotElt = this.plotElements[i];
         if (dataSetChange1D.isDeleted(plotElt.dataPoint.x)) {
           deleted.push(plotElt);
+          deletedIndexes.push(i);
         } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.x)) {
           updated.push(this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.x)!));
-        } else if (dataSetChange1D.isAdded(plotElt.dataPoint.x)) {
-          let elt = this.add1DPlotElement(dataSetChange1D.getAdded(plotElt.dataPoint.x)!);
-          if (elt) {
-            added.push(elt);
-          }
         }
+      }
+
+      for(let value of dataSetChange1D.added){
+        let plotElt = this.add1DPlotElement(value);
+        this.plotElements.push(plotElt);
+        added.push(plotElt);
       }
     }
 
-    return {deleted: deleted, updated: updated, added: added};
+    return {deleted: deleted, deletedIndexes: deletedIndexes, updated: updated, added: added};
   }
 
   /**
@@ -220,3 +224,9 @@ export abstract class Plot<
   }
 }
 
+interface PlotElementsUpdate {
+  deleted: Array<PlotDrawableElement>;
+  updated: Array<PlotDrawableElement>;
+  added: Array<PlotDrawableElement>;
+  deletedIndexes: Array<number>;
+}
