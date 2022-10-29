@@ -16,7 +16,7 @@ export class ChartDemoComponent implements OnInit {
   ngOnInit(): void {
 
     let amplitude = 40;
-    let frequency = 20;
+    let frequency = 10;
     let width = 100;
     let height = 200;
 
@@ -29,7 +29,7 @@ export class ChartDemoComponent implements OnInit {
     }
 
     let origin = 0;
-    let count = 1000;
+    let count = 300;
 
     let data = generateSinData(0, count);
 
@@ -82,7 +82,7 @@ export class ChartDemoComponent implements OnInit {
               caption: "Y",
               color: new Color("#AA0000")
             },
-            markerSize: 10
+            markerSize: 7
           } as MarkerPlotOptions
         ]
       }
