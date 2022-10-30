@@ -16,15 +16,15 @@ export interface BarsPlotOptions extends PlotOptions, TextOptions {
   /**
    * True, if labels must be drawn on bars. Otherwise, false.
    */
-  drawLabelsOnBars: boolean;
+  drawLabelsOnBars?: boolean;
   /**
    * Bars labels precision.
    */
-  labelsPrecision: number;
+  labelsPrecision?: number;
   /**
    * True, if plot border must be darker than plot background. Otherwise, must be false.
    */
-  useDarkerBorder: boolean;
+  useDarkerBorder?: boolean;
 }
 
 export class BarsPlotOptionsDefaults

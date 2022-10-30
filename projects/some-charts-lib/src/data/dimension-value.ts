@@ -32,7 +32,7 @@ export class DimensionValue<XDimensionType extends number | string | Date> {
       let rightPrimitive = right.primitiveValue;
 
       if (sorting === Sorting.None) {
-        return -1;
+        return 1;
       } else {
         if (leftPrimitive > rightPrimitive) {
           return sorting === Sorting.Asc ? 1 : -1;

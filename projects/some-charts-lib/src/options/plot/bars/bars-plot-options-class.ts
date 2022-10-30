@@ -12,10 +12,10 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
   metrics: Array<MetricOptions<Color>>;
 
   font: FontInUnits;
-  drawLabelsOnBars: boolean;
   foregroundColor: Color;
-  labelsPrecision: number;
-  useDarkerBorder: boolean;
+  drawLabelsOnBars?: boolean;
+  labelsPrecision?: number;
+  useDarkerBorder?: boolean;
 
   constructor(barsPlotOptions: BarsPlotOptions) {
     super(barsPlotOptions);

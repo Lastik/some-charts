@@ -1,12 +1,6 @@
 ﻿import {Range} from '../range';
-import {Point} from '../point';
 
 export class DataRect<XType extends number | string | Date, YType extends  number | string | Date> {
-
-  readonly minX: XType;
-  readonly minY: YType;
-  readonly maxX: XType;
-  readonly maxY: YType;
 
   /**
    * Creates data rectangle.
@@ -17,7 +11,11 @@ export class DataRect<XType extends number | string | Date, YType extends  numbe
    * @param {YType} minY - Top corner of rectangle coordinate.
    * @param {YType} maxY - Bottom corner of rectangle coordinate.
    */
-  constructor(minX: XType, maxX: XType, minY: YType, maxY: YType) {
+  constructor(public readonly minX: XType,
+              public readonly maxX: XType,
+              public readonly minY: YType,
+              public readonly maxY: YType) {
+
     this.minX = minX;
     this.minY = minY;
     this.maxX = maxX;

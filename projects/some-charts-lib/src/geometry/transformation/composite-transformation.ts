@@ -2,9 +2,7 @@ import {CoordinateTransformation} from "./coordinate-transformation";
 
 export class CompositeTransformation implements CoordinateTransformation {
 
-  private readonly transformations: Array<CoordinateTransformation>;
-
-  constructor(transformations: Array<CoordinateTransformation>) {
+  constructor(private readonly transformations: Array<CoordinateTransformation>) {
     this.transformations = transformations;
   }
 

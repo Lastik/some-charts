@@ -1,9 +1,8 @@
 import {CoordinateTransformation} from "./coordinate-transformation";
 
 export class LogPointXTransformation implements CoordinateTransformation {
-  private base: number;
 
-  constructor(base: number) {
+  constructor(private base: number) {
     this.base = base;
   }
 

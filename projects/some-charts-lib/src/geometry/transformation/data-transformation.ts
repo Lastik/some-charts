@@ -6,14 +6,13 @@ import {NumericRange} from "../numeric-range";
 import {NumericDataRect} from "../rect";
 
 export class DataTransformation {
-  public coordinateTransformation?: CoordinateTransformation;
 
   /**
    * Creates new instance of data DataTransformation. This entity transforms data from data coordinates
    * to screen coordinates and reverse.
    * @param {CoordinateTransformation} coordinateTransformation - Additional transformation applied to data coordinates.
    */
-  constructor(coordinateTransformation?: CoordinateTransformation) {
+  constructor(public coordinateTransformation?: CoordinateTransformation) {
     this.coordinateTransformation = coordinateTransformation;
   }
 
@@ -102,6 +101,24 @@ export class DataTransformation {
 
     const leftTopTransformed = this.screenRegionToDataXY(leftTop, visible, screenRegion);
     const rightBottomTransformed = this.screenRegionToDataXY(rightBottom, visible, screenRegion);
+
+    return new NumericDataRect(leftTopTransformed.x, rightBottomTransformed.x, leftTopTransformed.y, rightBottomTransformed.y);
+  }
+
+  /**
+   * Transforms rectangle from XY coordinates in data coordinates to specified screen region.
+   * @param {NumericPoint} rect - NumericDataRect in data coords.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
+   * @returns {NumericDataRect}
+   */
+  public dataToScreenRegionForRect(rect: NumericDataRect, visible: NumericDataRect, screenRegion: NumericDataRect): NumericDataRect {
+
+    const leftTop = rect.getMinXMinY();
+    const rightBottom = rect.getMaxXMaxY();
+
+    let leftTopTransformed = this.dataToScreenRegionXY(leftTop, visible, screenRegion);
+    let rightBottomTransformed = this.dataToScreenRegionXY(rightBottom, visible, screenRegion);
 
     return new NumericDataRect(leftTopTransformed.x, rightBottomTransformed.x, leftTopTransformed.y, rightBottomTransformed.y);
   }

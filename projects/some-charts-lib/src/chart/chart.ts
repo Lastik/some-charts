@@ -193,6 +193,8 @@ export class Chart<TItemType = any,
 
     Chart.createLayers(this.renderer, this.layersConfigs);
 
+    this.updateLabeledAxesLabels();
+
     if (this.horizontalAxis) {
       this.horizontalAxis.placeOnChart(this as Chart);
     }
@@ -215,8 +217,6 @@ export class Chart<TItemType = any,
     for (let contentItem of this.contentItems) {
       contentItem.attach(this._renderer);
     }
-
-    this.updateLabeledAxesLabels();
 
     this.buildLegend(plotOptionsArr);
 

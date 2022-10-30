@@ -5,12 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {ChartDemoComponent} from "./chart-demo/chart-demo.component";
 import {DateTimeAxisComponent} from "./date-time-axis/date-time-axis.component";
+import {BarsDemoComponent} from "./bars-demo/bars-demo.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     ChartDemoComponent,
-    DateTimeAxisComponent
+    DateTimeAxisComponent,
+    BarsDemoComponent
   ],
   imports: [
     BrowserModule,

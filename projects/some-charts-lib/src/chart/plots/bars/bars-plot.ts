@@ -1,24 +1,16 @@
 import Konva from "konva";
 import merge from "lodash-es/merge";
-import {
-  BarsPlotOptions,
-  BarsPlotOptionsDefaults,
-  PlotOptionsClassFactory
-} from "../../../options";
+import {BarsPlotOptions, BarsPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
 
-import {
-  DataTransformation, NumericDataRect,
-  NumericPoint,
-  Range
-} from "../../../geometry";
+import {DataTransformation, NumericDataRect, Range} from "../../../geometry";
 import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {FontHelper, MathHelper, TextMeasureUtils} from "../../../services";
+import {FontHelper, MathHelper} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
-import {BarsPlotDrawableElement} from "./bars-plot-drawable-element";
+import {Bar} from "./bar";
 import {cloneDeep} from "lodash-es";
 
 export class BarsPlot<TItemType,
@@ -26,184 +18,165 @@ export class BarsPlot<TItemType,
   YDimensionType extends number | string | Date | undefined = undefined>
   extends Plot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
-  private labelsHeight: number | undefined;
-
   private barMaxWidthMap: Map<string, number> = new Map<string, number>();
-  private colorsByMetricName: Map<string, BarsColoring> = new Map<string, BarsColoring>();
+  private colorsByMetricName?: Map<string, BarsColoring>;
 
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
-              options: BarsPlotOptions,
-              private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
+              options: BarsPlotOptions) {
     super(dataSet, dataTransformation, options);
+  }
 
-    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BarsPlotOptionsDefaults.Instance), options)) as BarsPlotOptionsClass;
+  override buildPlotOptionsClass(plotOptions: BarsPlotOptions): BarsPlotOptionsClass {
+    return PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BarsPlotOptionsDefaults.Instance), plotOptions)) as BarsPlotOptionsClass;
+  }
+
+  override init(plotOptionsClass: BarsPlotOptionsClass) {
     this.colorsByMetricName = new Map(this.plotOptions.metrics.map(m => [m.name, this.getBarsColoring(m.color)]));
   }
 
-  /*
-    protected create1DPlotElements(xDimension: DimensionValue<XDimensionType>[]): Array<PlotDrawableElement> {
+  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement | undefined {
+    let drawableElement: PlotDrawableElement | undefined;
 
-      let drawableElements: Array<PlotDrawableElement> = [];
+    for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
+      let metric = this.plotOptions.metrics[metricIdx];
+      let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-      let minY = 0;
+      let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
 
-      let barAvailableWidthsMap: Map<string, number> = new Map<string, number>();
+      if (metricValue) {
 
-      let isSingleBar = false;
+        let barsColoring = this.colorsByMetricName?.get(metric.name)!;
 
-      for (let metric of this.plotOptions.metrics) {
-        let barAvailableWidth = this.calculateBarMaxWidth(metric.name);
-        if (barAvailableWidth) {
-          barAvailableWidthsMap.set(metric.name, barAvailableWidth);
-        }
-        let metricPoints = this.getMetricPoints1D(metric.name);
+        let sampleRectShape = new Konva.Rect({
+          stroke: barsColoring.stroke.toString(),
+          strokeWidth: 1,
+          fillLinearGradientStartPoint: {x: 0, y: 0},
+          fillLinearGradientEndPoint: {x: 0, y: 50},
+          fillLinearGradientColorStops: [
+            0,
+            barsColoring.fillGradient.min.toString(),
+            0.4,
+            barsColoring.fillGradient.max.toString(),
+            1,
+            barsColoring.fillGradient.max.toString()],
+        })
 
-        if (metricPoints?.length === 1) {
-          isSingleBar = true;
-        }
 
-        if (metricPoints) {
-          for (let point of metricPoints) {
-            minY = Math.min(minY, point.y);
-          }
-        }
-      }
+        let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
+        let rect: NumericDataRect | undefined = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
 
-      for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
-        let metric = this.plotOptions.metrics[metricIdx];
-        let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
+        if (pointLocation && rect) {
 
-        let metricPoints = this.getMetricPoints1D(metric.name);
-        let metricValues = this.dataSet.getMetricValues(metric.name) as Array<number>;
+          let group = new Konva.Group({
+            /*clipFunc: function (ctx) {
+              if (rect) {
+                ctx.rect(0, 0, rect.width, rect.height);
+              }
+            }*/
+          });
 
-        if (metricPoints) {
+          let rectShape = sampleRectShape.clone();
 
-          let prevMetricPts: NumericPoint[] | undefined =
-            prevMetric ? this.getMetricPoints1D(prevMetric.name) : undefined;
+          group.add(rectShape);
 
-          let barWidthWithMargin: number | undefined = barAvailableWidthsMap.get(metric.name);
+          let label: Konva.Text | undefined;
 
-          if (barWidthWithMargin) {
+          if (this.plotOptions.drawLabelsOnBars) {
 
-            if (isSingleBar) {
-              barWidthWithMargin *= 0.45;
-            } else {
-              barWidthWithMargin *= 0.7;
-            }
+            let labelText: string = metricValue.toFixed(this.plotOptions.labelsPrecision);
 
-            let barsColoring = this.getBarsColoring(metric.color);
-
-            let sampleRect = new Konva.Rect({
-              stroke: barsColoring.stroke.toString(),
-              strokeWidth: 1,
-              fillLinearGradientStartPoint: { x: 0, y: 0 },
-              fillLinearGradientEndPoint: { x: 0, y: 50 },
-              fillLinearGradientColorStops: [
-                0,
-                barsColoring.fillGradient.min.toString(),
-                0.4,
-                barsColoring.fillGradient.max.toString(),
-                1,
-                barsColoring.fillGradient.max.toString()],
+            label = new Konva.Text({
+              text: labelText,
+              fill: this.plotOptions.foregroundColor.toString(),
+              stroke: this.plotOptions.foregroundColor.toString(),
+              font: FontHelper.fontToString(this.plotOptions.font)
             })
 
-            for (let ptIdx = 0; ptIdx < metricPoints.length; ptIdx++) {
-
-              let rectX: number | undefined;
-              let rectY: number | undefined;
-              let rectW: number | undefined;
-              let rectH: number | undefined;
-
-              let pointLocation = metricPoints[ptIdx];
-
-              if (metricIdx == 0) {
-                rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-                rectY = 0;
-                rectW = MathHelper.optimizeValue(barWidthWithMargin);
-                rectH = MathHelper.optimizeValue(pointLocation.y);
-              } else {
-                let prevPointLocation = prevMetricPts![ptIdx];
-
-                let barHeight = pointLocation.y;
-
-                let barOriginY: number | undefined;
-
-                if (barHeight < 0) {
-                  barOriginY = Math.min(prevPointLocation.y + 2, 0);
-                } else if (barHeight > 0) {
-                  barOriginY = Math.max(prevPointLocation.y - 2, 0);
-                } else {
-                  barOriginY = 0;
-                }
-
-                rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-                rectY = MathHelper.optimizeValue(barOriginY);
-                rectW = MathHelper.optimizeValue(barWidthWithMargin);
-                rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
-              }
-
-              if (rectH != 0) {
-
-                let group = new Konva.Group({
-                  x: rectX,
-                  y: rectY,
-                  clipFunc: function (ctx) {
-                    ctx.rect(rectX, rectY, rectW, rectH);
-                  }
-                });
-
-                let rect = sampleRect.clone({
-                  x: 0,
-                  y: 0,
-                  width: rectW,
-                  height: rectH,
-                });
-
-                group.add(rect);
-
-                let label: Konva.Text | undefined;
-
-                if (this.plotOptions.drawLabelsOnBars) {
-
-                  let labelText: string = metricValues[ptIdx].toFixed(this.plotOptions.labelsPrecision);
-
-                  let textWidth = this.textMeasureUtils.measureTextSize(this.plotOptions.font, labelText).width;
-
-                  let pointLocation = metricPoints[ptIdx];
-
-                  let x = barWidthWithMargin / 2 - textWidth / 2;
-
-                  this.labelsHeight = this.labelsHeight ??
-                    this.textMeasureUtils!.measureFontHeight(this.plotOptions.font);
-
-                  let y = this.labelsHeight + 2;
-
-                  label = new Konva.Text({
-                    x: x,
-                    y: y,
-                    text: labelText,
-                    fill: this.plotOptions.foregroundColor.toString(),
-                    stroke: this.plotOptions.foregroundColor.toString(),
-                    font: FontHelper.fontToString(this.plotOptions.font)
-                  })
-
-                  group.add(label);
-                }
-
-                drawableElements.push(new BarsPlotDrawableElement(pointLocation, group, rect, label));
-              }
-            }
+            group.add(label);
           }
 
-          prevMetricPts = metricPoints;
+          drawableElement = new Bar(pointLocation, rect, group, rectShape, label);
         }
       }
-
-      return drawableElements;
     }
-  */
 
+    return drawableElement;
+  }
+
+  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
+    throw new Error('Bars plot doesn\'t support 2D rendering');
+  }
+
+  protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
+    for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
+      let metric = this.plotOptions.metrics[metricIdx];
+      let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
+
+      let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
+
+      if (metricValue) {
+
+        let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
+        let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
+
+        if (pointLocation && rect) {
+          let bar = plotElt as Bar;
+          bar.setBarBounds(rect);
+          bar.setBarLabel(metricValue.toFixed(this.plotOptions.labelsPrecision));
+        }
+      }
+    }
+  }
+
+  protected update2DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
+    throw new Error('Bars plot doesn\'t support 2D rendering');
+  }
+
+  private getBarRectForMetric(metricName: string, prevMetricName: string | undefined, xDimVal: DimensionValue<XDimensionType>): NumericDataRect | undefined {
+    let rectX: number | undefined;
+    let rectY: number | undefined;
+    let rectW: number | undefined;
+    let rectH: number | undefined;
+
+    let pointLocation = this.getMetricPoint1D(metricName, xDimVal);
+    let barWidthWithMargin = this.calculateBarMaxWidth(metricName);
+    if (pointLocation && barWidthWithMargin) {
+      if (!prevMetricName) {
+        rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
+        rectY = 0;
+        rectW = MathHelper.optimizeValue(barWidthWithMargin);
+        rectH = MathHelper.optimizeValue(pointLocation.y);
+      } else {
+        let prevPointLocation = this.getMetricPoint1D(prevMetricName, xDimVal);
+
+        if (prevPointLocation) {
+
+          let barHeight = pointLocation.y;
+
+          let barOriginY: number | undefined;
+
+          if (barHeight < 0) {
+            barOriginY = Math.min(prevPointLocation.y + 2, 0);
+          } else if (barHeight > 0) {
+            barOriginY = Math.max(prevPointLocation.y - 2, 0);
+          } else {
+            barOriginY = 0;
+          }
+
+          rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
+          rectY = MathHelper.optimizeValue(barOriginY);
+          rectW = MathHelper.optimizeValue(barWidthWithMargin);
+          rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
+        }
+      }
+    }
+
+    if (rectX !== undefined && rectY !== undefined && rectW !== undefined && rectH !== undefined) {
+      return NumericDataRect.apply(rectX, rectY, rectW, rectH);
+    }
+    else return undefined;
+  }
 
   /**
    * Calculates bar available width for metric name.
@@ -211,20 +184,21 @@ export class BarsPlot<TItemType,
    * */
   private calculateBarMaxWidth(metricName: string): number | undefined {
 
-    if(this.barMaxWidthMap.has(metricName)){
+    if (this.barMaxWidthMap.has(metricName)) {
       return this.barMaxWidthMap.get(metricName);
-    }
-    else {
-      let transformedPts = this.getMetricPoints1D(metricName);
+    } else {
+      let metricPoints = this.getMetricPoints1D(metricName);
 
-      if (transformedPts) {
-        if (transformedPts.length >= 2) {
+      let barWidth: number | undefined;
+
+      if (metricPoints) {
+        if (metricPoints.length >= 2) {
 
           let minDelta = Number.MAX_VALUE;
 
-          transformedPts.forEach((point, index) => {
+          metricPoints.forEach((point, index) => {
             if (index != 0) {
-              let prevPoint = transformedPts![index - 1];
+              let prevPoint = metricPoints![index - 1];
               let delta = point.x - prevPoint.x;
               if (delta < minDelta) {
                 minDelta = delta;
@@ -232,18 +206,17 @@ export class BarsPlot<TItemType,
             }
           });
 
-          this.barMaxWidthMap.set(metricName, minDelta);
+          barWidth = minDelta * 0.7;
+        } else {
+          barWidth = 1;
+        }
+      }
 
-          return minDelta;
-        } else if (this.visible && this.screen) {
-          let xMin = this.dataTransformation.dataToScreenRegionXY(this.visible.getMinXMinY(), this.visible, this.screen);
-          let xMax = this.dataTransformation.dataToScreenRegionXY(this.visible.getMaxXMaxY(), this.visible, this.screen);
+      if (barWidth) {
+        this.barMaxWidthMap.set(metricName, barWidth);
+      }
 
-          let maxWidth = xMax.x - xMin.x;
-          this.barMaxWidthMap.set(metricName, maxWidth);
-          return maxWidth;
-        } else return undefined;
-      } else return undefined;
+      return barWidth;
     }
   }
 
@@ -275,181 +248,11 @@ export class BarsPlot<TItemType,
     return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
   }
 
-  protected add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement {
-    let drawableElements: Array<PlotDrawableElement> = [];
-
-    let minY = 0;
-
-    let barAvailableWidthsMap: Map<string, number> = new Map<string, number>();
-
-    let isSingleBar = false;
-
-    for (let metric of this.plotOptions.metrics) {
-      let barAvailableWidth = this.calculateBarMaxWidth(metric.name);
-      if (barAvailableWidth) {
-        barAvailableWidthsMap.set(metric.name, barAvailableWidth);
-      }
-      let metricPoints = this.getMetricPoints1D(metric.name);
-
-      if (metricPoints?.length === 1) {
-        isSingleBar = true;
-      }
-
-      if (metricPoints) {
-        for (let point of metricPoints) {
-          minY = Math.min(minY, point.y);
-        }
-      }
-    }
-
-    for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
-      let metric = this.plotOptions.metrics[metricIdx];
-      let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
-
-      let metricValue = this.dataSet.getMetricValue(metric.name, xDimension.value);
-
-      if (metricValue) {
-
-        let prevMetricPts: NumericPoint[] | undefined =
-          prevMetric ? this.getMetricPoints1D(prevMetric.name) : undefined;
-
-        let barWidthWithMargin: number | undefined = barAvailableWidthsMap.get(metric.name);
-
-        if (barWidthWithMargin) {
-
-          if (isSingleBar) {
-            barWidthWithMargin *= 0.45;
-          } else {
-            barWidthWithMargin *= 0.7;
-          }
-
-          let barsColoring = this.colorsByMetricName.get(metric.name)!;
-
-          let sampleRect = new Konva.Rect({
-            stroke: barsColoring.stroke.toString(),
-            strokeWidth: 1,
-            fillLinearGradientStartPoint: {x: 0, y: 0},
-            fillLinearGradientEndPoint: {x: 0, y: 50},
-            fillLinearGradientColorStops: [
-              0,
-              barsColoring.fillGradient.min.toString(),
-              0.4,
-              barsColoring.fillGradient.max.toString(),
-              1,
-              barsColoring.fillGradient.max.toString()],
-          })
-
-
-          let rectX: number | undefined;
-          let rectY: number | undefined;
-          let rectW: number | undefined;
-          let rectH: number | undefined;
-
-          let pointLocation = metricPoints[ptIdx];
-
-          if (metricIdx == 0) {
-            rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-            rectY = 0;
-            rectW = MathHelper.optimizeValue(barWidthWithMargin);
-            rectH = MathHelper.optimizeValue(pointLocation.y);
-          } else {
-            let prevPointLocation = prevMetricPts![ptIdx];
-
-            let barHeight = pointLocation.y;
-
-            let barOriginY: number | undefined;
-
-            if (barHeight < 0) {
-              barOriginY = Math.min(prevPointLocation.y + 2, 0);
-            } else if (barHeight > 0) {
-              barOriginY = Math.max(prevPointLocation.y - 2, 0);
-            } else {
-              barOriginY = 0;
-            }
-
-            rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-            rectY = MathHelper.optimizeValue(barOriginY);
-            rectW = MathHelper.optimizeValue(barWidthWithMargin);
-            rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
-          }
-
-          if (rectH != 0) {
-
-            let group = new Konva.Group({
-              x: rectX,
-              y: rectY,
-              clipFunc: function (ctx) {
-                ctx.rect(rectX, rectY, rectW, rectH);
-              }
-            });
-
-            let rect = sampleRect.clone({
-              x: 0,
-              y: 0,
-              width: rectW,
-              height: rectH,
-            });
-
-            group.add(rect);
-
-            let label: Konva.Text | undefined;
-
-            if (this.plotOptions.drawLabelsOnBars) {
-
-              let labelText: string = metricValues[ptIdx].toFixed(this.plotOptions.labelsPrecision);
-
-              let textWidth = this.textMeasureUtils.measureTextSize(this.plotOptions.font, labelText).width;
-
-              let pointLocation = metricPoints[ptIdx];
-
-              let x = barWidthWithMargin / 2 - textWidth / 2;
-
-              this.labelsHeight = this.labelsHeight ??
-                this.textMeasureUtils!.measureFontHeight(this.plotOptions.font);
-
-              let y = this.labelsHeight + 2;
-
-              label = new Konva.Text({
-                x: x,
-                y: y,
-                text: labelText,
-                fill: this.plotOptions.foregroundColor.toString(),
-                stroke: this.plotOptions.foregroundColor.toString(),
-                font: FontHelper.fontToString(this.plotOptions.font)
-              })
-
-              group.add(label);
-            }
-
-            drawableElements.push(new BarsPlotDrawableElement(pointLocation, group, rect, label));
-          }
-        }
-
-        prevMetricPts = metricPoints;
-      }
-    }
-
-    return drawableElements;
-  }
-
-  protected add2DPlotElement(xDimension: DimensionValue<XDimensionType>, yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
-   throw new Error('Bars plot doesn\'t support 2D rendering');
-  }
-
-  protected update1DPlotElement(plotElt: PlotDrawableElement, xDimension: DimensionValue<XDimensionType>): PlotDrawableElement {
-    throw new Error('');
-  }
-
-  protected update2DPlotElement(plotElt: PlotDrawableElement, xDimension: DimensionValue<XDimensionType>, yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
-    throw new Error('');
-  }
-
   override clearPreCalculatedDataSetRelatedData(){
     super.clearPreCalculatedDataSetRelatedData();
     this.barMaxWidthMap.clear();
   }
 
-  /*
   override getBoundingRectangle() {
     let boundingRect = super.getBoundingRectangle();
 
@@ -472,7 +275,7 @@ export class BarsPlot<TItemType,
       }
     }
     return boundingRect;
-  }*/
+  }
 
 
 }

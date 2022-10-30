@@ -26,6 +26,17 @@ export class NumericDataRect extends DataRect<number, number> {
   }
 
   /**
+   * Creates numeric data rectangle.
+   * @param {number} minX - Left corner of rectangle coordinate.
+   * @param {number} width - Rectangle width.
+   * @param {number} minY - Top corner of rectangle coordinate.
+   * @param {number} height - Rectangle height.
+   */
+  static override apply(minX: number, minY: number, width: number, height: number): NumericDataRect {
+    return new NumericDataRect(minX, minX + width, minY, minY + height)
+  }
+
+  /**
    * Returns data rectangle size.
    * @returns {Size}
    */

@@ -34,8 +34,7 @@ export abstract class Plot<
   protected visible: NumericDataRect | undefined;
   protected screen: NumericDataRect | undefined;
 
-  protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>;
-  protected readonly dataTransformation: DataTransformation;
+  protected dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsClassType;
 
   private metricPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
@@ -49,14 +48,14 @@ export abstract class Plot<
   protected shapesGroup: Konva.Group;
 
   protected constructor(
-    dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
+    protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
     dataTransformation: DataTransformation,
     plotOptions: PlotOptionsType) {
     super();
 
-    this.dataSet = dataSet;
     this.dataTransformation = dataTransformation;
-    this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
+    this.plotOptions = this.buildPlotOptionsClass(plotOptions);
+    this.init(this.plotOptions);
 
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
@@ -78,8 +77,16 @@ export abstract class Plot<
 
     this.plotElements = [];
 
-    this.updatePlotFromDataSet(DataSetChange.fromDataSet(this.dataSet));
+    setTimeout(()=> {
+      this.updatePlotFromDataSet(DataSetChange.fromDataSet(this.dataSet));
+    });
   }
+
+  protected buildPlotOptionsClass(plotOptions: PlotOptionsType): PlotOptionsClassType {
+    return PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
+  }
+
+  protected init(plotOptions: PlotOptionsClassType) { }
 
   eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
     if (event.type === DataSetEventType.Changed) {
@@ -113,7 +120,6 @@ export abstract class Plot<
     let is2D = dataSetChange.is2D;
 
     let deleted: Array<PlotDrawableElement> = [];
-    let updated: Array<PlotDrawableElement> = [];
     let added: Array<PlotDrawableElement> = [];
     let deletedIndexes: Array<number> = [];
 
@@ -128,14 +134,16 @@ export abstract class Plot<
           deletedIndexes.push(i);
         } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
           let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
-          updated.push(this.update2DPlotElement(plotElt, xy[0], xy[1]));
+          this.update2DPlotElement(plotElt, xy[0], xy[1]);
         }
       }
 
       for(let tuple of dataSetChange2D.added){
         let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
-        this.plotElements.push(plotElt);
-        added.push(plotElt);
+        if(plotElt) {
+          this.plotElements.push(plotElt);
+          added.push(plotElt);
+        }
       }
     } else {
 
@@ -147,18 +155,20 @@ export abstract class Plot<
           deleted.push(plotElt);
           deletedIndexes.push(i);
         } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.x)) {
-          updated.push(this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.x)!));
+          this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.x)!);
         }
       }
 
       for(let value of dataSetChange1D.added){
         let plotElt = this.add1DPlotElement(value);
-        this.plotElements.push(plotElt);
-        added.push(plotElt);
+        if(plotElt) {
+          this.plotElements.push(plotElt);
+          added.push(plotElt);
+        }
       }
     }
 
-    return {deleted: deleted, deletedIndexes: deletedIndexes, updated: updated, added: added};
+    return {deleted: deleted, deletedIndexes: deletedIndexes, added: added};
   }
 
   protected clearPreCalculatedDataSetRelatedData(){
@@ -180,17 +190,17 @@ export abstract class Plot<
     }
   }
 
-  protected abstract add1DPlotElement(xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
+  protected abstract add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement | undefined;
 
   protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
-                                         xDimension: DimensionValue<XDimensionType>): PlotDrawableElement;
+                                         xDimVal: DimensionValue<XDimensionType>): void;
 
-  protected abstract add2DPlotElement(xDimension: DimensionValue<XDimensionType>,
-                                      yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
+  protected abstract add2DPlotElement(xDimVal: DimensionValue<XDimensionType>,
+                                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement | undefined;
 
   protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
-                                         xDimension: DimensionValue<XDimensionType>,
-                                         yDimension: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement;
+                                         xDimVal: DimensionValue<XDimensionType>,
+                                         yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): void;
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
@@ -230,6 +240,11 @@ export abstract class Plot<
     return this.metricPoints1DMap.get(metricName);
   }
 
+  protected getMetricPoint1D(metricName: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {
+    let metricPoints1D = this.getMetricPoints1D(metricName);
+    return metricPoints1D ? metricPoints1D[xDimension.index] : undefined;
+  }
+
   protected setContextFont(context: Konva.Context, font: FontInUnits) {
     context.setAttr('font', FontHelper.fontToString(font));
   }
@@ -248,7 +263,6 @@ export abstract class Plot<
 
 interface PlotElementsUpdate {
   deleted: Array<PlotDrawableElement>;
-  updated: Array<PlotDrawableElement>;
   added: Array<PlotDrawableElement>;
   deletedIndexes: Array<number>;
 }

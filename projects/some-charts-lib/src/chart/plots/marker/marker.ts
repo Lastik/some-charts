@@ -3,9 +3,9 @@ import Konva from "konva";
 import {NumericPoint} from "../../../geometry";
 import * as Color from "color";
 
-export class MarkerPlotDrawableElement extends PlotDrawableElement {
+export class Marker extends PlotDrawableElement {
 
-  public readonly markerShape: Konva.Shape;
+  private readonly markerShape: Konva.Shape;
 
   private _size: number;
   private _color: Color;
@@ -20,16 +20,16 @@ export class MarkerPlotDrawableElement extends PlotDrawableElement {
 
   public set size(value: number){
     this._size = value;
-    MarkerPlotDrawableElement.updateMarkerSize(this.markerShape, value)
+    Marker.updateMarkerSize(this.markerShape, value)
   }
 
   public set color(value: Color){
     this._color = value;
-    MarkerPlotDrawableElement.updateMarkerColor(this.markerShape, value);
+    Marker.updateMarkerColor(this.markerShape, value);
   }
 
   constructor(dataPoint: NumericPoint, color: Color, size: number) {
-    let markerShape = MarkerPlotDrawableElement.createMarkerShape(color, size);
+    let markerShape = Marker.createMarkerShape(color, size);
     super(dataPoint, markerShape);
     this.markerShape = markerShape;
     this._color = color;
