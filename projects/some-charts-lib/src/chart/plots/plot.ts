@@ -100,13 +100,13 @@ export abstract class Plot<
 
     for(let plotElt of updateResult.deleted){
       plotElt.destroy();
-      plotElt.konvaDrawable.remove();
+      plotElt.rootDrawable.remove();
     }
 
     pullAt(this.plotElements, updateResult.deletedIndexes);
 
     for(let plotElt of updateResult.added){
-      this.shapesGroup.add(plotElt.konvaDrawable);
+      this.shapesGroup.add(plotElt.rootDrawable);
     }
 
     this.clearPreCalculatedDataSetRelatedData();

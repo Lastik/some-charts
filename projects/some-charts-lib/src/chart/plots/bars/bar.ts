@@ -2,16 +2,18 @@ import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../geometry";
 import {TextMeasureUtils} from "../../../services";
+import {Font} from "../../../font";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 
   constructor(dataPoint: NumericPoint,
               private bounds: NumericDataRect,
-              konvaDrawable: Konva.Group,
+              private readonly font: Font,
+              rootDrawable: Konva.Group,
               private readonly boundsShape: Konva.Rect,
               private readonly textShape: Konva.Text | undefined,
               private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
-    super(dataPoint, konvaDrawable);
+    super(dataPoint, rootDrawable);
     this.setBarBounds(bounds);
   }
 
@@ -27,8 +29,8 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
 
   private updateBarShapes(barBoundsInScreenCoords: NumericDataRect) {
     this.boundsShape.setAttrs({
-      x: -barBoundsInScreenCoords.width / 2,
-      y: -barBoundsInScreenCoords.height,
+      x: barBoundsInScreenCoords.minX,
+      y: barBoundsInScreenCoords.minY,
       width: barBoundsInScreenCoords.width,
       height: barBoundsInScreenCoords.height
     })
@@ -43,13 +45,20 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   protected arrangeTextWithinBar() {
     if (this.textShape) {
       let labelText = this.textShape.text();
-      let textWidth = this.textMeasureUtils.measureTextWidth(this.textShape.getAttr('font'), labelText);
-      let textHeight = this.textMeasureUtils.measureTextHeight(this.textShape.getAttr('font'));
+      let textSize = this.textMeasureUtils.measureTextSize(this.font, labelText);
 
       this.textShape.setAttrs({
-        x: -textWidth / 2,
-        y: textHeight + 2
+        x: -textSize.width / 2,
+        y: textSize.height + 2
       });
     }
+  }
+
+  override getBoundingRectangle(): NumericDataRect {
+    return new NumericDataRect(
+      this.dataPoint.x + this.bounds.minX,
+      this.dataPoint.x + this.bounds.maxX,
+      this.dataPoint.y + this.bounds.minY,
+      this.dataPoint.y  + this.bounds.maxY);
   }
 }

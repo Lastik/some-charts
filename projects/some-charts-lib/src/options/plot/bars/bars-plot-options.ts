@@ -1,5 +1,4 @@
-import {TextOptions} from "../../common";
-import {FontUnits} from "../../../font";
+import {Font} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import {MetricOptions} from "../metric-options";
@@ -8,7 +7,7 @@ import * as Color from "color";
 /**
  * Bars plot options
  */
-export interface BarsPlotOptions extends PlotOptions, TextOptions {
+export interface BarsPlotOptions extends PlotOptions {
   /**
   * Array of metrics options.
   * */
@@ -25,6 +24,14 @@ export interface BarsPlotOptions extends PlotOptions, TextOptions {
    * True, if plot border must be darker than plot background. Otherwise, must be false.
    */
   useDarkerBorder?: boolean;
+  /**
+   * Font
+   */
+  font?: Font;
+  /**
+   * Foreground color
+   */
+  foregroundColor?: Color;
 }
 
 export class BarsPlotOptionsDefaults
@@ -37,8 +44,7 @@ export class BarsPlotOptionsDefaults
     useDarkerBorder: false,
     font: {
       family: 'Calibri',
-      size: 10,
-      units: FontUnits.Points
+      size: 13
     },
     foregroundColor: new Color("white")
   }

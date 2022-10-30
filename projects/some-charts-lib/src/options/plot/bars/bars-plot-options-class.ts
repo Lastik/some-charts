@@ -1,4 +1,4 @@
-import {FontInUnits} from "../../../font";
+import {Font} from "../../../font";
 import {PlotOptionsClass} from "../plot-options-class";
 import {BarsPlotOptions} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
@@ -11,7 +11,7 @@ import {Palette} from "../../../chart/plots";
 export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOptions {
   metrics: Array<MetricOptions<Color>>;
 
-  font: FontInUnits;
+  font: Font;
   foregroundColor: Color;
   drawLabelsOnBars?: boolean;
   labelsPrecision?: number;

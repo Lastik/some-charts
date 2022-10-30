@@ -5,15 +5,13 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
   public dataPoint: NumericPoint;
 
-  public readonly konvaDrawable: DrawableType;
-
-  constructor(dataPoint: NumericPoint, konvaDrawable: DrawableType) {
+  constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType) {
     this.dataPoint = dataPoint;
-    this.konvaDrawable = konvaDrawable;
+    this.rootDrawable = rootDrawable;
   }
 
   update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    PlotDrawableElement.updateKonvaDrawableLocation(this.konvaDrawable, this.dataPoint, dataTransformation, visible, screen)
+    PlotDrawableElement.updateKonvaDrawableLocation(this.rootDrawable, this.dataPoint, dataTransformation, visible, screen)
   }
 
   protected static updateKonvaDrawableLocation(konvaDrawable: Konva.Group | Konva.Shape, dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
@@ -22,6 +20,10 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   destroy() {
-    this.konvaDrawable.destroy();
+    this.rootDrawable.destroy();
+  }
+
+  getBoundingRectangle(): NumericDataRect {
+    return new NumericDataRect(this.dataPoint.x, this.dataPoint.x, this.dataPoint.y, this.dataPoint.y);
   }
 }

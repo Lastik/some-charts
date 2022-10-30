@@ -68,13 +68,7 @@ export class BarsPlot<TItemType,
 
         if (pointLocation && rect) {
 
-          let group = new Konva.Group({
-            /*clipFunc: function (ctx) {
-              if (rect) {
-                ctx.rect(0, 0, rect.width, rect.height);
-              }
-            }*/
-          });
+          let group = new Konva.Group();
 
           let rectShape = sampleRectShape.clone();
 
@@ -89,14 +83,17 @@ export class BarsPlot<TItemType,
             label = new Konva.Text({
               text: labelText,
               fill: this.plotOptions.foregroundColor.toString(),
-              stroke: this.plotOptions.foregroundColor.toString(),
-              font: FontHelper.fontToString(this.plotOptions.font)
+              fontSize: this.plotOptions.font.size,
+              fontFamily: this.plotOptions.font.family
             })
 
             group.add(label);
           }
 
-          drawableElement = new Bar(pointLocation, rect, group, rectShape, label);
+          drawableElement = new Bar(
+            pointLocation, rect,
+            this.plotOptions.font,
+            group, rectShape, label);
         }
       }
     }
@@ -140,33 +137,20 @@ export class BarsPlot<TItemType,
     let rectH: number | undefined;
 
     let pointLocation = this.getMetricPoint1D(metricName, xDimVal);
-    let barWidthWithMargin = this.calculateBarMaxWidth(metricName);
-    if (pointLocation && barWidthWithMargin) {
+    let barWidth = this.calculateBarMaxWidth(metricName);
+    if (pointLocation && barWidth) {
       if (!prevMetricName) {
-        rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-        rectY = 0;
-        rectW = MathHelper.optimizeValue(barWidthWithMargin);
+        rectX = MathHelper.optimizeValue(-barWidth);
+        rectY = -MathHelper.optimizeValue(pointLocation.y);
+        rectW = MathHelper.optimizeValue(barWidth);
         rectH = MathHelper.optimizeValue(pointLocation.y);
       } else {
         let prevPointLocation = this.getMetricPoint1D(prevMetricName, xDimVal);
 
         if (prevPointLocation) {
-
-          let barHeight = pointLocation.y;
-
-          let barOriginY: number | undefined;
-
-          if (barHeight < 0) {
-            barOriginY = Math.min(prevPointLocation.y + 2, 0);
-          } else if (barHeight > 0) {
-            barOriginY = Math.max(prevPointLocation.y - 2, 0);
-          } else {
-            barOriginY = 0;
-          }
-
-          rectX = MathHelper.optimizeValue(pointLocation.x - barWidthWithMargin / 2);
-          rectY = MathHelper.optimizeValue(barOriginY);
-          rectW = MathHelper.optimizeValue(barWidthWithMargin);
+          rectX = MathHelper.optimizeValue(-barWidth);
+          rectY = -MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
+          rectW = MathHelper.optimizeValue(barWidth);
           rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
         }
       }
@@ -254,6 +238,9 @@ export class BarsPlot<TItemType,
   }
 
   override getBoundingRectangle() {
+
+
+
     let boundingRect = super.getBoundingRectangle();
 
     if(boundingRect && this.visible && this.screen && this.plotOptions.metrics.length) {
