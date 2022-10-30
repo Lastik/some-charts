@@ -23,18 +23,12 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
 
   public setBarBounds(rect: NumericDataRect) {
     this.bounds = rect;
-/*
-    this.konvaDrawable.clipFunc((ctx) => {
-      if (bounds) {
-        ctx.bounds(0, 0, bounds.width, bounds.height);
-      }
-    });*/
   }
 
   private updateBarShapes(barBoundsInScreenCoords: NumericDataRect) {
     this.boundsShape.setAttrs({
-      x: barBoundsInScreenCoords.minX,
-      y: barBoundsInScreenCoords.minY,
+      x: -barBoundsInScreenCoords.width / 2,
+      y: -barBoundsInScreenCoords.height,
       width: barBoundsInScreenCoords.width,
       height: barBoundsInScreenCoords.height
     })
