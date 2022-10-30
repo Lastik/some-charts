@@ -102,6 +102,8 @@ export abstract class Plot<
       this.shapesGroup.add(plotElt.konvaDrawable);
     }
 
+    this.clearPreCalculatedDataSetRelatedData();
+
     if(this.visible && this.screen) {
       this.update(this.visible, this.screen);
     }
@@ -159,6 +161,10 @@ export abstract class Plot<
     return {deleted: deleted, deletedIndexes: deletedIndexes, updated: updated, added: added};
   }
 
+  protected clearPreCalculatedDataSetRelatedData(){
+    this.metricPoints1DMap.clear();
+  }
+
   /**
    * Sets visible and screen rectangle of plot
    * @param {DataRect} visible - Visible rectangle of plot.
@@ -206,6 +212,22 @@ export abstract class Plot<
     return metricValue ?
       new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue) :
       undefined;
+  }
+
+  protected getMetricPoints1D(metricName: string): Array<NumericPoint> | undefined {
+
+    if (!this.metricPoints1DMap.has(metricName)) {
+      let dimensionXValues = this.dataSet.dimensionXValues;
+
+      if (this.dataSet.is1D) {
+        let metricValues = this.dataSet.getMetricValues(metricName) as number[];
+        let points = dimensionXValues.map((dimXVal, index) => {
+          return new NumericPoint(dimXVal.toNumericValue(), metricValues[index])
+        });
+        this.metricPoints1DMap.set(metricName, points);
+      } else throw new Error("DataSet is not 1-Dimensional!");
+    }
+    return this.metricPoints1DMap.get(metricName);
   }
 
   protected setContextFont(context: Konva.Context, font: FontInUnits) {
