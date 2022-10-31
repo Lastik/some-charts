@@ -141,8 +141,8 @@ export abstract class Plot<
       for(let tuple of dataSetChange2D.added){
         let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
         if(plotElt) {
-          this.plotElements.push(plotElt);
-          added.push(plotElt);
+          this.plotElements.push(...plotElt);
+          added.push(...plotElt);
         }
       }
     } else {
@@ -162,8 +162,8 @@ export abstract class Plot<
       for(let value of dataSetChange1D.added){
         let plotElt = this.add1DPlotElement(value);
         if(plotElt) {
-          this.plotElements.push(plotElt);
-          added.push(plotElt);
+          this.plotElements.push(...plotElt);
+          added.push(...plotElt);
         }
       }
     }
@@ -190,13 +190,13 @@ export abstract class Plot<
     }
   }
 
-  protected abstract add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement | undefined;
+  protected abstract add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[];
 
   protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
                                          xDimVal: DimensionValue<XDimensionType>): void;
 
   protected abstract add2DPlotElement(xDimVal: DimensionValue<XDimensionType>,
-                                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement | undefined;
+                                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[];
 
   protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
                                          xDimVal: DimensionValue<XDimensionType>,

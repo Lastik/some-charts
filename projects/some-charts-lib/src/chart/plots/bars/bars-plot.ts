@@ -35,8 +35,8 @@ export class BarsPlot<TItemType,
     this.colorsByMetricName = new Map(this.plotOptions.metrics.map(m => [m.name, this.getBarsColoring(m.color)]));
   }
 
-  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement | undefined {
-    let drawableElement: PlotDrawableElement | undefined;
+  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
+    let drawableElements: PlotDrawableElement[] = [];
 
     for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
       let metric = this.plotOptions.metrics[metricIdx];
@@ -55,19 +55,19 @@ export class BarsPlot<TItemType,
 
           let labelText: string | undefined = this.plotOptions.drawLabelsOnBars ? metricValue.toFixed(this.plotOptions.labelsPrecision) : undefined;
 
-          drawableElement = new Bar(
+          drawableElements.push(new Bar(
             pointLocation, rect,
             barsColoring,
             labelText, this.plotOptions.font,
-            this.plotOptions.foregroundColor);
+            this.plotOptions.foregroundColor));
         }
       }
     }
 
-    return drawableElement;
+    return drawableElements;
   }
 
-  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement {
+  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {
     throw new Error('Bars plot doesn\'t support 2D rendering');
   }
 

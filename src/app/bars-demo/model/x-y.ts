@@ -1,4 +1,5 @@
 export interface XY {
   x: string;
-  y: number;
+  y1: number;
+  y2: number;
 }

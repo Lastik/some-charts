@@ -33,21 +33,21 @@ export class MarkerPlot<TItemType,
       this.getDependantNumericValueForMetricValue(this.plotOptions.markerSize, xDimVal, yDimVal)!;
   }
 
-  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement | undefined {
+  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
     let markerSize = this.getMarkerSize(xDimVal);
     let metricValue = this.dataSet.getMetricValue(this.plotOptions.metric.name, xDimVal.value)!;
 
     let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
-    return MarkerPlot.createElementForMarker(point, markerColor, markerSize);
+    return [MarkerPlot.createElementForMarker(point, markerColor, markerSize)];
   }
 
-  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement | undefined {
+  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): [PlotDrawableElement] {
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal, yDimVal);
-    let markerSize =  this.getMarkerSize(xDimVal, yDimVal);
+    let markerSize = this.getMarkerSize(xDimVal, yDimVal);
 
     let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
-    return MarkerPlot.createElementForMarker(point, markerColor, markerSize);
+    return [MarkerPlot.createElementForMarker(point, markerColor, markerSize)];
   }
 
   protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {

@@ -19,20 +19,27 @@ export class BarsDemoComponent implements OnInit {
     let dataSet = new DataSet<XY, string>(
       [{
         x: 'first',
-        y: 10
+        y1: 10,
+        y2: 15,
       }, {
         x: 'second',
-        y: 20
+        y1: 20,
+        y2: 25,
       }, {
         x: 'third',
-        y: 30
+        y1: 30,
+        y2: 35,
       }, {
         x: 'fourth',
-        y: 15
+        y1: 15,
+        y2: 20,
       }],
       {
-        y: item => {
-          return item.y
+        y1: item => {
+          return item.y1
+        },
+        y2: item => {
+          return item.y2
         }
       },
       item => {
@@ -53,9 +60,13 @@ export class BarsDemoComponent implements OnInit {
           {
             kind: PlotKind.Bars,
             metrics: [{
-              name: 'y',
-              caption: 'Y',
+              name: 'y1',
+              caption: 'Y1',
               color: new Color("#AA0000")
+            },{
+              name: 'y2',
+              caption: 'Y2',
+              color: new Color("#00AA00")
             }]
           } as BarsPlotOptions
         ],
