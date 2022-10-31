@@ -232,11 +232,13 @@ export class Chart<TItemType = any,
     this.isFitToViewModeEnabled = false;
 
     if (!visibleRect || this.options?.navigation?.isFitToViewModeEnabled) {
-      this.fitToView();
+      setTimeout(() => {
+        this.fitToView();
 
-      if(this.options?.navigation?.isFitToViewModeEnabled){
-        this.isFitToViewModeEnabled = true;
-      }
+        if (this.options?.navigation?.isFitToViewModeEnabled) {
+          this.isFitToViewModeEnabled = true;
+        }
+      });
     }
   }
 

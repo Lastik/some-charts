@@ -7,7 +7,7 @@ import {DataSet, DimensionValue} from "../../../data";
 import {Plot} from "../plot";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {FontHelper, MathHelper} from "../../../services";
+import {MathHelper} from "../../../services";
 import {BarsPlotOptionsClass} from "../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Bar} from "./bar";
@@ -48,52 +48,18 @@ export class BarsPlot<TItemType,
 
         let barsColoring = this.colorsByMetricName?.get(metric.name)!;
 
-        let sampleRectShape = new Konva.Rect({
-          stroke: barsColoring.stroke.toString(),
-          strokeWidth: 1,
-          fillLinearGradientStartPoint: {x: 0, y: 0},
-          fillLinearGradientEndPoint: {x: 0, y: 50},
-          fillLinearGradientColorStops: [
-            0,
-            barsColoring.fillGradient.min.toString(),
-            0.4,
-            barsColoring.fillGradient.max.toString(),
-            1,
-            barsColoring.fillGradient.max.toString()],
-        })
-
-
         let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
         let rect: NumericDataRect | undefined = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
 
         if (pointLocation && rect) {
 
-          let group = new Konva.Group();
-
-          let rectShape = sampleRectShape.clone();
-
-          group.add(rectShape);
-
-          let label: Konva.Text | undefined;
-
-          if (this.plotOptions.drawLabelsOnBars) {
-
-            let labelText: string = metricValue.toFixed(this.plotOptions.labelsPrecision);
-
-            label = new Konva.Text({
-              text: labelText,
-              fill: this.plotOptions.foregroundColor.toString(),
-              fontSize: this.plotOptions.font.size,
-              fontFamily: this.plotOptions.font.family
-            })
-
-            group.add(label);
-          }
+          let labelText: string | undefined = this.plotOptions.drawLabelsOnBars ? metricValue.toFixed(this.plotOptions.labelsPrecision) : undefined;
 
           drawableElement = new Bar(
             pointLocation, rect,
-            this.plotOptions.font,
-            group, rectShape, label);
+            barsColoring,
+            labelText, this.plotOptions.font,
+            this.plotOptions.foregroundColor);
         }
       }
     }
@@ -120,7 +86,7 @@ export class BarsPlot<TItemType,
         if (pointLocation && rect) {
           let bar = plotElt as Bar;
           bar.setBarBounds(rect);
-          bar.setBarLabel(metricValue.toFixed(this.plotOptions.labelsPrecision));
+          bar.setBarLabelText(metricValue.toFixed(this.plotOptions.labelsPrecision));
         }
       }
     }
@@ -140,7 +106,7 @@ export class BarsPlot<TItemType,
     let barWidth = this.calculateBarMaxWidth(metricName);
     if (pointLocation && barWidth) {
       if (!prevMetricName) {
-        rectX = MathHelper.optimizeValue(-barWidth);
+        rectX = MathHelper.optimizeValue(-barWidth / 2);
         rectY = -MathHelper.optimizeValue(pointLocation.y);
         rectW = MathHelper.optimizeValue(barWidth);
         rectH = MathHelper.optimizeValue(pointLocation.y);
@@ -148,7 +114,7 @@ export class BarsPlot<TItemType,
         let prevPointLocation = this.getMetricPoint1D(prevMetricName, xDimVal);
 
         if (prevPointLocation) {
-          rectX = MathHelper.optimizeValue(-barWidth);
+          rectX = MathHelper.optimizeValue(-barWidth / 2);
           rectY = -MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
           rectW = MathHelper.optimizeValue(barWidth);
           rectH = MathHelper.optimizeValue(pointLocation.y - prevPointLocation.y);
@@ -236,33 +202,4 @@ export class BarsPlot<TItemType,
     super.clearPreCalculatedDataSetRelatedData();
     this.barMaxWidthMap.clear();
   }
-
-  override getBoundingRectangle() {
-
-
-
-    let boundingRect = super.getBoundingRectangle();
-
-    if(boundingRect && this.visible && this.screen && this.plotOptions.metrics.length) {
-      let horizontalMargin: number | undefined = undefined;
-      for (let metric of this.plotOptions.metrics) {
-        let barAvailWidth = this.calculateBarMaxWidth(metric.name);
-        if(barAvailWidth) {
-          horizontalMargin = Math.min(horizontalMargin ?? Number.MAX_VALUE, barAvailWidth);
-        }
-      }
-
-      if(horizontalMargin) {
-
-        let visibleHorizontalRange = this.visible.getHorizontalRange();
-        let screenHorizontalMargin = this.dataTransformation.screenToDataX(horizontalMargin, visibleHorizontalRange, this.screen.getHorizontalRange().getLength()) - visibleHorizontalRange.min;
-
-        boundingRect = new NumericDataRect(boundingRect.minX - screenHorizontalMargin / 2, boundingRect.maxX + screenHorizontalMargin / 2, boundingRect.minY, boundingRect.maxY);
-        boundingRect = boundingRect.merge(new NumericDataRect(boundingRect.minX, boundingRect.maxX, 0, 0));
-      }
-    }
-    return boundingRect;
-  }
-
-
 }

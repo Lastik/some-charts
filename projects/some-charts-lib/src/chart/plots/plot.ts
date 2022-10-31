@@ -77,7 +77,7 @@ export abstract class Plot<
 
     this.plotElements = [];
 
-    setTimeout(()=> {
+    setTimeout(() => {
       this.updatePlotFromDataSet(DataSetChange.fromDataSet(this.dataSet));
     });
   }
@@ -253,7 +253,7 @@ export abstract class Plot<
    * Calculates bounding rectangle of this plot.
    * */
   getBoundingRectangle(): NumericDataRect | undefined {
-    return this.dataSet.getBoundingRectangle(this.plotOptions.metricsOptions.map(o => o.name));
+    return this.plotElements.map(plot => plot.getBoundingRectangle()).reduce((l, r) => l.merge(r));
   }
 
   dispose(): void {

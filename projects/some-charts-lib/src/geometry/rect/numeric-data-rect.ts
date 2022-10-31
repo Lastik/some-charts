@@ -102,10 +102,19 @@ export class NumericDataRect extends DataRect<number, number> {
     let maxX = Math.max(thisMaxXmaxY.x, otherMaxXmaxY.x);
 
     let minY = Math.min(thisMinXminY.y, otherMinXminY.y);
-    let maxY = Math.max(thisMaxXmaxY.y, otherMinXminY.y);
+    let maxY = Math.max(thisMaxXmaxY.y, otherMaxXmaxY.y);
 
 
     return new NumericDataRect(minX, maxX, minY, maxY);
+  }
+
+  /**
+   * Adds numeric point to rect coordinates.
+   * @param {NumericPoint} point - Point to add.
+   * @returns {NumericDataRect}
+   */
+  addOffset(point: NumericPoint): NumericDataRect {
+    return new NumericDataRect(this.minX + point.x, this.maxX + point.x, this.minY + point.y, this.maxY + point.y);
   }
 
   /**

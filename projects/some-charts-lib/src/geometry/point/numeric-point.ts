@@ -24,6 +24,14 @@ export class NumericPoint extends Point<number>{
   }
 
   /**
+   * Creates additive inversion for this point such as this + other = 0
+   * @returns {NumericPoint}
+   */
+  additiveInvert(): NumericPoint {
+    return new NumericPoint(-this.x, -this.y);
+  }
+
+  /**
    * Compares x coordinates of two numeric points.
    * @param {NumericPoint} point1 - First point to compare.
    * @param {NumericPoint} point2 - Second point to compare.

@@ -1,22 +1,28 @@
 import Konva from "konva";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
+import {TextMeasureUtils} from "../../services";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> {
 
   public dataPoint: NumericPoint;
 
-  constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType) {
+  constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
+              protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     this.dataPoint = dataPoint;
     this.rootDrawable = rootDrawable;
   }
 
   update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    PlotDrawableElement.updateKonvaDrawableLocation(this.rootDrawable, this.dataPoint, dataTransformation, visible, screen)
+    this.updateRootDrawableLocation(dataTransformation, visible, screen)
   }
 
-  protected static updateKonvaDrawableLocation(konvaDrawable: Konva.Group | Konva.Shape, dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    let screenLocation = dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
-    konvaDrawable.setPosition(screenLocation);
+  protected updateRootDrawableLocation(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
+    let screenLocation = this.getLocationOnScreen(dataTransformation, visible, screen);
+    this.rootDrawable.setPosition(screenLocation);
+  }
+
+  protected getLocationOnScreen(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
+    return dataTransformation.dataToScreenRegionXY(this.dataPoint, visible, screen);
   }
 
   destroy() {

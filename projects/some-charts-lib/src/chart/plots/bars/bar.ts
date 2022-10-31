@@ -1,33 +1,72 @@
 import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../geometry";
-import {TextMeasureUtils} from "../../../services";
 import {Font} from "../../../font";
+import {BarsColoring} from "./bars-coloring";
+import * as Color from "color";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 
+  private readonly boundsShape: Konva.Rect;
+  private readonly textShape: Konva.Text | undefined;
+
+  private relativeBounds: NumericDataRect;
+  private readonly labelFont: Font;
+
   constructor(dataPoint: NumericPoint,
-              private bounds: NumericDataRect,
-              private readonly font: Font,
-              rootDrawable: Konva.Group,
-              private readonly boundsShape: Konva.Rect,
-              private readonly textShape: Konva.Text | undefined,
-              private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
-    super(dataPoint, rootDrawable);
-    this.setBarBounds(bounds);
+              relativeBounds: NumericDataRect,
+              coloring: BarsColoring,
+              labelText: string | undefined,
+              labelFont: Font,
+              labelColor: Color) {
+    let root = new Konva.Group();
+    super(dataPoint, root);
+
+    this.relativeBounds = relativeBounds;
+    this.labelFont = labelFont;
+
+    this.boundsShape = new Konva.Rect({
+      stroke: coloring.stroke.toString(),
+      strokeWidth: 1,
+      fillLinearGradientStartPoint: {x: 0, y: 0},
+      fillLinearGradientEndPoint: {x: 0, y: 50},
+      fillLinearGradientColorStops: [
+        0,
+        coloring.fillGradient.min.toString(),
+        0.4,
+        coloring.fillGradient.max.toString(),
+        1,
+        coloring.fillGradient.max.toString()],
+    });
+    root.add(this.boundsShape);
+
+    if(labelText) {
+      this.textShape = new Konva.Text({
+        text: labelText,
+        fill: labelColor.toString(),
+        fontSize: labelFont.size,
+        fontFamily: labelFont.family
+      })
+      root.add(this.textShape);
+    }
+
+    this.setBarBounds(relativeBounds);
   }
 
   override update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
     super.update(dataTransformation, visible, screen);
-    this.updateBarShapes(dataTransformation.dataToScreenRegionForRect(this.bounds, visible, screen));
+    let locationOnScreen = this.getLocationOnScreen(dataTransformation, visible, screen);
+    this.updateBarBoundingShape(
+      dataTransformation.dataToScreenRegionForRect(this.relativeBounds.addOffset(this.dataPoint), visible, screen).addOffset(locationOnScreen.additiveInvert())
+    );
     this.arrangeTextWithinBar();
   }
 
   public setBarBounds(rect: NumericDataRect) {
-    this.bounds = rect;
+    this.relativeBounds = rect;
   }
 
-  private updateBarShapes(barBoundsInScreenCoords: NumericDataRect) {
+  private updateBarBoundingShape(barBoundsInScreenCoords: NumericDataRect) {
     this.boundsShape.setAttrs({
       x: barBoundsInScreenCoords.minX,
       y: barBoundsInScreenCoords.minY,
@@ -36,16 +75,16 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     })
   }
 
-  public setBarLabel(label: string) {
+  public setBarLabelText(text: string) {
     this.textShape?.setAttrs({
-      text: label
+      text: text
     })
   }
 
   protected arrangeTextWithinBar() {
     if (this.textShape) {
       let labelText = this.textShape.text();
-      let textSize = this.textMeasureUtils.measureTextSize(this.font, labelText);
+      let textSize = this.textMeasureUtils.measureTextSize(this.labelFont, labelText);
 
       this.textShape.setAttrs({
         x: -textSize.width / 2,
@@ -55,10 +94,6 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   }
 
   override getBoundingRectangle(): NumericDataRect {
-    return new NumericDataRect(
-      this.dataPoint.x + this.bounds.minX,
-      this.dataPoint.x + this.bounds.maxX,
-      this.dataPoint.y + this.bounds.minY,
-      this.dataPoint.y  + this.bounds.maxY);
+    return this.relativeBounds.addOffset(this.dataPoint);
   }
 }
