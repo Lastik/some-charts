@@ -53,7 +53,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     this.setBarBounds(relativeBounds);
   }
 
-  override update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
+  override update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean) {
     super.update(dataTransformation, visible, screen);
     let locationOnScreen = this.getLocationOnScreen(dataTransformation, visible, screen);
     this.updateBarBoundingShape(

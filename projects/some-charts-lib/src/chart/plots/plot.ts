@@ -112,7 +112,7 @@ export abstract class Plot<
     this.clearPreCalculatedDataSetRelatedData();
 
     if(this.visible && this.screen) {
-      this.update(this.visible, this.screen);
+      this.update(this.visible, this.screen, true);
     }
   }
 
@@ -179,13 +179,14 @@ export abstract class Plot<
    * Sets visible and screen rectangle of plot
    * @param {DataRect} visible - Visible rectangle of plot.
    * @param {DataRect} screen - Screen rectangle of plot.
+   * @param {boolean} animate - Animate plot elements transitions for this update or not.
    */
-  update(visible: NumericDataRect, screen: NumericDataRect) {
+  update(visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false) {
     this.visible = visible;
     this.screen = screen;
     if(this.visible && this.screen){
       for(let plotElement of this.plotElements){
-        plotElement.update(this.dataTransformation, this.visible, this.screen);
+        plotElement.update(this.dataTransformation, this.visible, this.screen, animate);
       }
     }
   }

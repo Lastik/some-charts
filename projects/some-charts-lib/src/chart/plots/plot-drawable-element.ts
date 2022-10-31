@@ -12,11 +12,11 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
     this.rootDrawable = rootDrawable;
   }
 
-  update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    this.updateRootDrawableLocation(dataTransformation, visible, screen)
+  update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false): void {
+    this.updateRootDrawableLocation(dataTransformation, visible, screen, animate)
   }
 
-  protected updateRootDrawableLocation(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
+  protected updateRootDrawableLocation(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false): void {
     let screenLocation = this.getLocationOnScreen(dataTransformation, visible, screen);
     this.rootDrawable.setPosition(screenLocation);
   }
