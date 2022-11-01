@@ -156,8 +156,6 @@ export class Chart<TItemType = any,
     this._visibleRect = visibleRect;
     this._visibleRectAsNumeric = visibleRect ? this.dimensionalVisibleRectToNumeric(visibleRect) : new NumericDataRect(0, 1, 0, 1)
 
-    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
-
     let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes!));
 
     this.contentItems = [];
@@ -228,6 +226,8 @@ export class Chart<TItemType = any,
     }
 
     this.updateNumeric(this.visibleRectAsNumeric);
+
+    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
     this.isFitToViewModeEnabled = false;
 

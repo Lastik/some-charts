@@ -70,9 +70,13 @@ export class BarsDemoComponent implements OnInit {
     }, 2000)
 
     let chart = new Chart<XY, string>(
+
       '#chart-element',
       dataSet,
       {
+        navigation: {
+          isFitToViewModeEnabled: true
+        },
         header: {
           text: 'Заголовок графика'
         },
