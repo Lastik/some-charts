@@ -49,6 +49,26 @@ export class BarsDemoComponent implements OnInit {
       Sorting.None
     );
 
+    setTimeout(()=>{
+      dataSet.update([{
+        x: 'first',
+        y1: 14,
+        y2: 17,
+      }, {
+        x: 'second',
+        y1: 23,
+        y2: 30,
+      }, {
+        x: 'third',
+        y1: 25,
+        y2: 20,
+      }, {
+        x: 'fourth',
+        y1: 10,
+        y2: 16,
+      }])
+    }, 2000)
+
     let chart = new Chart<XY, string>(
       '#chart-element',
       dataSet,
@@ -67,7 +87,8 @@ export class BarsDemoComponent implements OnInit {
               name: 'y2',
               caption: 'Y2',
               color: new Color("#00AA00")
-            }]
+            }],
+            animate: true
           } as BarsPlotOptions
         ],
         axes: {

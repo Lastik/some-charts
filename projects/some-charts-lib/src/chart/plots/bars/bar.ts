@@ -50,19 +50,19 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
       root.add(this.textShape);
     }
 
-    this.setBarBounds(relativeBounds);
+    this.setBarRelativeBounds(relativeBounds);
   }
 
-  override update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean) {
-    super.update(dataTransformation, visible, screen);
-    let locationOnScreen = this.getLocationOnScreen(dataTransformation, visible, screen);
+  override updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
+    let locationOnScreen = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
     this.updateBarBoundingShape(
-      dataTransformation.dataToScreenRegionForRect(this.relativeBounds.addOffset(this.dataPoint), visible, screen).addOffset(locationOnScreen.additiveInvert())
+      dataTransformation.dataToScreenRegionForRect(this.relativeBounds.addOffset(this.dataPoint.animatedValue), visible, screen)
+        .addOffset(locationOnScreen.additiveInvert())
     );
     this.arrangeTextWithinBar();
   }
 
-  public setBarBounds(rect: NumericDataRect) {
+  public setBarRelativeBounds(rect: NumericDataRect) {
     this.relativeBounds = rect;
   }
 
@@ -94,6 +94,6 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   }
 
   override getBoundingRectangle(): NumericDataRect {
-    return this.relativeBounds.addOffset(this.dataPoint);
+    return this.relativeBounds.addOffset(this.dataPoint.animatedValue);
   }
 }

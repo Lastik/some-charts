@@ -112,7 +112,7 @@ export abstract class Plot<
     this.clearPreCalculatedDataSetRelatedData();
 
     if(this.visible && this.screen) {
-      this.update(this.visible, this.screen, true);
+      this.update(this.visible, this.screen);
     }
   }
 
@@ -129,11 +129,11 @@ export abstract class Plot<
 
       for (let i = 0; i < this.plotElements.length; i++) {
         let plotElt = this.plotElements[i];
-        if (dataSetChange2D.isDeleted(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
+        if (dataSetChange2D.isDeleted(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)) {
           deleted.push(plotElt);
           deletedIndexes.push(i);
-        } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)) {
-          let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.x, plotElt.dataPoint.y)!;
+        } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)) {
+          let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)!;
           this.update2DPlotElement(plotElt, xy[0], xy[1]);
         }
       }
@@ -151,11 +151,11 @@ export abstract class Plot<
 
       for (let i = 0; i < this.plotElements.length; i++) {
         let plotElt = this.plotElements[i];
-        if (dataSetChange1D.isDeleted(plotElt.dataPoint.x)) {
+        if (dataSetChange1D.isDeleted(plotElt.dataPoint.actualValue.x)) {
           deleted.push(plotElt);
           deletedIndexes.push(i);
-        } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.x)) {
-          this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.x)!);
+        } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.actualValue.x)) {
+          this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.actualValue.x)!);
         }
       }
 
@@ -179,14 +179,13 @@ export abstract class Plot<
    * Sets visible and screen rectangle of plot
    * @param {DataRect} visible - Visible rectangle of plot.
    * @param {DataRect} screen - Screen rectangle of plot.
-   * @param {boolean} animate - Animate plot elements transitions for this update or not.
    */
-  update(visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false) {
+  update(visible: NumericDataRect, screen: NumericDataRect) {
     this.visible = visible;
     this.screen = screen;
     if(this.visible && this.screen){
       for(let plotElement of this.plotElements){
-        plotElement.update(this.dataTransformation, this.visible, this.screen, animate);
+        plotElement.updateShapes(this.dataTransformation, this.visible, this.screen);
       }
     }
   }

@@ -1,28 +1,55 @@
 import Konva from "konva";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 import {TextMeasureUtils} from "../../services";
+import {AnimatedProperty} from "./animated-property";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> {
 
-  public dataPoint: NumericPoint;
+  public readonly dataPoint: AnimatedProperty<NumericPoint>;
+
+  private runningAnimation: Konva.Animation | undefined;
 
   constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
               protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
-    this.dataPoint = dataPoint;
+    this.dataPoint = new AnimatedProperty(dataPoint);
     this.rootDrawable = rootDrawable;
   }
 
-  update(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false): void {
-    this.updateRootDrawableLocation(dataTransformation, visible, screen, animate)
+  updateShapes(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
+    if (!this.dataPoint.isAnimationInProcess) {
+      this.updateRootDrawableRenderLocation(this.dataPoint.animatedValue, dataTransformation, visible, screen);
+      this.updateShapesInStatic(this.dataPoint.animatedValue, dataTransformation, visible, screen);
+    } else {
+      let self = this;
+
+      if(this.runningAnimation){
+        this.runningAnimation.stop();
+      }
+
+      this.runningAnimation = new Konva.Animation(function (frame) {
+
+        self.dataPoint.tick(frame?.time ?? self.dataPoint.animationDuration!)
+
+        self.updateRootDrawableRenderLocation(self.dataPoint.animatedValue, dataTransformation, visible, screen);
+        self.updateShapesInStatic(self.dataPoint.animatedValue, dataTransformation, visible, screen);
+
+        if(!self.dataPoint.isAnimationInProcess){
+          self.runningAnimation?.stop();
+          self.runningAnimation = undefined;
+        }
+      }, this.rootDrawable.getLayer());
+    }
   }
 
-  protected updateRootDrawableLocation(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect, animate: boolean = false): void {
-    let screenLocation = this.getLocationOnScreen(dataTransformation, visible, screen);
+  updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
+
+  private updateRootDrawableRenderLocation(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
+    let screenLocation = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
     this.rootDrawable.setPosition(screenLocation);
   }
 
-  protected getLocationOnScreen(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
-    return dataTransformation.dataToScreenRegionXY(this.dataPoint, visible, screen);
+  protected getLocationOnScreen(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
+    return dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
   }
 
   destroy() {
@@ -30,6 +57,9 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   getBoundingRectangle(): NumericDataRect {
-    return new NumericDataRect(this.dataPoint.x, this.dataPoint.x, this.dataPoint.y, this.dataPoint.y);
+
+    let animatedDataPoint = this.dataPoint.animatedValue;
+
+    return new NumericDataRect(animatedDataPoint.x, animatedDataPoint.x, animatedDataPoint.y, animatedDataPoint.y);
   }
 }

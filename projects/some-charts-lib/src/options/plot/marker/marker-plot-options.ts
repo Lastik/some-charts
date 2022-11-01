@@ -29,7 +29,9 @@ export class MarkerPlotOptionsDefaults
       color: new Color('blue')
     },
     markerSize: 5,
-    kind: PlotKind.Marker
+    kind: PlotKind.Marker,
+    animate: false,
+    animationDuration: 600
   }
 
   public static get Instance()

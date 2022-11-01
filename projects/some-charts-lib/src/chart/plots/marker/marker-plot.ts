@@ -58,7 +58,8 @@ export class MarkerPlot<TItemType,
     let marker = plotElt as Marker;
 
     if (markerColor && markerSize && metricValue) {
-      marker.dataPoint = new NumericPoint(marker.dataPoint.x, metricValue);
+      marker.dataPoint.setValue(new NumericPoint(marker.dataPoint.actualValue.x, metricValue),
+        this.plotOptions.animate, this.plotOptions.animationDuration);
       marker.size = markerSize;
       marker.color = markerColor;
     }
@@ -71,7 +72,8 @@ export class MarkerPlot<TItemType,
     let point = new NumericPoint(xDimVal.toNumericValue(), yDimVal.toNumericValue());
 
     let marker = plotElt as Marker;
-    marker.dataPoint = point;
+    marker.dataPoint.setValue(point,
+      this.plotOptions.animate, this.plotOptions.animationDuration);
     marker.size = markerSize;
     marker.color = markerColor;
   }

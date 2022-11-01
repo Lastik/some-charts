@@ -46,7 +46,9 @@ export class BarsPlotOptionsDefaults
       family: 'Calibri',
       size: 13
     },
-    foregroundColor: new Color("white")
+    foregroundColor: new Color("white"),
+    animate: false,
+    animationDuration: 600
   }
 
   public static get Instance()

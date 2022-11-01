@@ -4,5 +4,7 @@
 import {PlotKind} from "./plot-kind";
 
 export interface PlotOptions {
-  kind: PlotKind
+  kind: PlotKind;
+  animate?: boolean;
+  animationDuration?: number;
 }
