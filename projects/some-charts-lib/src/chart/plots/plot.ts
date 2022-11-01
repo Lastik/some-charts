@@ -6,7 +6,8 @@ import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../..
 import {
   DataSet,
   DataSetChange,
-  DataSetChange1D, DataSetChange2D,
+  DataSetChange1D,
+  DataSetChange2D,
   DataSetChangedEvent,
   DataSetEventType,
   DimensionValue
@@ -17,9 +18,10 @@ import {Transition} from "../../transition";
 import {FontHelper} from "../../services";
 import {IDisposable} from "../../i-disposable";
 
-import {EventBase, EventListener} from "../../events";
+import {ACEventTarget, EventBase, EventListener} from "../../events";
 import {PlotDrawableElement} from "./plot-drawable-element";
 import {pullAt} from "lodash-es";
+import {AnimationEventType} from "./event";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -27,7 +29,7 @@ export abstract class Plot<
   TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem<Konva.Group>
-  implements EventListener<DataSetEventType>, IDisposable{
+  implements EventListener<DataSetEventType | AnimationEventType>, IDisposable{
 
   protected plotElements: PlotDrawableElement[];
 
@@ -38,6 +40,8 @@ export abstract class Plot<
   protected plotOptions: PlotOptionsClassType;
 
   private metricPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
+
+  public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
   protected static readonly errors = {
     doesntSupport2DData: "This plot doesn't support 2D Data"
@@ -60,6 +64,8 @@ export abstract class Plot<
     this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
 
     this.layerId = `plot-layer-${this.id}`;
+
+    this.eventTarget = new ACEventTarget<AnimationEventType>();
 
     let self = this;
 
@@ -88,10 +94,13 @@ export abstract class Plot<
 
   protected init(plotOptions: PlotOptionsClassType) { }
 
-  eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
+  eventCallback(event: EventBase<DataSetEventType | AnimationEventType>, options?: any): void {
     if (event.type === DataSetEventType.Changed) {
       let changedEvent = event as DataSetChangedEvent<XDimensionType, YDimensionType>;
       this.updatePlotFromDataSet(changedEvent.change);
+    }
+    else if(event.type === AnimationEventType.Tick) {
+      this.eventTarget.fireEvent(event as EventBase<AnimationEventType>);
     }
   }
 
@@ -99,7 +108,7 @@ export abstract class Plot<
     let updateResult = this.updatePlotElements(dataSetChange);
 
     for(let plotElt of updateResult.deleted){
-      plotElt.destroy();
+      plotElt.dispose();
       plotElt.rootDrawable.remove();
     }
 
@@ -107,6 +116,7 @@ export abstract class Plot<
 
     for(let plotElt of updateResult.added){
       this.shapesGroup.add(plotElt.rootDrawable);
+      plotElt.eventTarget.addListener(AnimationEventType.Tick, this);
     }
 
     this.clearPreCalculatedDataSetRelatedData();
@@ -258,6 +268,7 @@ export abstract class Plot<
 
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
+    this.eventTarget.dispose();
   }
 }
 

@@ -1,8 +1,8 @@
 ﻿import {EventListener} from "./event-listener";
 import {EventBase} from "./event-base";
-import {DataSetEventType} from "../data";
+import {IDisposable} from "../i-disposable";
 
-export class ACEventTarget<EventType extends DataSetEventType> {
+export class ACEventTarget<EventType extends string> implements IDisposable {
 
   private readonly listeners: { [EventType: string]: Array<EventListener<EventType>> };
 
@@ -27,6 +27,14 @@ export class ACEventTarget<EventType extends DataSetEventType> {
         listenersOfType.splice(listenerIdx, 1);
       }
     }
+  }
+
+  dispose(): void {
+    this.removeAllListeners();
+  }
+
+  removeAllListeners(){
+    for (let key in this.listeners) delete this.listeners[key];
   }
 
   /**

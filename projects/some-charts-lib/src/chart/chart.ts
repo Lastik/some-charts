@@ -1,15 +1,16 @@
 import Konva from "konva";
 import merge from "lodash-es/merge";
 import {Grid} from "./grid";
-import {Plot, PlotFactory} from "./plots";
+import {AnimationEventType, Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType, DimensionValue} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {KeyboardNavigation, KeyboardNavigationsFactory, MouseNavigation} from "./navigation";
 import {
   CoordinateTransformationStatic,
-  DataRect, NumericDataRect,
+  DataRect,
   DataTransformation,
+  NumericDataRect,
   NumericPoint,
   Point,
   Range,
@@ -41,7 +42,9 @@ import {cloneDeep} from "lodash-es";
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-    implements EventListener<DataSetEventType>, IDisposable {
+    implements EventListener<DataSetEventType | AnimationEventType>, IDisposable {
+
+  private isDisposed: boolean = false;
 
   public static readonly MinZoomLevel: number = 1e-8;
 
@@ -76,6 +79,8 @@ export class Chart<TItemType = any,
   private resizeSensorCallback: () => void;
 
   private isFitToViewModeEnabled: boolean;
+
+  private isAsyncFitToViewRequired: boolean = false;
 
   public get id(): number{
     return this._id;
@@ -179,6 +184,7 @@ export class Chart<TItemType = any,
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
+        plot.eventTarget.addListener(AnimationEventType.Tick, this);
 
         let plotLayers = plot.getDependantLayers();
         for (let plotLayerId of plotLayers) {
@@ -240,6 +246,8 @@ export class Chart<TItemType = any,
         }
       });
     }
+
+    this.onFrameRenderedCycle();
   }
 
   get renderer(): Renderer{
@@ -450,11 +458,16 @@ export class Chart<TItemType = any,
     renderer.createLayers(layersConfigs);
   }
 
-  eventCallback(event: EventBase<DataSetEventType>, options?: any): void {
+  eventCallback(event: EventBase<DataSetEventType | AnimationEventType>, options?: any): void {
     if(event.type === DataSetEventType.Changed){
       this.updateLabeledAxesLabels();
       if(this.isFitToViewModeEnabled){
         this.fitToView();
+      }
+    }
+    else if(event.type === AnimationEventType.Tick){
+      if(this.isFitToViewModeEnabled) {
+        this.isAsyncFitToViewRequired = true;
       }
     }
   }
@@ -506,6 +519,17 @@ export class Chart<TItemType = any,
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
     this._renderer.setSize(this._size);
     this.updateNumeric(this.visibleRectAsNumeric);
+  }
+
+  private onFrameRenderedCycle(){
+    if(!this.isDisposed){
+      if(this.isAsyncFitToViewRequired && this.isFitToViewModeEnabled) {
+        this.fitToView();
+        this.isAsyncFitToViewRequired = false;
+      }
+
+      window.requestAnimationFrame(this.onFrameRenderedCycle.bind(this));
+    }
   }
 
   protected dimensionalVisibleRectToNumeric(visibleRect: DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>>): NumericDataRect {

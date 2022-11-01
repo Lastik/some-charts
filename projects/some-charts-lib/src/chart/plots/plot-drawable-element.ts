@@ -3,8 +3,13 @@ import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry"
 import {TextMeasureUtils} from "../../services";
 import {AnimatedProperty} from "./animated-property";
 import {isEqual} from "lodash-es";
+import {ACEventTarget} from "../../events";
+import {AnimationEventType} from "./event";
+import {IDisposable} from "../../i-disposable";
 
-export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> {
+export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> implements IDisposable {
+
+  public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
   public readonly dataPoint: AnimatedProperty<NumericPoint>;
 
@@ -24,6 +29,8 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
               protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     this.dataPoint = new AnimatedProperty(dataPoint);
     this.rootDrawable = rootDrawable;
+
+    this.eventTarget = new ACEventTarget<AnimationEventType>();
   }
 
   updateShapes(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
@@ -46,6 +53,8 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
         self.updateRootDrawableRenderLocation(self.dataPoint.animatedValue, dataTransformation, visible, screen);
         self.updateShapesInStatic(self.dataPoint.animatedValue, dataTransformation, visible, screen);
+
+        self.eventTarget.fireEvent({type: AnimationEventType.Tick});
 
         if(!self.isAnimationInProcess){
           self.runningAnimation?.stop();
@@ -76,8 +85,9 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
     return dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
   }
 
-  destroy() {
+  dispose() {
     this.rootDrawable.destroy();
+    this.eventTarget.dispose();
   }
 
   getBoundingRectangle(): NumericDataRect {

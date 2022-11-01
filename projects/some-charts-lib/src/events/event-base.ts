@@ -1,5 +1,3 @@
-import {DataSetEventType} from "../data";
-
-export interface EventBase<EventType extends DataSetEventType> {
+export interface EventBase<EventType extends string> {
   readonly type: EventType;
 }
