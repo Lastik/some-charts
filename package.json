@@ -31,7 +31,7 @@
     "moment": "^2.29.4",
     "reflect-metadata": "^0.1.13",
     "save": "^2.5.0",
-    "some-charts": "dist/some-charts/some-charts-0.0.266.tgz",
+    "some-charts": "dist/some-charts/some-charts-0.0.270.tgz",
     "tslib": "^2.3.0",
     "typedi": "^0.10.0",
     "zone.js": "~0.11.4"

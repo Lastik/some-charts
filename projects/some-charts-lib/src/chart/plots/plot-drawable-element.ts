@@ -37,13 +37,13 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
     let animationsIds = this.animatedProperties.map(p => p.animationId).filter(v => v !== undefined) as Array<number>;
 
-    if (!this.isAnimationInProcess || isEqual(this.runningAnimationsIds, animationsIds)) {
-      this.updateRootDrawableRenderLocation(this.dataPoint.animatedValue, dataTransformation, visible, screen);
-      this.updateShapesInStatic(this.dataPoint.animatedValue, dataTransformation, visible, screen);
-    } else {
+    this.updateRootDrawableRenderLocation(this.dataPoint.displayedValue, dataTransformation, visible, screen);
+    this.updateShapesInStatic(this.dataPoint.displayedValue, dataTransformation, visible, screen);
+
+    if (this.isAnimationInProcess && !isEqual(this.runningAnimationsIds, animationsIds)) {
       let self = this;
 
-      if(this.runningAnimation){
+      if (this.runningAnimation) {
         this.runningAnimation.stop();
       }
 
@@ -51,12 +51,12 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
         self.tickAnimations(frame?.time);
 
-        self.updateRootDrawableRenderLocation(self.dataPoint.animatedValue, dataTransformation, visible, screen);
-        self.updateShapesInStatic(self.dataPoint.animatedValue, dataTransformation, visible, screen);
+        self.updateRootDrawableRenderLocation(self.dataPoint.displayedValue, dataTransformation, visible, screen);
+        self.updateShapesInStatic(self.dataPoint.displayedValue, dataTransformation, visible, screen);
 
         self.eventTarget.fireEvent({type: AnimationEventType.Tick});
 
-        if(!self.isAnimationInProcess){
+        if (!self.isAnimationInProcess) {
           self.runningAnimation?.stop();
           self.runningAnimation = undefined;
         }
@@ -92,7 +92,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
   getBoundingRectangle(): NumericDataRect {
 
-    let animatedDataPoint = this.dataPoint.animatedValue;
+    let animatedDataPoint = this.dataPoint.displayedValue;
 
     return new NumericDataRect(animatedDataPoint.x, animatedDataPoint.x, animatedDataPoint.y, animatedDataPoint.y);
   }

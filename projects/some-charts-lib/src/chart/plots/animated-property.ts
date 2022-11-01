@@ -11,14 +11,14 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
   private animationStartValue: PropertyType | undefined;
   private animationEndValue: PropertyType | undefined;
 
-  private _animatedValue: PropertyType;
+  private _displayedValue: PropertyType;
   private _actualValue: PropertyType;
   private _animationDuration: number | undefined;
 
   private transition: Transition<Exclude<PropertyType, undefined>> | undefined;
 
-  public get animatedValue(): PropertyType {
-    return this._animatedValue;
+  public get displayedValue(): PropertyType {
+    return this._displayedValue;
   }
 
   public get actualValue(): PropertyType {
@@ -38,7 +38,7 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
   }
 
   constructor(value: PropertyType) {
-    this._animatedValue = this._actualValue = value;
+    this._displayedValue = this._actualValue = value;
     this._isAnimationInProcess = false;
   }
 
@@ -49,7 +49,7 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
         this.stopAnimation();
       }
       else {
-        this._animatedValue = value;
+        this._displayedValue = value;
       }
     } else {
       this._animationDuration = animationDuration;
@@ -64,11 +64,11 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
     this._isAnimationInProcess = false;
     this.transition = undefined;
     this.prevAnimationId = this._animationId;
-    this._animatedValue = this._actualValue;
+    this._displayedValue = this._actualValue;
   }
 
   private startAnimation() {
-    this.animationStartValue = this._animatedValue;
+    this.animationStartValue = this._displayedValue;
     this.animationEndValue = this._actualValue;
     this._isAnimationInProcess = true;
     this._animationId = this.prevAnimationId ? this.prevAnimationId + 1 : 1;
@@ -88,7 +88,7 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
     if (passedTimeRatio >= 1) {
       this.stopAnimation();
     } else {
-      this._animatedValue = this.transition!.apply(new Range<number>(0, 1), passedTimeRatio);
+      this._displayedValue = this.transition!.apply(new Range<number>(0, 1), passedTimeRatio);
     }
   }
 }

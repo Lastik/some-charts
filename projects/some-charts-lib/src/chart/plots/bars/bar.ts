@@ -60,7 +60,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   override updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     let locationOnScreen = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
 
-    let relativeBounds = this.relativeBounds.animatedValue;
+    let relativeBounds = this.relativeBounds.displayedValue;
 
     this.updateBarBoundingShape(
       dataTransformation.dataToScreenRegionForRect(relativeBounds.addOffset(dataPoint), visible, screen)
@@ -97,6 +97,6 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   }
 
   override getBoundingRectangle(): NumericDataRect {
-    return this.relativeBounds.animatedValue.addOffset(this.dataPoint.animatedValue);
+    return this.relativeBounds.displayedValue.addOffset(this.dataPoint.displayedValue);
   }
 }

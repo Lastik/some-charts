@@ -293,6 +293,12 @@ export class Chart<TItemType = any,
    * @param {boolean} isTriggeredByInputDevice - whether this update is triggered by user input device (Mouse, Keyboard, etc) or not.
    * */
   updateNumeric(visibleRectAsNumeric: NumericDataRect, isTriggeredByInputDevice: boolean = false) {
+
+    if(isTriggeredByInputDevice) {
+      this.isFitToViewModeEnabled = false;
+      this.isAsyncFitToViewRequired = false;
+    }
+
     this._visibleRectAsNumeric = visibleRectAsNumeric;
     this._visibleRect = this.numericVisibleRectToDimensional(visibleRectAsNumeric);
 
@@ -367,10 +373,6 @@ export class Chart<TItemType = any,
     }
 
     this.headerLabel?.update(this.location, this.size.width);
-
-    if(isTriggeredByInputDevice) {
-      this.isFitToViewModeEnabled = false;
-    }
   }
 
   /**
