@@ -2,16 +2,21 @@ import Konva from "konva";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 import {TextMeasureUtils} from "../../services";
 import {AnimatedProperty} from "./animated-property";
+import {isEqual} from "lodash-es";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> {
 
   public readonly dataPoint: AnimatedProperty<NumericPoint>;
 
-  protected get isAnimationInProcess(): boolean{
-    return this.dataPoint.isAnimationInProcess;
+  protected get animatedProperties(): Array<AnimatedProperty<any>>{
+    return [this.dataPoint];
   };
 
-  private runningAnimationId: number | undefined;
+  private get isAnimationInProcess(): boolean{
+    return !this.animatedProperties.every(p => !p.isAnimationInProcess);
+  };
+
+  private runningAnimationsIds: Array<number> = [];
   private runningAnimation: Konva.Animation | undefined;
 
   constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
@@ -21,7 +26,10 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   updateShapes(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    if (!this.isAnimationInProcess || this.runningAnimationId === this.dataPoint.animationId) {
+
+    let animationsIds = this.animatedProperties.map(p => p.animationId).filter(v => v !== undefined) as Array<number>;
+
+    if (!this.isAnimationInProcess || isEqual(this.runningAnimationsIds, animationsIds)) {
       this.updateRootDrawableRenderLocation(this.dataPoint.animatedValue, dataTransformation, visible, screen);
       this.updateShapesInStatic(this.dataPoint.animatedValue, dataTransformation, visible, screen);
     } else {
@@ -44,14 +52,18 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
         }
       }, this.rootDrawable.getLayer());
       this.runningAnimation.start();
-      this.runningAnimationId = this.dataPoint.animationId;
+      this.runningAnimationsIds = animationsIds;
     }
   }
 
   protected updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
 
-  protected tickAnimations(time: number | undefined){
-    this.dataPoint.tick(time);
+  private tickAnimations(time: number | undefined) {
+    this.animatedProperties.forEach(p => {
+      if (p.isAnimationInProcess) {
+        p.tick(time)
+      }
+    });
   }
 
   private updateRootDrawableRenderLocation(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {

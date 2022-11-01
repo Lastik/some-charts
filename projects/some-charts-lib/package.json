@@ -1,6 +1,6 @@
 {
   "name": "some-charts",
-  "version": "0.0.255",
+  "version": "0.0.261",
   "scripts": {
     "build-dev": "webpack --env=development && tsc --declaration --project tsconfig.lib.json",
     "build": "webpack --env=production && tsc --declaration --project tsconfig.lib.json"

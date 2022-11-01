@@ -14,8 +14,8 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   public relativeBounds: AnimatedProperty<NumericDataRect>;
   private readonly labelFont: Font;
 
-  override get isAnimationInProcess(): boolean {
-    return super.isAnimationInProcess && this.relativeBounds.isAnimationInProcess;
+  override get animatedProperties(): Array<AnimatedProperty<any>>{
+    return [...super.animatedProperties, this.relativeBounds];
   };
 
   constructor(dataPoint: NumericPoint,
@@ -68,11 +68,6 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     this.arrangeTextWithinBar();
   }
 
-  override tickAnimations(time: number | undefined){
-    super.tickAnimations(time);
-    this.relativeBounds.tick(time);
-  }
-
   private updateBarBoundingShape(barBoundsInScreenCoords: NumericDataRect) {
     this.boundsShape.setAttrs({
       x: barBoundsInScreenCoords.minX,
@@ -88,7 +83,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     })
   }
 
-  protected arrangeTextWithinBar() {
+  private arrangeTextWithinBar() {
     if (this.textShape) {
       let labelText = this.textShape.text();
       let textSize = this.textMeasureUtils.measureTextSize(this.labelFont, labelText);
