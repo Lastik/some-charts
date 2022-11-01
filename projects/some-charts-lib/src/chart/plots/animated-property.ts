@@ -1,13 +1,15 @@
 import * as Color from "color";
-import {NumericPoint, Range} from "../../geometry";
+import {NumericDataRect, NumericPoint, Range} from "../../geometry";
 import {Transition} from "../../transition";
 
-export class AnimatedProperty<PropertyType extends Color | number | NumericPoint | undefined> {
+export class AnimatedProperty<PropertyType extends Color | number | NumericPoint | NumericDataRect | undefined> {
 
-  _isAnimationInProcess: boolean;
+  private prevAnimationId: number | undefined;
+  private _animationId: number | undefined;
+  private _isAnimationInProcess: boolean;
 
-  private startValue: PropertyType | undefined;
-  private endValue: PropertyType | undefined;
+  private animationStartValue: PropertyType | undefined;
+  private animationEndValue: PropertyType | undefined;
 
   private _animatedValue: PropertyType;
   private _actualValue: PropertyType;
@@ -31,47 +33,60 @@ export class AnimatedProperty<PropertyType extends Color | number | NumericPoint
     return this._isAnimationInProcess;
   }
 
+  public get animationId(): number | undefined {
+    return this._animationId;
+  }
+
   constructor(value: PropertyType) {
     this._animatedValue = this._actualValue = value;
     this._isAnimationInProcess = false;
   }
 
   setValue(value: PropertyType, animate: boolean = false, animationDuration: number = 800) {
-    if (animate && this.isAnimationInProcess) {
-      throw new Error('Animation is in process, so setting value is unsupported!');
-    }
+    this._actualValue = value;
     if (!animate) {
-      this._actualValue = value;
-      this._animatedValue = value;
+      if(this.isAnimationInProcess){
+        this.stopAnimation();
+      }
+      else {
+        this._animatedValue = value;
+      }
     } else {
       this._animationDuration = animationDuration;
-      this.startAnimation(value);
+      this.startAnimation();
     }
   }
 
-  private startAnimation(endValue: PropertyType) {
-    this.startValue = this._animatedValue;
-    this.endValue = endValue;
-    this._isAnimationInProcess = true;
-    this.transition = new Transition<Exclude<PropertyType, undefined>>(new Range<Exclude<PropertyType, undefined>>(
-      this.startValue as Exclude<PropertyType, undefined>,
-      this.endValue as Exclude<PropertyType, undefined>));
+  private stopAnimation(){
+    this.animationStartValue = undefined;
+    this.animationEndValue = undefined;
+    this._animationDuration = undefined
+    this._isAnimationInProcess = false;
+    this.transition = undefined;
+    this.prevAnimationId = this._animationId;
+    this._animatedValue = this._actualValue;
   }
 
-  tick(time: number) {
+  private startAnimation() {
+    this.animationStartValue = this._animatedValue;
+    this.animationEndValue = this._actualValue;
+    this._isAnimationInProcess = true;
+    this._animationId = this.prevAnimationId ? this.prevAnimationId + 1 : 1;
+    this.transition = new Transition<Exclude<PropertyType, undefined>>(new Range<Exclude<PropertyType, undefined>>(
+      this.animationStartValue as Exclude<PropertyType, undefined>,
+      this.animationEndValue as Exclude<PropertyType, undefined>));
+  }
+
+  tick(time: number | undefined) {
 
     if (!this.isAnimationInProcess) {
       throw new Error('Animation is not in process!');
     }
 
-    let passedTimeRatio = time / this.animationDuration!;
+    let passedTimeRatio = (time ?? this.animationDuration!) / this.animationDuration!;
 
     if (passedTimeRatio >= 1) {
-      this._animatedValue = this.endValue!;
-      this.startValue = undefined;
-      this.endValue = undefined;
-      this.transition = undefined;
-      this._isAnimationInProcess = false;
+      this.stopAnimation();
     } else {
       this._animatedValue = this.transition!.apply(new Range<number>(0, 1), passedTimeRatio);
     }

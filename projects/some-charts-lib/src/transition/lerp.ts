@@ -1,6 +1,6 @@
 import * as Color from "color";
-import {NumericPoint} from "../geometry";
+import {NumericDataRect, NumericPoint} from "../geometry";
 
-export interface Lerp<T extends Color | number | NumericPoint> {
+export interface Lerp<T extends Color | number | NumericPoint | NumericDataRect> {
   apply(start: T, end: T, weight: number): T;
 }

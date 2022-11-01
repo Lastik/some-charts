@@ -4,14 +4,19 @@ import {NumericDataRect, DataTransformation, NumericPoint} from "../../../geomet
 import {Font} from "../../../font";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
+import {AnimatedProperty} from "../animated-property";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 
   private readonly boundsShape: Konva.Rect;
   private readonly textShape: Konva.Text | undefined;
 
-  private relativeBounds: NumericDataRect;
+  public relativeBounds: AnimatedProperty<NumericDataRect>;
   private readonly labelFont: Font;
+
+  override get isAnimationInProcess(): boolean {
+    return super.isAnimationInProcess && this.relativeBounds.isAnimationInProcess;
+  };
 
   constructor(dataPoint: NumericPoint,
               relativeBounds: NumericDataRect,
@@ -22,7 +27,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     let root = new Konva.Group();
     super(dataPoint, root);
 
-    this.relativeBounds = relativeBounds;
+    this.relativeBounds = new AnimatedProperty<NumericDataRect>(relativeBounds);
     this.labelFont = labelFont;
 
     this.boundsShape = new Konva.Rect({
@@ -49,21 +54,23 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
       })
       root.add(this.textShape);
     }
-
-    this.setBarRelativeBounds(relativeBounds);
   }
 
   override updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     let locationOnScreen = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
+
+    let relativeBounds = this.relativeBounds.animatedValue;
+
     this.updateBarBoundingShape(
-      dataTransformation.dataToScreenRegionForRect(this.relativeBounds.addOffset(this.dataPoint.animatedValue), visible, screen)
+      dataTransformation.dataToScreenRegionForRect(relativeBounds.addOffset(this.dataPoint.animatedValue), visible, screen)
         .addOffset(locationOnScreen.additiveInvert())
     );
     this.arrangeTextWithinBar();
   }
 
-  public setBarRelativeBounds(rect: NumericDataRect) {
-    this.relativeBounds = rect;
+  override tickAnimations(time: number | undefined){
+    super.tickAnimations(time);
+    this.relativeBounds.tick(time);
   }
 
   private updateBarBoundingShape(barBoundsInScreenCoords: NumericDataRect) {
@@ -94,6 +101,6 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   }
 
   override getBoundingRectangle(): NumericDataRect {
-    return this.relativeBounds.addOffset(this.dataPoint.animatedValue);
+    return this.relativeBounds.animatedValue.addOffset(this.dataPoint.animatedValue);
   }
 }

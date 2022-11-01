@@ -87,7 +87,8 @@ export class BarsPlot<TItemType,
           let bar = plotElt as Bar;
           bar.dataPoint.setValue(pointLocation,
             this.plotOptions.animate, this.plotOptions.animationDuration);
-          bar.setBarRelativeBounds(rect);
+          bar.relativeBounds.setValue(rect,
+            this.plotOptions.animate, this.plotOptions.animationDuration);
           bar.setBarLabelText(metricValue.toFixed(this.plotOptions.labelsPrecision));
         }
       }

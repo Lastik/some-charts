@@ -7,6 +7,11 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
   public readonly dataPoint: AnimatedProperty<NumericPoint>;
 
+  protected get isAnimationInProcess(): boolean{
+    return this.dataPoint.isAnimationInProcess;
+  };
+
+  private runningAnimationId: number | undefined;
   private runningAnimation: Konva.Animation | undefined;
 
   constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
@@ -16,7 +21,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   updateShapes(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    if (!this.dataPoint.isAnimationInProcess) {
+    if (!this.isAnimationInProcess || this.runningAnimationId === this.dataPoint.animationId) {
       this.updateRootDrawableRenderLocation(this.dataPoint.animatedValue, dataTransformation, visible, screen);
       this.updateShapesInStatic(this.dataPoint.animatedValue, dataTransformation, visible, screen);
     } else {
@@ -28,7 +33,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
       this.runningAnimation = new Konva.Animation(function (frame) {
 
-        self.dataPoint.tick(frame?.time ?? self.dataPoint.animationDuration!)
+        self.tickAnimations(frame?.time);
 
         self.updateRootDrawableRenderLocation(self.dataPoint.animatedValue, dataTransformation, visible, screen);
         self.updateShapesInStatic(self.dataPoint.animatedValue, dataTransformation, visible, screen);
@@ -38,10 +43,16 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
           self.runningAnimation = undefined;
         }
       }, this.rootDrawable.getLayer());
+      this.runningAnimation.start();
+      this.runningAnimationId = this.dataPoint.animationId;
     }
   }
 
-  updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
+  protected updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
+
+  protected tickAnimations(time: number | undefined){
+    this.dataPoint.tick(time);
+  }
 
   private updateRootDrawableRenderLocation(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
     let screenLocation = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
