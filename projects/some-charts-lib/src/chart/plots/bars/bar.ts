@@ -18,14 +18,15 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     return [...super.animatedProperties, this.relativeBounds];
   };
 
-  constructor(dataPoint: NumericPoint,
+  constructor(metricName: string,
+              dataPoint: NumericPoint,
               relativeBounds: NumericDataRect,
               coloring: BarsColoring,
               labelText: string | undefined,
               labelFont: Font,
               labelColor: Color) {
     let root = new Konva.Group();
-    super(dataPoint, root);
+    super(metricName, dataPoint, root);
 
     this.relativeBounds = new AnimatedProperty<NumericDataRect>(relativeBounds);
     this.labelFont = labelFont;
@@ -62,7 +63,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     let relativeBounds = this.relativeBounds.animatedValue;
 
     this.updateBarBoundingShape(
-      dataTransformation.dataToScreenRegionForRect(relativeBounds.addOffset(this.dataPoint.animatedValue), visible, screen)
+      dataTransformation.dataToScreenRegionForRect(relativeBounds.addOffset(dataPoint), visible, screen)
         .addOffset(locationOnScreen.additiveInvert())
     );
     this.arrangeTextWithinBar();

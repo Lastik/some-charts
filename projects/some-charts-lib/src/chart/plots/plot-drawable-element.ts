@@ -19,7 +19,8 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   private runningAnimationsIds: Array<number> = [];
   private runningAnimation: Konva.Animation | undefined;
 
-  constructor(dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
+  constructor(public readonly metricName: string,
+              dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
               protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     this.dataPoint = new AnimatedProperty(dataPoint);
     this.rootDrawable = rootDrawable;
@@ -46,7 +47,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
         self.updateRootDrawableRenderLocation(self.dataPoint.animatedValue, dataTransformation, visible, screen);
         self.updateShapesInStatic(self.dataPoint.animatedValue, dataTransformation, visible, screen);
 
-        if(!self.dataPoint.isAnimationInProcess){
+        if(!self.isAnimationInProcess){
           self.runningAnimation?.stop();
           self.runningAnimation = undefined;
         }

@@ -28,9 +28,9 @@ export class Marker extends PlotDrawableElement {
     Marker.updateMarkerColor(this.markerShape, value);
   }
 
-  constructor(dataPoint: NumericPoint, color: Color, size: number) {
+  constructor(metricName: string, dataPoint: NumericPoint, color: Color, size: number) {
     let markerShape = Marker.createMarkerShape(color, size);
-    super(dataPoint, markerShape);
+    super(metricName, dataPoint, markerShape);
     this.markerShape = markerShape;
     this._color = color;
     this._size = size;

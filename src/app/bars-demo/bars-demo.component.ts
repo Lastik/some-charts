@@ -60,8 +60,8 @@ export class BarsDemoComponent implements OnInit {
         y2: 30,
       }, {
         x: 'third',
-        y1: 25,
-        y2: 20,
+        y1: 20,
+        y2: 25,
       }, {
         x: 'fourth',
         y1: 10,

@@ -49,13 +49,14 @@ export class BarsPlot<TItemType,
         let barsColoring = this.colorsByMetricName?.get(metric.name)!;
 
         let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
-        let rect: NumericDataRect | undefined = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
+        let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
 
         if (pointLocation && rect) {
 
           let labelText: string | undefined = this.plotOptions.drawLabelsOnBars ? metricValue.toFixed(this.plotOptions.labelsPrecision) : undefined;
 
           drawableElements.push(new Bar(
+            metric.name,
             pointLocation, rect,
             barsColoring,
             labelText, this.plotOptions.font,
@@ -72,25 +73,24 @@ export class BarsPlot<TItemType,
   }
 
   protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
-    for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
-      let metric = this.plotOptions.metrics[metricIdx];
-      let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
+    let metricIdx = this.plotOptions.metrics.findIndex(m => m.name === plotElt.metricName)!;
+    let metric = this.plotOptions.metrics[metricIdx];
+    let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-      let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
+    let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
 
-      if (metricValue) {
+    if (metricValue) {
 
-        let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
-        let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
+      let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
+      let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
 
-        if (pointLocation && rect) {
-          let bar = plotElt as Bar;
-          bar.dataPoint.setValue(pointLocation,
-            this.plotOptions.animate, this.plotOptions.animationDuration);
-          bar.relativeBounds.setValue(rect,
-            this.plotOptions.animate, this.plotOptions.animationDuration);
-          bar.setBarLabelText(metricValue.toFixed(this.plotOptions.labelsPrecision));
-        }
+      if (pointLocation && rect) {
+        let bar = plotElt as Bar;
+        bar.dataPoint.setValue(pointLocation,
+          this.plotOptions.animate, this.plotOptions.animationDuration);
+        bar.relativeBounds.setValue(rect,
+          this.plotOptions.animate, this.plotOptions.animationDuration);
+        bar.setBarLabelText(metricValue.toFixed(this.plotOptions.labelsPrecision));
       }
     }
   }
