@@ -15,7 +15,6 @@ import {
 import * as Color from "color";
 import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
-import {FontHelper} from "../../services";
 import {IDisposable} from "../../i-disposable";
 
 import {ACEventTarget, EventBase, EventListener} from "../../events";
@@ -218,8 +217,8 @@ export abstract class Plot<
     return color instanceof Color ?
       color :
       (() => {
-        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricName, xDimVal, yDimVal)!;
-        return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricName), metricValue)
+        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricId, xDimVal, yDimVal)!;
+        return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricId), metricValue)
       })();
   }
 
@@ -227,36 +226,32 @@ export abstract class Plot<
                                                    xDimVal: DimensionValue<XDimensionType>,
                                                    YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
 
-    let metricValue = this.dataSet.getMetricValueForDimensions(dependant.metricName, xDimVal, YDimVal);
+    let metricValue = this.dataSet.getMetricValueForDimensions(dependant.metricId, xDimVal, YDimVal);
 
     return metricValue ?
-      new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricName), metricValue) :
+      new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricId), metricValue) :
       undefined;
   }
 
-  protected getMetricPoints1D(metricName: string): Array<NumericPoint> | undefined {
+  protected getMetricPoints1D(metricId: string): Array<NumericPoint> | undefined {
 
-    if (!this.metricPoints1DMap.has(metricName)) {
+    if (!this.metricPoints1DMap.has(metricId)) {
       let dimensionXValues = this.dataSet.dimensionXValues;
 
       if (this.dataSet.is1D) {
-        let metricValues = this.dataSet.getMetricValues(metricName) as number[];
+        let metricValues = this.dataSet.getMetricValues(metricId) as number[];
         let points = dimensionXValues.map((dimXVal, index) => {
           return new NumericPoint(dimXVal.toNumericValue(), metricValues[index])
         });
-        this.metricPoints1DMap.set(metricName, points);
+        this.metricPoints1DMap.set(metricId, points);
       } else throw new Error("DataSet is not 1-Dimensional!");
     }
-    return this.metricPoints1DMap.get(metricName);
+    return this.metricPoints1DMap.get(metricId);
   }
 
-  protected getMetricPoint1D(metricName: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {
-    let metricPoints1D = this.getMetricPoints1D(metricName);
+  protected getMetricPoint1D(metricId: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {
+    let metricPoints1D = this.getMetricPoints1D(metricId);
     return metricPoints1D ? metricPoints1D[xDimension.index] : undefined;
-  }
-
-  protected setContextFont(context: Konva.Context, font: FontInUnits) {
-    context.setAttr('font', FontHelper.fontToString(font));
   }
 
   /**

@@ -84,11 +84,11 @@ export class BarsDemoComponent implements OnInit {
           {
             kind: PlotKind.Bars,
             metrics: [{
-              name: 'y1',
+              id: 'y1',
               caption: 'Y1',
               color: new Color("#AA0000")
             },{
-              name: 'y2',
+              id: 'y2',
               caption: 'Y2',
               color: new Color("#00AA00")
             }],

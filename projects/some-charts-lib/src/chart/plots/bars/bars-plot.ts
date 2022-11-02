@@ -19,7 +19,7 @@ export class BarsPlot<TItemType,
   extends Plot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
   private barMaxWidthMap: Map<string, number> = new Map<string, number>();
-  private colorsByMetricName?: Map<string, BarsColoring>;
+  private colorsByMetricId?: Map<string, BarsColoring>;
 
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               dataTransformation: DataTransformation,
@@ -32,7 +32,7 @@ export class BarsPlot<TItemType,
   }
 
   override init(plotOptionsClass: BarsPlotOptionsClass) {
-    this.colorsByMetricName = new Map(this.plotOptions.metrics.map(m => [m.name, this.getBarsColoring(m.color)]));
+    this.colorsByMetricId = new Map(this.plotOptions.metrics.map(m => [m.id, this.getBarsColoring(m.color)]));
   }
 
   protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
@@ -42,21 +42,21 @@ export class BarsPlot<TItemType,
       let metric = this.plotOptions.metrics[metricIdx];
       let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-      let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
+      let metricValue = this.dataSet.getMetricValue(metric.id, xDimVal.value);
 
       if (metricValue) {
 
-        let barsColoring = this.colorsByMetricName?.get(metric.name)!;
+        let barsColoring = this.colorsByMetricId?.get(metric.id)!;
 
-        let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
-        let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
+        let pointLocation = this.getMetricPoint1D(metric.id, xDimVal);
+        let rect = this.getBarRectForMetric(metric.id, prevMetric?.id, xDimVal);
 
         if (pointLocation && rect) {
 
           let labelText: string | undefined = this.plotOptions.drawLabelsOnBars ? metricValue.toFixed(this.plotOptions.labelsPrecision) : undefined;
 
           drawableElements.push(new Bar(
-            metric.name,
+            metric.id,
             pointLocation, rect,
             barsColoring,
             labelText, this.plotOptions.font,
@@ -73,16 +73,16 @@ export class BarsPlot<TItemType,
   }
 
   protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
-    let metricIdx = this.plotOptions.metrics.findIndex(m => m.name === plotElt.metricName)!;
+    let metricIdx = this.plotOptions.metrics.findIndex(m => m.id === plotElt.metricId)!;
     let metric = this.plotOptions.metrics[metricIdx];
     let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-    let metricValue = this.dataSet.getMetricValue(metric.name, xDimVal.value);
+    let metricValue = this.dataSet.getMetricValue(metric.id, xDimVal.value);
 
     if (metricValue) {
 
-      let pointLocation = this.getMetricPoint1D(metric.name, xDimVal);
-      let rect = this.getBarRectForMetric(metric.name, prevMetric?.name, xDimVal);
+      let pointLocation = this.getMetricPoint1D(metric.id, xDimVal);
+      let rect = this.getBarRectForMetric(metric.id, prevMetric?.id, xDimVal);
 
       if (pointLocation && rect) {
         let bar = plotElt as Bar;
@@ -99,22 +99,22 @@ export class BarsPlot<TItemType,
     throw new Error('Bars plot doesn\'t support 2D rendering');
   }
 
-  private getBarRectForMetric(metricName: string, prevMetricName: string | undefined, xDimVal: DimensionValue<XDimensionType>): NumericDataRect | undefined {
+  private getBarRectForMetric(metricId: string, prevMetricId: string | undefined, xDimVal: DimensionValue<XDimensionType>): NumericDataRect | undefined {
     let rectX: number | undefined;
     let rectY: number | undefined;
     let rectW: number | undefined;
     let rectH: number | undefined;
 
-    let pointLocation = this.getMetricPoint1D(metricName, xDimVal);
-    let barWidth = this.calculateBarMaxWidth(metricName);
+    let pointLocation = this.getMetricPoint1D(metricId, xDimVal);
+    let barWidth = this.calculateBarMaxWidth(metricId);
     if (pointLocation && barWidth) {
-      if (!prevMetricName) {
+      if (!prevMetricId) {
         rectX = MathHelper.optimizeValue(-barWidth / 2);
         rectY = -MathHelper.optimizeValue(pointLocation.y);
         rectW = MathHelper.optimizeValue(barWidth);
         rectH = MathHelper.optimizeValue(pointLocation.y);
       } else {
-        let prevPointLocation = this.getMetricPoint1D(prevMetricName, xDimVal);
+        let prevPointLocation = this.getMetricPoint1D(prevMetricId, xDimVal);
 
         if (prevPointLocation) {
           rectX = MathHelper.optimizeValue(-barWidth / 2);
@@ -132,15 +132,15 @@ export class BarsPlot<TItemType,
   }
 
   /**
-   * Calculates bar available width for metric name.
-   * @param {string} metricName - metric name
+   * Calculates bar available width for metric id.
+   * @param {string} metricId - metric id
    * */
-  private calculateBarMaxWidth(metricName: string): number | undefined {
+  private calculateBarMaxWidth(metricId: string): number | undefined {
 
-    if (this.barMaxWidthMap.has(metricName)) {
-      return this.barMaxWidthMap.get(metricName);
+    if (this.barMaxWidthMap.has(metricId)) {
+      return this.barMaxWidthMap.get(metricId);
     } else {
-      let metricPoints = this.getMetricPoints1D(metricName);
+      let metricPoints = this.getMetricPoints1D(metricId);
 
       let barWidth: number | undefined;
 
@@ -166,7 +166,7 @@ export class BarsPlot<TItemType,
       }
 
       if (barWidth) {
-        this.barMaxWidthMap.set(metricName, barWidth);
+        this.barMaxWidthMap.set(metricId, barWidth);
       }
 
       return barWidth;

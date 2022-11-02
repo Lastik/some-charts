@@ -6,9 +6,9 @@ import * as Color from "color";
  */
 export interface MetricDependantValue<OutputType extends Color | number> {
   /**
-   * Metric name
+   * Metric id
    */
-  metricName: string;
+  metricId: string;
 
   /**
    * Range of values

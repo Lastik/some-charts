@@ -18,7 +18,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     return [...super.animatedProperties, this.relativeBounds];
   };
 
-  constructor(metricName: string,
+  constructor(metricId: string,
               dataPoint: NumericPoint,
               relativeBounds: NumericDataRect,
               coloring: BarsColoring,
@@ -26,7 +26,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
               labelFont: Font,
               labelColor: Color) {
     let root = new Konva.Group();
-    super(metricName, dataPoint, root);
+    super(metricId, dataPoint, root);
 
     this.relativeBounds = new AnimatedProperty<NumericDataRect>(relativeBounds);
     this.labelFont = labelFont;

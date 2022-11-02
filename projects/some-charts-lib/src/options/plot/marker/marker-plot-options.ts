@@ -24,7 +24,7 @@ export class MarkerPlotOptionsDefaults
 {
   private static _instance: MarkerPlotOptions = {
     metric: {
-      name: "",
+      id: "",
       caption: "",
       color: new Color('blue')
     },

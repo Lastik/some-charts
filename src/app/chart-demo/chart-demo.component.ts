@@ -78,7 +78,7 @@ export class ChartDemoComponent implements OnInit {
           {
             kind: PlotKind.Marker,
             metric: {
-              name: "y",
+              id: "y",
               caption: "Y",
               color: new Color("#AA0000")
             },

@@ -16,7 +16,7 @@ export class DataSet<TItemType,
 
   public readonly eventTarget: ACEventTarget<DataSetEventType>;
 
-  private readonly metricsFuncs: { [name: string]: (item: TItemType) => number };
+  private readonly metricsFuncs: { [id: string]: (item: TItemType) => number };
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => Exclude<YDimensionType, undefined>) | undefined;
   private readonly dimensionsSorting: Sorting;
@@ -55,7 +55,7 @@ export class DataSet<TItemType,
 
   private metricsValues: Map<string, Array<number | Array<number>>>;
 
-  public readonly metricsNames: ReadonlyArray<string>;
+  public readonly metricsIds: ReadonlyArray<string>;
 
   constructor(elements: Array<TItemType>,
               metricsFuncs: { [name: string]: (item: TItemType) => number },
@@ -71,7 +71,7 @@ export class DataSet<TItemType,
     this.dimensionYFunc = dimensionYFunc;
     this.dimensionsSorting = dimensionsSorting;
 
-    this.metricsNames = Object.keys(metricsFuncs);
+    this.metricsIds = Object.keys(metricsFuncs);
 
     this._dimensionXValues = [];
     this._dimensionYValues = dimensionYFunc ? []: undefined;
@@ -93,12 +93,12 @@ export class DataSet<TItemType,
     return this.dimensionYFunc !== undefined;
   }
 
-  public getMetricRange(metricName: string) {
+  public getMetricRange(metricId: string) {
 
-    let metricRange = this.metricsRanges.get(metricName);
+    let metricRange = this.metricsRanges.get(metricId);
 
     if (!metricRange) {
-      let metricValues = this.metricsValues.get(metricName);
+      let metricValues = this.metricsValues.get(metricId);
 
       if (metricValues) {
 
@@ -124,7 +124,7 @@ export class DataSet<TItemType,
         }
 
         metricRange = new Range<number>(min, max);
-        this.metricsRanges.set(metricName, metricRange);
+        this.metricsRanges.set(metricId, metricRange);
 
       } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
     }
@@ -132,12 +132,12 @@ export class DataSet<TItemType,
     return metricRange;
   }
 
-  public getMetricValue(metricName: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+  public getMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | undefined {
     if (!isUndefined(y) && !this.dimensionYFunc || isUndefined(y) && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
 
-    let metricValues = this.metricsValues.get(metricName);
+    let metricValues = this.metricsValues.get(metricId);
 
     let xIdx = this.indexByXDimension.get(new DimensionValue(x).primitiveValue);
 
@@ -152,12 +152,12 @@ export class DataSet<TItemType,
   }
 
 
-  public getMetricValueForDimensions(metricName: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+  public getMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
     if (yDimVal && !this.dimensionYFunc || !yDimVal && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
 
-    let metricValues = this.metricsValues.get(metricName);
+    let metricValues = this.metricsValues.get(metricId);
 
     if (metricValues) {
       if (!isUndefined(xDimVal) && !isUndefined(yDimVal)) {
@@ -168,8 +168,8 @@ export class DataSet<TItemType,
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
 
-  public getMetricValues(metricName: string): Array<number | Array<number>> | undefined {
-    return this.metricsValues.get(metricName);
+  public getMetricValues(metricId: string): Array<number | Array<number>> | undefined {
+    return this.metricsValues.get(metricId);
   }
 
   /**
@@ -285,17 +285,17 @@ export class DataSet<TItemType,
     let indexXOffset = dimensionXValuesMap.size - this._dimensionXValues.length;
     let indexYOffset = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
 
-    for (let metricName in this.metricsFuncs) {
+    for (let metricId in this.metricsFuncs) {
 
-      let metricValues: Array<number | Array<number>> = this.metricsValues.get(metricName) ?? Array(this._dimensionXValues.length);
+      let metricValues: Array<number | Array<number>> = this.metricsValues.get(metricId) ?? Array(this._dimensionXValues.length);
 
-      if (!this.metricsValues.has(metricName)) {
+      if (!this.metricsValues.has(metricId)) {
         if (this._dimensionYValues) {
           for (let i = 0; i < this._dimensionXValues.length; i++) {
             metricValues[i] = Array(this._dimensionYValues.length)
           }
         }
-        this.metricsValues.set(metricName, metricValues);
+        this.metricsValues.set(metricId, metricValues);
       } else {
         metricValues.splice(0, indexXOffset);
         if (indexYOffset) {
@@ -308,7 +308,7 @@ export class DataSet<TItemType,
         }
       }
 
-      let metricFunc = this.metricsFuncs[metricName];
+      let metricFunc = this.metricsFuncs[metricId];
 
       elements.forEach((element, index) => {
         let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
@@ -451,13 +451,13 @@ export class DataSet<TItemType,
 
   /**
    * Calculates bounding rectangle for the specified metrics of this DataSet.
-   * @param {Array<string>} metricsNames - names of metrics to take into consideration.
+   * @param {Array<string>} metricsIds - ids of metrics to take into consideration.
    * @returns {NumericDataRect}
    */
-  getBoundingRectangle(metricsNames: Array<string>): NumericDataRect | undefined {
+  getBoundingRectangle(metricsIds: Array<string>): NumericDataRect | undefined {
     let boundingRect: NumericDataRect | undefined = undefined;
 
-    for (let metricName of metricsNames) {
+    for (let metricId of metricsIds) {
 
       let curMetricBoundingRect: NumericDataRect | undefined = undefined;
 
@@ -467,7 +467,7 @@ export class DataSet<TItemType,
 
         if (this.is1D) {
 
-          let yValues = this.getMetricValues(metricName) as number[];
+          let yValues = this.getMetricValues(metricId) as number[];
 
           let minY = min(yValues);
           let maxY = max(yValues);

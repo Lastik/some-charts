@@ -90,14 +90,14 @@ export class Legend {
       if(legendItem.color instanceof Color){
         colorDiv.css('background-color', legendItem.color.toString())
       }
-      else if (legendItem.color.metricName && legendItem.color.range){
+      else if (legendItem.color.metricId && legendItem.color.range){
         colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.range.min.toString()}, ${legendItem.color.range.max.toString()}`);
       }
 
       colorColumn.append(colorDiv);
 
       let nameColumn = $('<td></td>');
-      let nameDiv = $('<div>' + legendItem.name + '</div>');
+      let nameDiv = $('<div>' + legendItem.id + '</div>');
       nameColumn.append(nameDiv);
 
       let row = $('<tr></tr>');

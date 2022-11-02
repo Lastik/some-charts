@@ -24,7 +24,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   private runningAnimationsIds: Array<number> = [];
   private runningAnimation: Konva.Animation | undefined;
 
-  constructor(public readonly metricName: string,
+  constructor(public readonly metricId: string,
               dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
               protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     this.dataPoint = new AnimatedProperty(dataPoint);
@@ -86,14 +86,13 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   dispose() {
+    this.rootDrawable.remove();
     this.rootDrawable.destroy();
     this.eventTarget.dispose();
   }
 
   getBoundingRectangle(): NumericDataRect {
-
     let animatedDataPoint = this.dataPoint.displayedValue;
-
     return new NumericDataRect(animatedDataPoint.x, animatedDataPoint.x, animatedDataPoint.y, animatedDataPoint.y);
   }
 }

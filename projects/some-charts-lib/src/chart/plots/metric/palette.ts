@@ -6,11 +6,11 @@ import {Range} from "../../../geometry";
  * Represents color palette
  */
 export class Palette implements MetricDependantValue<Color> {
-  readonly metricName: string;
+  readonly metricId: string;
   readonly range: Range<Color>;
 
-  constructor(metricName: string, range: Range<Color>) {
-    this.metricName = metricName;
+  constructor(metricId: string, range: Range<Color>) {
+    this.metricId = metricId;
     this.range = range;
   }
 }
