@@ -366,7 +366,7 @@ export class Chart<TItemType = any,
     }
 
     for (let plot of this.plots) {
-      plot.update(
+      plot.updateVisibleAndScreen(
         this._visibleRectAsNumeric,
         new NumericDataRect(gridLocation.x, gridLocation.x + gridSize.width, gridLocation.y, gridLocation.y + gridSize.height)
       );

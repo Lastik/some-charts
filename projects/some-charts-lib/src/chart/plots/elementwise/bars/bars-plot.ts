@@ -1,24 +1,23 @@
-import Konva from "konva";
 import merge from "lodash-es/merge";
-import {BarsPlotOptions, BarsPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
+import {BarsPlotOptions, BarsPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../../options";
 
-import {DataTransformation, NumericDataRect, Range} from "../../../geometry";
-import {DataSet, DimensionValue} from "../../../data";
-import {Plot} from "../plot";
+import {DataTransformation, NumericDataRect, Range} from "../../../../geometry";
+import {DataSet, DimensionValue} from "../../../../data";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {MathHelper} from "../../../services";
-import {BarsPlotOptionsClass} from "../../../options/plot/bars";
+import {MathHelper} from "../../../../services";
+import {BarsPlotOptionsClass} from "../../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Bar} from "./bar";
 import {cloneDeep} from "lodash-es";
+import {ElementwisePlot} from "../elementwise-plot";
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
+  extends ElementwisePlot<BarsPlotOptions, BarsPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
-  private barMaxWidthMap: Map<string, number> = new Map<string, number>();
+  private barMaxWidthMap!: Map<string, number>;
   private colorsByMetricId?: Map<string, BarsColoring>;
 
   constructor(dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -32,7 +31,9 @@ export class BarsPlot<TItemType,
   }
 
   override init(plotOptionsClass: BarsPlotOptionsClass) {
+    super.init(plotOptionsClass);
     this.colorsByMetricId = new Map(this.plotOptions.metrics.map(m => [m.id, this.getBarsColoring(m.color)]));
+    this.barMaxWidthMap = new Map<string, number>();
   }
 
   protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {

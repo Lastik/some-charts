@@ -1,7 +1,6 @@
 import {Plot} from "./plot";
 import {DataSet} from "../../data";
-import {BarsPlot} from "./bars";
-import {MarkerPlot} from "./marker";
+import {BarsPlot, MarkerPlot} from "./elementwise";
 
 import {
   BarsPlotOptions,

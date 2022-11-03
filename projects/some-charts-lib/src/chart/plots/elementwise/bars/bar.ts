@@ -1,10 +1,10 @@
 import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
-import {NumericDataRect, DataTransformation, NumericPoint} from "../../../geometry";
-import {Font} from "../../../font";
+import {NumericDataRect, DataTransformation, NumericPoint} from "../../../../geometry";
+import {Font} from "../../../../font";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
-import {AnimatedProperty} from "../animated-property";
+import {AnimatedProperty} from "../../animated-property";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 

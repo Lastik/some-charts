@@ -1,13 +1,10 @@
 import Konva from "konva";
 import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
-import {FontInUnits} from "../../font"
 import {ChartRenderableItem} from "../chart-renderable-item";
 import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
 import {
   DataSet,
   DataSetChange,
-  DataSetChange1D,
-  DataSetChange2D,
   DataSetChangedEvent,
   DataSetEventType,
   DimensionValue
@@ -18,8 +15,7 @@ import {Transition} from "../../transition";
 import {IDisposable} from "../../i-disposable";
 
 import {ACEventTarget, EventBase, EventListener} from "../../events";
-import {PlotDrawableElement} from "./plot-drawable-element";
-import {pullAt} from "lodash-es";
+import {PlotDrawableElement} from "./elementwise";
 import {AnimationEventType} from "./event";
 
 export abstract class Plot<
@@ -28,9 +24,7 @@ export abstract class Plot<
   TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> extends ChartRenderableItem<Konva.Group>
-  implements EventListener<DataSetEventType | AnimationEventType>, IDisposable{
-
-  protected plotElements: PlotDrawableElement[];
+  implements EventListener<DataSetEventType | AnimationEventType>, IDisposable {
 
   protected visible: NumericDataRect | undefined;
   protected screen: NumericDataRect | undefined;
@@ -38,7 +32,7 @@ export abstract class Plot<
   protected dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsClassType;
 
-  private metricPoints1DMap: Map<string, Array<NumericPoint>> = new Map<string, Array<NumericPoint>>();
+  private metricPoints1DMap!: Map<string, Array<NumericPoint>>;
 
   public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
@@ -80,108 +74,36 @@ export abstract class Plot<
     });
     this.konvaDrawables = [this.shapesGroup];
 
-    this.plotElements = [];
-
-    setTimeout(() => {
-      this.updatePlotFromDataSet(DataSetChange.fromDataSet(this.dataSet));
-    });
+    this.updateFromDataSet(DataSetChange.fromDataSet(this.dataSet));
   }
+
 
   protected buildPlotOptionsClass(plotOptions: PlotOptionsType): PlotOptionsClassType {
     return PlotOptionsClassFactory.buildPlotOptionsClass(plotOptions) as PlotOptionsClassType;
   }
 
-  protected init(plotOptions: PlotOptionsClassType) { }
+  protected init(plotOptions: PlotOptionsClassType) {
+    this.metricPoints1DMap = new Map<string, Array<NumericPoint>>();
+  }
 
   eventCallback(event: EventBase<DataSetEventType | AnimationEventType>, options?: any): void {
     if (event.type === DataSetEventType.Changed) {
       let changedEvent = event as DataSetChangedEvent<XDimensionType, YDimensionType>;
-      this.updatePlotFromDataSet(changedEvent.change);
-    }
-    else if(event.type === AnimationEventType.Tick) {
+      this.updateFromDataSet(changedEvent.change);
+    } else if (event.type === AnimationEventType.Tick) {
       this.eventTarget.fireEvent(event as EventBase<AnimationEventType>);
     }
   }
 
-  private updatePlotFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>){
-    let updateResult = this.updatePlotElements(dataSetChange);
+  protected updateFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>) {
 
-    for(let plotElt of updateResult.deleted){
-      plotElt.dispose();
-      plotElt.rootDrawable.remove();
-    }
-
-    pullAt(this.plotElements, updateResult.deletedIndexes);
-
-    for(let plotElt of updateResult.added){
-      this.shapesGroup.add(plotElt.rootDrawable);
-      plotElt.eventTarget.addListener(AnimationEventType.Tick, this);
-    }
+    this.rebuildShapesFromDataSet(dataSetChange);
 
     this.clearPreCalculatedDataSetRelatedData();
 
-    if(this.visible && this.screen) {
-      this.update(this.visible, this.screen);
+    if (this.visible && this.screen) {
+      this.updateVisibleAndScreen(this.visible, this.screen);
     }
-  }
-
-  private updatePlotElements(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): PlotElementsUpdate {
-    let is2D = dataSetChange.is2D;
-
-    let deleted: Array<PlotDrawableElement> = [];
-    let added: Array<PlotDrawableElement> = [];
-    let deletedIndexes: Array<number> = [];
-
-    if (is2D) {
-
-      let dataSetChange2D = dataSetChange as DataSetChange2D<XDimensionType, YDimensionType>;
-
-      for (let i = 0; i < this.plotElements.length; i++) {
-        let plotElt = this.plotElements[i];
-        if (dataSetChange2D.isDeleted(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)) {
-          deleted.push(plotElt);
-          deletedIndexes.push(i);
-        } else if (dataSetChange2D.isUpdated(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)) {
-          let xy = dataSetChange2D.getUpdated(plotElt.dataPoint.actualValue.x, plotElt.dataPoint.actualValue.y)!;
-          this.update2DPlotElement(plotElt, xy[0], xy[1]);
-        }
-      }
-
-      for(let tuple of dataSetChange2D.added){
-        let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
-        if(plotElt) {
-          this.plotElements.push(...plotElt);
-          added.push(...plotElt);
-        }
-      }
-    } else {
-
-      let dataSetChange1D = dataSetChange as DataSetChange1D<XDimensionType>;
-
-      for (let i = 0; i < this.plotElements.length; i++) {
-        let plotElt = this.plotElements[i];
-        if (dataSetChange1D.isDeleted(plotElt.dataPoint.actualValue.x)) {
-          deleted.push(plotElt);
-          deletedIndexes.push(i);
-        } else if (dataSetChange1D.isUpdated(plotElt.dataPoint.actualValue.x)) {
-          this.update1DPlotElement(plotElt, dataSetChange1D.getUpdated(plotElt.dataPoint.actualValue.x)!);
-        }
-      }
-
-      for(let value of dataSetChange1D.added){
-        let plotElt = this.add1DPlotElement(value);
-        if(plotElt) {
-          this.plotElements.push(...plotElt);
-          added.push(...plotElt);
-        }
-      }
-    }
-
-    return {deleted: deleted, deletedIndexes: deletedIndexes, added: added};
-  }
-
-  protected clearPreCalculatedDataSetRelatedData(){
-    this.metricPoints1DMap.clear();
   }
 
   /**
@@ -189,27 +111,21 @@ export abstract class Plot<
    * @param {DataRect} visible - Visible rectangle of plot.
    * @param {DataRect} screen - Screen rectangle of plot.
    */
-  update(visible: NumericDataRect, screen: NumericDataRect) {
+  updateVisibleAndScreen(visible: NumericDataRect, screen: NumericDataRect) {
     this.visible = visible;
     this.screen = screen;
-    if(this.visible && this.screen){
-      for(let plotElement of this.plotElements){
-        plotElement.updateShapes(this.dataTransformation, this.visible, this.screen);
-      }
+    if (this.visible && this.screen) {
+      this.updateShapesVisibleAndScreen(this.dataTransformation, this.visible, this.screen);
     }
   }
 
-  protected abstract add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[];
+  protected abstract rebuildShapesFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): void;
 
-  protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
-                                         xDimVal: DimensionValue<XDimensionType>): void;
+  protected abstract updateShapesVisibleAndScreen(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void;
 
-  protected abstract add2DPlotElement(xDimVal: DimensionValue<XDimensionType>,
-                                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[];
-
-  protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
-                                         xDimVal: DimensionValue<XDimensionType>,
-                                         yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): void;
+  protected clearPreCalculatedDataSetRelatedData() {
+    this.metricPoints1DMap.clear();
+  }
 
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
@@ -257,18 +173,10 @@ export abstract class Plot<
   /**
    * Calculates bounding rectangle of this plot.
    * */
-  getBoundingRectangle(): NumericDataRect | undefined {
-    return this.plotElements.map(plot => plot.getBoundingRectangle()).reduce((l, r) => l.merge(r));
-  }
+  abstract getBoundingRectangle(): NumericDataRect | undefined;
 
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
     this.eventTarget.dispose();
   }
-}
-
-interface PlotElementsUpdate {
-  deleted: Array<PlotDrawableElement>;
-  added: Array<PlotDrawableElement>;
-  deletedIndexes: Array<number>;
 }

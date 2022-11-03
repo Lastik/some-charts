@@ -1,18 +1,19 @@
 import merge from "lodash-es/merge";
-import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../options";
-import {DataSet, DimensionValue} from "../../../data";
-import {DataTransformation, NumericPoint} from "../../../geometry";
-import {Plot} from "../plot";
+import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../../options";
+import {DataSet, DimensionValue} from "../../../../data";
+import {DataTransformation, NumericPoint} from "../../../../geometry";
+import {Plot} from "../../plot";
 import * as Color from "color";
-import {MarkerPlotOptionsClass} from "../../../options/plot/marker";
+import {MarkerPlotOptionsClass} from "../../../../options/plot/marker";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Marker} from "./marker";
 import {cloneDeep} from "lodash-es";
+import {ElementwisePlot} from "../elementwise-plot";
 
 export class MarkerPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<MarkerPlotOptions, MarkerPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
+  extends ElementwisePlot<MarkerPlotOptions, MarkerPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
 
   constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,

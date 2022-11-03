@@ -1,6 +1,6 @@
 import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
-import {NumericPoint} from "../../../geometry";
+import {NumericPoint} from "../../../../geometry";
 import * as Color from "color";
 
 export class Marker extends PlotDrawableElement {

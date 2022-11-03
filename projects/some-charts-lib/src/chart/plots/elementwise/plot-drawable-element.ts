@@ -1,11 +1,11 @@
 import Konva from "konva";
-import {DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
-import {TextMeasureUtils} from "../../services";
-import {AnimatedProperty} from "./animated-property";
+import {DataTransformation, NumericDataRect, NumericPoint} from "../../../geometry";
+import {TextMeasureUtils} from "../../../services";
+import {AnimatedProperty} from "../animated-property";
 import {isEqual} from "lodash-es";
-import {ACEventTarget} from "../../events";
-import {AnimationEventType} from "./event";
-import {IDisposable} from "../../i-disposable";
+import {ACEventTarget} from "../../../events";
+import {AnimationEventType} from "../event";
+import {IDisposable} from "../../../i-disposable";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> implements IDisposable {
 
