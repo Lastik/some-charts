@@ -35,11 +35,15 @@ export class BarsDemoComponent implements OnInit {
         y2: 20,
       }],
       {
-        y1: item => {
-          return item.y1
+        y1: {
+          func: item => {
+            return item.y1
+          }
         },
-        y2: item => {
-          return item.y2
+        y2: {
+          func: item => {
+            return item.y2
+          }
         }
       },
       item => {

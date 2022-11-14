@@ -38,8 +38,10 @@ export class ChartDemoComponent implements OnInit {
     let dataSet = new DataSet<XY, number>(
       data,
       {
-        y: item => {
-          return item.y
+        y: {
+          func: item => {
+            return item.y
+          }
         }
       },
       item => {

@@ -40,8 +40,10 @@ export class DateTimeAxisComponent implements OnInit {
     let dataSet = new DataSet<XY, Date>(
       data,
       {
-        y: item => {
-          return item.y
+        y: {
+          func: item => {
+            return item.y
+          }
         }
       },
       item => {

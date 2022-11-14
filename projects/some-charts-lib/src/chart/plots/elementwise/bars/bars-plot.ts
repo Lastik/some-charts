@@ -43,13 +43,13 @@ export class BarsPlot<TItemType,
       let metric = this.plotOptions.metrics[metricIdx];
       let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-      let metricValue = this.dataSet.getMetricValue(metric.id, xDimVal.value);
+      let metricValue = this.dataSet.getScalarMetricValue(metric.id, xDimVal.value);
 
       if (metricValue) {
 
         let barsColoring = this.colorsByMetricId?.get(metric.id)!;
 
-        let pointLocation = this.getMetricPoint1D(metric.id, xDimVal);
+        let pointLocation = this.getScalarMetricPoint1D(metric.id, xDimVal);
         let rect = this.getBarRectForMetric(metric.id, prevMetric?.id, xDimVal);
 
         if (pointLocation && rect) {
@@ -78,11 +78,11 @@ export class BarsPlot<TItemType,
     let metric = this.plotOptions.metrics[metricIdx];
     let prevMetric = metricIdx !== 0 ? this.plotOptions.metrics[metricIdx - 1] : undefined;
 
-    let metricValue = this.dataSet.getMetricValue(metric.id, xDimVal.value);
+    let metricValue = this.dataSet.getScalarMetricValue(metric.id, xDimVal.value) as number | undefined;
 
     if (metricValue) {
 
-      let pointLocation = this.getMetricPoint1D(metric.id, xDimVal);
+      let pointLocation = this.getScalarMetricPoint1D(metric.id, xDimVal);
       let rect = this.getBarRectForMetric(metric.id, prevMetric?.id, xDimVal);
 
       if (pointLocation && rect) {
@@ -106,7 +106,7 @@ export class BarsPlot<TItemType,
     let rectW: number | undefined;
     let rectH: number | undefined;
 
-    let pointLocation = this.getMetricPoint1D(metricId, xDimVal);
+    let pointLocation = this.getScalarMetricPoint1D(metricId, xDimVal);
     let barWidth = this.calculateBarMaxWidth(metricId);
     if (pointLocation && barWidth) {
       if (!prevMetricId) {
@@ -115,7 +115,7 @@ export class BarsPlot<TItemType,
         rectW = MathHelper.optimizeValue(barWidth);
         rectH = MathHelper.optimizeValue(pointLocation.y);
       } else {
-        let prevPointLocation = this.getMetricPoint1D(prevMetricId, xDimVal);
+        let prevPointLocation = this.getScalarMetricPoint1D(prevMetricId, xDimVal);
 
         if (prevPointLocation) {
           rectX = MathHelper.optimizeValue(-barWidth / 2);
@@ -141,7 +141,7 @@ export class BarsPlot<TItemType,
     if (this.barMaxWidthMap.has(metricId)) {
       return this.barMaxWidthMap.get(metricId);
     } else {
-      let metricPoints = this.getMetricPoints1D(metricId);
+      let metricPoints = this.getScalarMetricPoints1D(metricId);
 
       let barWidth: number | undefined;
 

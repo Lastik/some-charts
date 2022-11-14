@@ -13,10 +13,10 @@ export class DataSet<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined> {
 
-
   public readonly eventTarget: ACEventTarget<DataSetEventType>;
 
-  private readonly metricsFuncs: { [id: string]: (item: TItemType) => number };
+  private readonly metrics: { [id: string]: Metric<TItemType>};
+
   private readonly dimensionXFunc: (item: TItemType) => XDimensionType;
   private readonly dimensionYFunc: ((item: TItemType) => Exclude<YDimensionType, undefined>) | undefined;
   private readonly dimensionsSorting: Sorting;
@@ -58,7 +58,7 @@ export class DataSet<TItemType,
   public readonly metricsIds: ReadonlyArray<string>;
 
   constructor(elements: Array<TItemType>,
-              metricsFuncs: { [name: string]: (item: TItemType) => number },
+              metrics: { [id: string]: Metric<TItemType>},
               dimensionXFunc: (item: TItemType) => XDimensionType,
               dimensionYFunc?: (item: TItemType) => Exclude<YDimensionType, undefined>,
               dimensionsSorting: Sorting = Sorting.Asc
@@ -66,12 +66,13 @@ export class DataSet<TItemType,
 
     this.eventTarget = new ACEventTarget<DataSetEventType>();
 
-    this.metricsFuncs = metricsFuncs;
+    this.metrics = metrics;
+
     this.dimensionXFunc = dimensionXFunc;
     this.dimensionYFunc = dimensionYFunc;
     this.dimensionsSorting = dimensionsSorting;
 
-    this.metricsIds = Object.keys(metricsFuncs);
+    this.metricsIds = Object.keys(metrics);
 
     this._dimensionXValues = [];
     this._dimensionYValues = dimensionYFunc ? []: undefined;
@@ -93,6 +94,14 @@ export class DataSet<TItemType,
     return this.dimensionYFunc !== undefined;
   }
 
+  public isScalarMetric(metricId: string): boolean {
+    return !this.metrics[metricId]?.isVector;
+  }
+
+  public isVectorMetric(metricId: string): boolean {
+    return !!this.metrics[metricId]?.isVector;
+  }
+
   public getMetricRange(metricId: string) {
 
     let metricRange = this.metricsRanges.get(metricId);
@@ -105,7 +114,7 @@ export class DataSet<TItemType,
         let min = Number.MAX_VALUE;
         let max = Number.MIN_VALUE;
 
-        if (this.is2D) {
+        if (this.is2D || this.isVectorMetric(metricId)) {
           let metricValues2D = <number[][]>metricValues;
 
           for (let i = 0; i < metricValues2D.length; i++) {
@@ -132,7 +141,7 @@ export class DataSet<TItemType,
     return metricRange;
   }
 
-  public getMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+  public getMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | Array<number> | undefined {
     if (!isUndefined(y) && !this.dimensionYFunc || isUndefined(y) && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
@@ -144,15 +153,15 @@ export class DataSet<TItemType,
     if (metricValues) {
       if (!isUndefined(y)) {
         let yIdx = this.indexByYDimension!.get(new DimensionValue(y).primitiveValue);
-        return !isUndefined(xIdx) && !isUndefined(yIdx) ? (metricValues as Array<Array<number>>)[xIdx][yIdx] : undefined;
+        return !isUndefined(xIdx) && !isUndefined(yIdx) ? (metricValues as Array<Array<number | Array<number>>>)[xIdx][yIdx] : undefined;
       } else {
-        return !isUndefined(xIdx) ? (metricValues as Array<number>)[xIdx] : undefined;
+        return !isUndefined(xIdx) ? (metricValues as Array<number | Array<number>>)[xIdx] : undefined;
       }
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
 
 
-  public getMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+  public getMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | Array<number> | undefined {
     if (yDimVal && !this.dimensionYFunc || !yDimVal && this.dimensionYFunc) {
       throw new Error("Failed to get metric value. Dimensions mismatch.")
     }
@@ -161,15 +170,33 @@ export class DataSet<TItemType,
 
     if (metricValues) {
       if (!isUndefined(xDimVal) && !isUndefined(yDimVal)) {
-        return (metricValues as Array<Array<number>>)[xDimVal.index][yDimVal.index];
+        return (metricValues as Array<Array<number | Array<number>>>)[xDimVal.index][yDimVal.index];
       } else {
-        return (metricValues as Array<number>)[xDimVal.index];
+        return (metricValues as Array<number | Array<number>>)[xDimVal.index];
       }
     } else throw new Error("Failed to get metric value. Metric with specified name doesn't exist in this DataSet.")
   }
 
   public getMetricValues(metricId: string): Array<number | Array<number>> | undefined {
     return this.metricsValues.get(metricId);
+  }
+
+  public getScalarMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+    if (this.isScalarMetric(metricId)) {
+      return this.getMetricValue(metricId, x, y) as number | undefined;
+    } else throw DataSet.buildMetricIsNotScalarError(metricId);
+  }
+
+  public getScalarMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+    if (this.isScalarMetric(metricId)) {
+      return this.getMetricValueForDimensions(metricId, xDimVal, yDimVal) as number | undefined;
+    } else throw DataSet.buildMetricIsNotScalarError(metricId);
+  }
+
+  public getScalarMetricValues(metricId: string): Array<number | Array<number>> | undefined {
+    if (this.isScalarMetric(metricId)) {
+      return this.metricsValues.get(metricId);
+    } else throw DataSet.buildMetricIsNotScalarError(metricId);
   }
 
   /**
@@ -285,7 +312,7 @@ export class DataSet<TItemType,
     let indexXOffset = dimensionXValuesMap.size - this._dimensionXValues.length;
     let indexYOffset = dimensionYValuesMap && this._dimensionYValues ? (dimensionYValuesMap.size - this._dimensionYValues.length) : undefined;
 
-    for (let metricId in this.metricsFuncs) {
+    for (let metricId in this.metrics) {
 
       let metricValues: Array<number | Array<number>> = this.metricsValues.get(metricId) ?? Array(this._dimensionXValues.length);
 
@@ -308,7 +335,7 @@ export class DataSet<TItemType,
         }
       }
 
-      let metricFunc = this.metricsFuncs[metricId];
+      let metricFunc = this.metrics[metricId]?.func;
 
       elements.forEach((element, index) => {
         let dimXValue = new DimensionValue(this.dimensionXFunc(element), index);
@@ -324,9 +351,14 @@ export class DataSet<TItemType,
           if (!twoDMetricValues[xIdx]) {
             twoDMetricValues[xIdx] = [];
           }
-          twoDMetricValues[xIdx][yIdx] = metricValue;
+
+          if(Array.isArray(metricValue)){
+            throw new Error('DataSet doesn\'t support 2D metrics with array of values');
+          }
+
+          twoDMetricValues[xIdx][yIdx] = metricValue as number;
         } else if (!isUndefined(xIdx)) {
-          let oneDMetricValues = (metricValues as Array<number>);
+          let oneDMetricValues = (metricValues as Array<number | Array<number>>);
           oneDMetricValues[xIdx] = metricValue;
         }
       });
@@ -501,4 +533,10 @@ export class DataSet<TItemType,
 
     return boundingRect;
   }
+
+  private static buildMetricIsNotScalarError(metricId: string): Error{
+    return new Error(`DataSet metric ${metricId} is not scalar!`)
+  }
 }
+
+type Metric<TItemType> = {func: (item: TItemType) => number | Array<number>, isVector?: boolean };

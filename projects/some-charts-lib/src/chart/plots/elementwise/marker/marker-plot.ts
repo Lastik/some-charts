@@ -2,7 +2,6 @@ import merge from "lodash-es/merge";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../../options";
 import {DataSet, DimensionValue} from "../../../../data";
 import {DataTransformation, NumericPoint} from "../../../../geometry";
-import {Plot} from "../../plot";
 import * as Color from "color";
 import {MarkerPlotOptionsClass} from "../../../../options/plot/marker";
 import {PlotDrawableElement} from "../plot-drawable-element";
@@ -40,7 +39,7 @@ export class MarkerPlot<TItemType,
 
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
     let markerSize = this.getMarkerSize(xDimVal);
-    let metricValue = this.dataSet.getMetricValue(metricId, xDimVal.value)!;
+    let metricValue = this.dataSet.getScalarMetricValue(metricId, xDimVal.value)!;
 
     let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
     return [MarkerPlot.createElementForMarker(metricId, point, markerColor, markerSize)];
@@ -60,7 +59,7 @@ export class MarkerPlot<TItemType,
   protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
     let markerSize = this.getMarkerSize(xDimVal);
-    let metricValue = this.dataSet.getMetricValue(this.plotOptions.metric.id, xDimVal.value);
+    let metricValue = this.dataSet.getScalarMetricValue(this.plotOptions.metric.id, xDimVal.value);
 
     let marker = plotElt as Marker;
 

@@ -32,7 +32,7 @@ export abstract class Plot<
   protected dataTransformation: DataTransformation;
   protected plotOptions: PlotOptionsClassType;
 
-  private metricPoints1DMap!: Map<string, Array<NumericPoint>>;
+  private metricPoints1DMap!: Map<string, Array<NumericPoint | Array<NumericPoint>>>;
 
   public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
@@ -133,8 +133,11 @@ export abstract class Plot<
     return color instanceof Color ?
       color :
       (() => {
-        let metricValue = this.dataSet.getMetricValueForDimensions(color.metricId, xDimVal, yDimVal)!;
-        return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricId), metricValue)
+        if(this.dataSet.isScalarMetric(color.metricId)) {
+          let metricValue = this.dataSet.getMetricValueForDimensions(color.metricId, xDimVal, yDimVal) as number;
+          return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricId), metricValue)
+        }
+        else throw new Error('Color transition is only supported for scalar metric');
       })();
   }
 
@@ -142,22 +145,29 @@ export abstract class Plot<
                                                    xDimVal: DimensionValue<XDimensionType>,
                                                    YDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
 
-    let metricValue = this.dataSet.getMetricValueForDimensions(dependant.metricId, xDimVal, YDimVal);
+    if(this.dataSet.isScalarMetric(dependant.metricId)) {
+      let metricValue = this.dataSet.getMetricValueForDimensions(dependant.metricId, xDimVal, YDimVal) as number;
 
-    return metricValue ?
-      new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricId), metricValue) :
-      undefined;
+      return metricValue ?
+        new Transition<number>(dependant.range).apply(this.dataSet.getMetricRange(dependant.metricId), metricValue) :
+        undefined;
+    }
+    else throw new Error('Value transition is only supported for scalar metric');
   }
 
-  protected getMetricPoints1D(metricId: string): Array<NumericPoint> | undefined {
-
+  protected getMetricPoints1D(metricId: string): Array<NumericPoint | Array<NumericPoint>> | undefined {
     if (!this.metricPoints1DMap.has(metricId)) {
       let dimensionXValues = this.dataSet.dimensionXValues;
 
       if (this.dataSet.is1D) {
-        let metricValues = this.dataSet.getMetricValues(metricId) as number[];
+        let metricValues = this.dataSet.getMetricValues(metricId) as number[] | number[][];
         let points = dimensionXValues.map((dimXVal, index) => {
-          return new NumericPoint(dimXVal.toNumericValue(), metricValues[index])
+
+          let metricValuesForDimVal = metricValues[index];
+
+          if (Array.isArray(metricValuesForDimVal)) {
+            return (metricValuesForDimVal as number[]).map(metricValue => new NumericPoint(dimXVal.toNumericValue(), metricValue));
+          } else return new NumericPoint(dimXVal.toNumericValue(), metricValuesForDimVal as number);
         });
         this.metricPoints1DMap.set(metricId, points);
       } else throw new Error("DataSet is not 1-Dimensional!");
@@ -165,9 +175,23 @@ export abstract class Plot<
     return this.metricPoints1DMap.get(metricId);
   }
 
-  protected getMetricPoint1D(metricId: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {
+  protected getMetricPoint1D(metricId: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | Array<NumericPoint> | undefined {
     let metricPoints1D = this.getMetricPoints1D(metricId);
     return metricPoints1D ? metricPoints1D[xDimension.index] : undefined;
+  }
+
+  protected getScalarMetricPoints1D(metricId: string): Array<NumericPoint > | undefined {
+    if(this.dataSet.isScalarMetric(metricId)){
+      return this.getMetricPoints1D(metricId) as Array<NumericPoint > | undefined;
+    }
+    else throw new Error(`DataSet metric ${metricId} is not scalar!`);
+  }
+
+  protected getScalarMetricPoint1D(metricId: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {
+    if(this.dataSet.isScalarMetric(metricId)){
+      return this.getMetricPoint1D(metricId, xDimension) as NumericPoint | undefined;
+    }
+    else throw new Error(`DataSet metric ${metricId} is not scalar!`);
   }
 
   /**
