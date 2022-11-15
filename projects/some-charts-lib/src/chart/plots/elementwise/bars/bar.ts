@@ -57,7 +57,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
     }
   }
 
-  override updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
+  override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     let locationOnScreen = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
 
     let relativeBounds = this.relativeBounds.displayedValue;

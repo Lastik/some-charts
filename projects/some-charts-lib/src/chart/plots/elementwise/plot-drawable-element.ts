@@ -38,7 +38,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
     let animationsIds = this.animatedProperties.map(p => p.animationId).filter(v => v !== undefined) as Array<number>;
 
     this.updateRootDrawableRenderLocation(this.dataPoint.displayedValue, dataTransformation, visible, screen);
-    this.updateShapesInStatic(this.dataPoint.displayedValue, dataTransformation, visible, screen);
+    this.updateShapesForAnimationFrame(this.dataPoint.displayedValue, dataTransformation, visible, screen);
 
     if (this.isAnimationInProcess && !isEqual(this.runningAnimationsIds, animationsIds)) {
       let self = this;
@@ -52,7 +52,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
         self.tickAnimations(frame?.time);
 
         self.updateRootDrawableRenderLocation(self.dataPoint.displayedValue, dataTransformation, visible, screen);
-        self.updateShapesInStatic(self.dataPoint.displayedValue, dataTransformation, visible, screen);
+        self.updateShapesForAnimationFrame(self.dataPoint.displayedValue, dataTransformation, visible, screen);
 
         self.eventTarget.fireEvent({type: AnimationEventType.Tick});
 
@@ -66,7 +66,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
     }
   }
 
-  protected updateShapesInStatic(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
+  protected updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {}
 
   private tickAnimations(time: number | undefined) {
     this.animatedProperties.forEach(p => {
@@ -84,6 +84,19 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   protected getLocationOnScreen(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     return dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
   }
+
+  protected getRelativePointLocationOnScreen(origin: NumericPoint, relativeDataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
+    let locationOnScreen = this.getLocationOnScreen(origin, dataTransformation, visible, screen);
+    return dataTransformation.dataToScreenRegionXY(relativeDataPoint.scalarPlus(origin), visible, screen)
+      .scalarPlus(locationOnScreen.additiveInvert())
+  }
+
+  /*
+  protected getRelativeRectLocationOnScreen(origin: NumericPoint, dataRect: NumericDataRect, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
+    let locationOnScreen = this.getLocationOnScreen(origin, dataTransformation, visible, screen);
+    return  dataTransformation.dataToScreenRegionForRect(dataRect.addOffset(origin), visible, screen)
+      .addOffset(locationOnScreen.additiveInvert());
+  }*/
 
   dispose() {
     this.rootDrawable.remove();
