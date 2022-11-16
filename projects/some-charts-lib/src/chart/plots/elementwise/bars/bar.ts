@@ -58,13 +58,8 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   }
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
-    let locationOnScreen = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
-
-    let relativeBounds = this.relativeBounds.displayedValue;
-
     this.updateBarBoundingShape(
-      dataTransformation.dataToScreenRegionForRect(relativeBounds.addOffset(dataPoint), visible, screen)
-        .addOffset(locationOnScreen.additiveInvert())
+      dataTransformation.getRelativeRectLocationOnScreen(dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen), this.relativeBounds.displayedValue, visible, screen)
     );
     this.arrangeTextWithinBar();
   }

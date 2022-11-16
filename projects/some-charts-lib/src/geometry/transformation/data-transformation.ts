@@ -160,6 +160,20 @@ export class DataTransformation {
   }
 
   /**
+   * Transforms point in data XY coordinates to XY coordinates in specified screen region.
+   * @param {NumericPoint} y - Point y coordinate in data coordinates.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
+   * @returns {number}
+   */
+  public dataToScreenRegionY(y: number, visible: NumericDataRect, screenRegion: NumericDataRect): number {
+
+    const leftTop = screenRegion.getMinXMinY();
+
+    return leftTop.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+  }
+
+  /**
    * Transforms point in data XY coordinates to XY coordinates in specified screen region without inverting y coordinate..
    * @param {NumericPoint} value - Point in data coordinates.
    * @param {NumericDataRect} visible - Visible data rectangle.
@@ -170,5 +184,20 @@ export class DataTransformation {
     let res = this.dataToScreenRegionXY(value, visible, screenRegion);
     res.y = screenRegion.getVerticalRange().getLength() - res.y;
     return res;
+  }
+
+
+  public getRelativePointLocationOnScreen(origin: NumericPoint, relativeDataPoint: NumericPoint, visible: NumericDataRect, screen: NumericDataRect) {
+    return this.dataToScreenRegionXY(relativeDataPoint.scalarPlus(origin), visible, screen)
+      .scalarPlus(origin.additiveInvert())
+  }
+
+  public getRelativeYValueLocationOnScreen(origin: NumericPoint, yValue: number, visible: NumericDataRect, screen: NumericDataRect) {
+    return this.dataToScreenRegionY(yValue + origin.y, visible, screen) - origin.y;
+  }
+
+  public getRelativeRectLocationOnScreen(origin: NumericPoint, dataRect: NumericDataRect, visible: NumericDataRect, screen: NumericDataRect) {
+    return  this.dataToScreenRegionForRect(dataRect.addOffset(origin), visible, screen)
+      .addOffset(origin.additiveInvert());
   }
 }

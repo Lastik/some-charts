@@ -77,26 +77,9 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   }
 
   private updateRootDrawableRenderLocation(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
-    let screenLocation = this.getLocationOnScreen(dataPoint, dataTransformation, visible, screen);
+    let screenLocation = dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
     this.rootDrawable.setPosition(screenLocation);
   }
-
-  protected getLocationOnScreen(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
-    return dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
-  }
-
-  protected getRelativePointLocationOnScreen(origin: NumericPoint, relativeDataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
-    let locationOnScreen = this.getLocationOnScreen(origin, dataTransformation, visible, screen);
-    return dataTransformation.dataToScreenRegionXY(relativeDataPoint.scalarPlus(origin), visible, screen)
-      .scalarPlus(locationOnScreen.additiveInvert())
-  }
-
-  /*
-  protected getRelativeRectLocationOnScreen(origin: NumericPoint, dataRect: NumericDataRect, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect) {
-    let locationOnScreen = this.getLocationOnScreen(origin, dataTransformation, visible, screen);
-    return  dataTransformation.dataToScreenRegionForRect(dataRect.addOffset(origin), visible, screen)
-      .addOffset(locationOnScreen.additiveInvert());
-  }*/
 
   dispose() {
     this.rootDrawable.remove();
