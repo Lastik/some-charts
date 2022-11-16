@@ -1,4 +1,5 @@
 export enum PlotKind {
-  Bars,
-  Marker
+  Bars = 'Bars',
+  Marker = 'Marker',
+  Box = 'Box'
 }

@@ -1,2 +1,2 @@
-export * from './marker-plot-options';
-export * from './marker-plot-options-class';
+export * from './box-plot-options';
+export * from './box-plot-options-class';

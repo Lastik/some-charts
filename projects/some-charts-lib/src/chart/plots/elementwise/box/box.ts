@@ -16,7 +16,31 @@ export class Box extends PlotDrawableElement<Konva.Group>{
   private whiskersWidth: number
   private lineWidth: number;
 
-  private fill: Color;
+  private _fill: Color;
+
+  get fill(): Color {
+    return this._fill;
+  }
+
+  public set fill(value: Color) {
+    this._fill = value;
+    this.boxShape.setAttrs({
+      fill: value.toString()
+    });
+
+    this.topWhiskerShape.setAttrs({
+      fill: value.toString()
+    });
+
+    this.bottomWhiskerShape.setAttrs({
+      fill: value.toString()
+    });
+
+    this.avgLineShape.setAttrs({
+      fill: value.toString()
+    });
+  }
+
   private stroke: Color;
 
   private readonly relative25Percentile: AnimatedProperty<number>;
@@ -53,7 +77,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.whiskersWidth = whiskersWidth;
     this.lineWidth = lineWidth;
 
-    this.fill = fill;
+    this._fill = fill;
     this.stroke = stroke;
 
     this.relative25Percentile = new AnimatedProperty<number>(Box.calculate25Percentile(dataPoints) - boxCenter.y);
@@ -74,6 +98,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.topWhiskerShape = new Konva.Shape({
       relative75Percentile: undefined,
       relativeMaxY: undefined,
+      fill: self._fill.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.save();
@@ -81,7 +106,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
         context.setAttr('strokeStyle', self.stroke.toString());
         context.setAttr('lineWidth', self.lineWidth);
 
-        context.setAttr('fillStyle', self.fill.toString());
+        context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
         context.moveTo(0, shape.getAttr('relative75Percentile'));
         context.lineTo(0, shape.getAttr('relativeMaxY'));
@@ -97,6 +122,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.bottomWhiskerShape = new Konva.Shape({
       relative25Percentile: undefined,
       relativeMinY: undefined,
+      fill: self._fill.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.save();
@@ -104,7 +130,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
         context.setAttr('strokeStyle', self.stroke.toString());
         context.setAttr('lineWidth', self.lineWidth);
 
-        context.setAttr('fillStyle', self.fill.toString());
+        context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
         context.moveTo(0, shape.getAttr('relative25Percentile'));
         context.lineTo(0, shape.getAttr('relativeMinY'));
@@ -119,6 +145,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
     this.avgLineShape = new Konva.Shape({
       relativeAvg: undefined,
+      fill: self._fill.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
         context.save();
@@ -126,7 +153,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
         context.setAttr('strokeStyle', self.stroke.toString());
         context.setAttr('lineWidth', self.lineWidth);
 
-        context.setAttr('fillStyle', self.fill.toString());
+        context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
         context.moveTo(-self.boxWidth / 2, shape.getAttr('relativeAvg'));
         context.lineTo(self.boxWidth / 2, shape.getAttr('relativeAvg'));

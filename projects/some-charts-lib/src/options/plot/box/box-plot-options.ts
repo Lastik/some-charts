@@ -1,7 +1,7 @@
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import * as Color from "color";
-import {MetricDependantValue, Palette} from "../../../chart/plots";
+import {Palette} from "../../../chart/plots";
 import {MetricOptions} from "../metric-options";
 
 /**
@@ -14,13 +14,16 @@ export interface BoxPlotOptions extends PlotOptions {
   * */
   metric: MetricOptions<Color | Palette>;
 
-  /**
-   * Marker size.
-   */
-  markerSize: number | MetricDependantValue<number>;
+  boxWidth: number;
+
+  whiskersWidth: number
+
+  lineWidth: number;
+
+  stroke: Color;
 }
 
-export class MarkerPlotOptionsDefaults
+export class BoxPlotOptionsDefaults
 {
   private static _instance: BoxPlotOptions = {
     metric: {
@@ -28,8 +31,11 @@ export class MarkerPlotOptionsDefaults
       caption: "",
       color: new Color('blue')
     },
-    markerSize: 5,
     kind: PlotKind.Marker,
+    boxWidth: 8,
+    whiskersWidth: 5,
+    lineWidth: 2,
+    stroke: new Color('black'),
     animate: false,
     animationDuration: 600
   }

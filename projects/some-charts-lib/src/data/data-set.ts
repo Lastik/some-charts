@@ -187,6 +187,12 @@ export class DataSet<TItemType,
     } else throw DataSet.buildMetricIsNotScalarError(metricId);
   }
 
+  public getVectorMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): Array<number> | undefined {
+    if (this.isVectorMetric(metricId)) {
+      return this.getMetricValue(metricId, x, y) as  Array<number> | undefined;
+    } else throw DataSet.buildMetricIsNotVectorError(metricId);
+  }
+
   public getScalarMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
     if (this.isScalarMetric(metricId)) {
       return this.getMetricValueForDimensions(metricId, xDimVal, yDimVal) as number | undefined;
@@ -536,6 +542,10 @@ export class DataSet<TItemType,
 
   private static buildMetricIsNotScalarError(metricId: string): Error{
     return new Error(`DataSet metric ${metricId} is not scalar!`)
+  }
+
+  private static buildMetricIsNotVectorError(metricId: string): Error{
+    return new Error(`DataSet metric ${metricId} is not vector!`)
   }
 }
 
