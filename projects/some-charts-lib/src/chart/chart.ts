@@ -9,7 +9,7 @@ import {KeyboardNavigation, KeyboardNavigationsFactory, MouseNavigation} from ".
 import {
   CoordinateTransformationStatic,
   DataRect,
-  DataTransformation,
+  DataTransformation, Margin,
   NumericDataRect,
   NumericPoint,
   Point,
@@ -59,11 +59,15 @@ export class Chart<TItemType = any,
   private readonly _location: NumericPoint;
   private _size: Size;
 
+  private dataTransformation: DataTransformation;
+
   private readonly contentItems: ChartRenderableItem[];
   private readonly plots: Plot<PlotOptions, PlotOptionsClass, TItemType, XDimensionType, YDimensionType>[];
 
   private _visibleRect: DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>> | undefined;
   private _visibleRectAsNumeric: NumericDataRect;
+
+  private _screenRect: NumericDataRect | undefined;
 
   private readonly keyboardNavigation: KeyboardNavigation | undefined;
   private readonly mouseNavigation: MouseNavigation | undefined;
@@ -96,6 +100,10 @@ export class Chart<TItemType = any,
 
   public get visibleRect(): DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>> | undefined {
     return this._visibleRect;
+  }
+
+  public get screenRect(): NumericDataRect {
+    return this._screenRect ?? new NumericDataRect(0, this.size.width, 0, this.size.height);
   }
 
   public get visibleRectAsNumeric(): NumericDataRect {
@@ -161,12 +169,12 @@ export class Chart<TItemType = any,
     this._visibleRect = visibleRect;
     this._visibleRectAsNumeric = visibleRect ? this.dimensionalVisibleRectToNumeric(visibleRect) : new NumericDataRect(0, 1, 0, 1)
 
-    let dataTransformation: DataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes!));
+    this.dataTransformation = new DataTransformation(CoordinateTransformationStatic.buildFromOptions(this.options?.axes!));
 
     this.contentItems = [];
 
-    this.horizontalAxis = this.createAxis(dataTransformation, AxisOrientation.Horizontal, this.options?.axes!.horizontal);
-    this.verticalAxis = this.createAxis(dataTransformation, AxisOrientation.Vertical, this.options?.axes!.vertical);
+    this.horizontalAxis = this.createAxis(this.dataTransformation, AxisOrientation.Horizontal, this.options?.axes!.horizontal);
+    this.verticalAxis = this.createAxis(this.dataTransformation, AxisOrientation.Vertical, this.options?.axes!.vertical);
 
     this.chartGrid = new Grid(this.location, this.size, this.options.grid);
 
@@ -181,7 +189,7 @@ export class Chart<TItemType = any,
       .filter(po => po !== undefined) as PlotOptionsClass[];
 
     for (let plotOptions of plotOptionsArr) {
-      let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, dataTransformation, plotOptions);
+      let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, this.dataTransformation, plotOptions);
       if (plot) {
         this.plots.push(plot);
         plot.eventTarget.addListener(AnimationEventType.Tick, this);
@@ -365,10 +373,12 @@ export class Chart<TItemType = any,
       this.mouseNavigation.update(gridLocation, gridSize);
     }
 
+    this._screenRect = new NumericDataRect(gridLocation.x, gridLocation.x + gridSize.width, gridLocation.y, gridLocation.y + gridSize.height);
+
     for (let plot of this.plots) {
       plot.updateVisibleAndScreen(
         this._visibleRectAsNumeric,
-        new NumericDataRect(gridLocation.x, gridLocation.x + gridSize.width, gridLocation.y, gridLocation.y + gridSize.height)
+        this._screenRect
       );
     }
 
@@ -383,14 +393,18 @@ export class Chart<TItemType = any,
     if(this.plots.length) {
       let firstPlot = this.plots[0];
       let chartBoundingRect = firstPlot.getBoundingRectangle();
+      let chartFitToViewMargin = firstPlot.getFitToViewMargin();
       if (chartBoundingRect) {
         for (let i = 1; i < this.plots.length; i++) {
           let plot = this.plots[i];
           let plotBoundingRect = plot.getBoundingRectangle();
-          if(plotBoundingRect) {
-            chartBoundingRect.merge(plotBoundingRect);
+          if (plotBoundingRect) {
+            chartBoundingRect = chartBoundingRect.merge(plotBoundingRect);
+            chartFitToViewMargin = chartFitToViewMargin.merge(plot.getFitToViewMargin());
           }
         }
+
+        chartBoundingRect = this.addMarginToBoundingRect(chartBoundingRect, chartFitToViewMargin);
 
         let coeff = 0.03;
 
@@ -414,6 +428,10 @@ export class Chart<TItemType = any,
         this.updateNumeric(chartBoundingRect);
       }
     }
+  }
+
+  private addMarginToBoundingRect(boundingRect: NumericDataRect, margin: Margin): NumericDataRect {
+    return this.dataTransformation.screenRegionToDataForRect(this.screenRect.addMargin(margin), boundingRect, this.screenRect);
   }
 
   private static getNextId(): number{

@@ -1,7 +1,7 @@
 import Konva from "konva";
 import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
 import {ChartRenderableItem} from "../chart-renderable-item";
-import {DataRect, DataTransformation, NumericDataRect, NumericPoint} from "../../geometry";
+import {DataRect, DataTransformation, Margin, NumericDataRect, NumericPoint} from "../../geometry";
 import {
   DataSet,
   DataSetChange,
@@ -198,6 +198,10 @@ export abstract class Plot<
    * Calculates bounding rectangle of this plot.
    * */
   abstract getBoundingRectangle(): NumericDataRect | undefined;
+
+  getFitToViewMargin(): Margin {
+    return new Margin(0, 0, 0, 0);
+  }
 
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);

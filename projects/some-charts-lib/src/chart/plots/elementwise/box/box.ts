@@ -186,8 +186,6 @@ export class Box extends PlotDrawableElement<Konva.Group>{
   }
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
-    let boxLocationOnScreen = dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen);
-
     let relative25Percentile = this.relative25Percentile.displayedValue;
     let relative75Percentile = this.relative75Percentile.displayedValue;
     let relativeAvg = this.relativeAvg.displayedValue;
@@ -195,12 +193,12 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     let relativeMinY = this.relativeMinY.displayedValue;
     let relativeMaxY = this.relativeMaxY.displayedValue;
 
-    let relative25PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(boxLocationOnScreen, relative25Percentile, visible, screen);
-    let relative75PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(boxLocationOnScreen, relative75Percentile, visible, screen);
+    let relative25PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relative25Percentile, visible, screen);
+    let relative75PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relative75Percentile, visible, screen);
 
-    let relativeAvgOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(boxLocationOnScreen, relativeAvg, visible, screen);
-    let relativeMinYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(boxLocationOnScreen, relativeMinY, visible, screen);
-    let relativeMaxYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(boxLocationOnScreen, relativeMaxY, visible, screen);
+    let relativeAvgOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeAvg, visible, screen);
+    let relativeMinYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMinY, visible, screen);
+    let relativeMaxYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMaxY, visible, screen);
 
     this.boxShape.setAttrs({
       x: - this.boxWidth / 2,
@@ -225,10 +223,13 @@ export class Box extends PlotDrawableElement<Konva.Group>{
   }
 
   override getBoundingRectangle(): NumericDataRect {
-    let minY = this.relativeMinY.displayedValue;
-    let maxY = this.relativeMaxY.displayedValue;
-    let minX = -this.boxWidth / 2;
-    let maxX = this.boxWidth / 2;
+
+    let boxOrigin =  this.dataPoint.displayedValue;
+
+    let minY = this.relativeMinY.displayedValue + boxOrigin.y;
+    let maxY = this.relativeMaxY.displayedValue + boxOrigin.y;
+    let minX = boxOrigin.x;
+    let maxX = boxOrigin.x;
     return new NumericDataRect(minX, maxX, minY, maxY);
   }
 

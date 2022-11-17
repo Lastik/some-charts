@@ -32,10 +32,10 @@ export class BoxPlotOptionsDefaults
       color: new Color('blue')
     },
     kind: PlotKind.Box,
-    boxWidth: 8,
-    whiskersWidth: 5,
+    boxWidth: 40,
+    whiskersWidth: 30,
     lineWidth: 2,
-    stroke: new Color('black'),
+    stroke: new Color('white'),
     animate: false,
     animationDuration: 600
   }

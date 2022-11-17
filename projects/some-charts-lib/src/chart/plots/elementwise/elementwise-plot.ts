@@ -18,7 +18,7 @@ export abstract class ElementwisePlot<
   TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
-  extends Plot<PlotOptionsType, PlotOptionsClassType, TItemType, XDimensionType, YDimensionType>{
+  extends Plot<PlotOptionsType, PlotOptionsClassType, TItemType, XDimensionType, YDimensionType> {
 
   protected plotElements!: PlotDrawableElement[];
 
@@ -37,14 +37,14 @@ export abstract class ElementwisePlot<
   protected rebuildShapesFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): void {
     let updateResult = this.updatePlotElements(dataSetChange);
 
-    for(let plotElt of updateResult.deleted){
+    for (let plotElt of updateResult.deleted) {
       plotElt.dispose();
       plotElt.rootDrawable.remove();
     }
 
     pullAt(this.plotElements, updateResult.deletedIndexes);
 
-    for(let plotElt of updateResult.added){
+    for (let plotElt of updateResult.added) {
       this.shapesGroup.add(plotElt.rootDrawable);
       plotElt.eventTarget.addListener(AnimationEventType.Tick, this);
     }
@@ -72,9 +72,9 @@ export abstract class ElementwisePlot<
         }
       }
 
-      for(let tuple of dataSetChange2D.added){
+      for (let tuple of dataSetChange2D.added) {
         let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
-        if(plotElt) {
+        if (plotElt) {
           this.plotElements.push(...plotElt);
           added.push(...plotElt);
         }
@@ -93,9 +93,9 @@ export abstract class ElementwisePlot<
         }
       }
 
-      for(let value of dataSetChange1D.added){
+      for (let value of dataSetChange1D.added) {
         let plotElt = this.add1DPlotElement(value);
-        if(plotElt) {
+        if (plotElt) {
           this.plotElements.push(...plotElt);
           added.push(...plotElt);
         }

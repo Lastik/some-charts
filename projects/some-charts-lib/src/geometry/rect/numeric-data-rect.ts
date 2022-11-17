@@ -3,6 +3,7 @@ import {DataRect} from "./data-rect";
 import {NumericPoint, Point} from "../point";
 import {Range} from "../range";
 import {NumericRange} from "../numeric-range";
+import {Margin} from "../margin";
 
 export class NumericDataRect extends DataRect<number, number> {
 
@@ -131,5 +132,18 @@ export class NumericDataRect extends DataRect<number, number> {
    */
   override getVerticalRange(): NumericRange {
     return new NumericRange(this.minY, this.maxY);
+  }
+
+  /**
+   * Adds margin to the rect coordinates.
+   * @param {Margin} margin - Margin to add.
+   * @returns {NumericDataRect}
+   */
+  addMargin(margin: Margin) {
+    return new NumericDataRect(
+      this.minX - margin.left,
+      this.maxX + margin.right,
+      this.minY - margin.bottom,
+      this.maxY + margin.top);
   }
 }

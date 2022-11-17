@@ -4,7 +4,7 @@ import {
   PlotOptionsClassFactory
 } from "../../../../options";
 import {DataSet, DimensionValue} from "../../../../data";
-import {DataTransformation, NumericPoint} from "../../../../geometry";
+import {DataTransformation, Margin, NumericPoint} from "../../../../geometry";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Box} from "./box";
 import {cloneDeep} from "lodash-es";
@@ -65,5 +65,10 @@ export class BoxPlot<TItemType,
 
   protected update2DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>) {
     throw this.plotErrorBuilder.buildPlotDoesntSupport2DRendering(this.plotOptions.kind);
+  }
+
+  override getFitToViewMargin(): Margin {
+    let eltWidth = Math.max(this.plotOptions.boxWidth + this.plotOptions.whiskersWidth);
+    return new Margin(0, eltWidth / 2, 0, eltWidth / 2)
   }
 }

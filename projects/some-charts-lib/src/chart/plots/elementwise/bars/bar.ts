@@ -59,7 +59,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     this.updateBarBoundingShape(
-      dataTransformation.getRelativeRectLocationOnScreen(dataTransformation.dataToScreenRegionXY(dataPoint, visible, screen), this.relativeBounds.displayedValue, visible, screen)
+      dataTransformation.getRelativeRectLocationOnScreen(dataPoint, this.relativeBounds.displayedValue, visible, screen)
     );
     this.arrangeTextWithinBar();
   }

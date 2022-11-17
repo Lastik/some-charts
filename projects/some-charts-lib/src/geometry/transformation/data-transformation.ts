@@ -79,10 +79,10 @@ export class DataTransformation {
     const x = value.x;
     const y = value.y;
 
-    const leftTop = screenRegion.getMinXMinY();
+    const minXMinY = screenRegion.getMinXMinY();
 
-    const newX = this.screenToDataX(x - leftTop.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = this.screenToDataY(y - leftTop.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = this.screenToDataX(x - minXMinY.x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = this.screenToDataY(y - minXMinY.y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -96,31 +96,13 @@ export class DataTransformation {
    * @returns {NumericDataRect}
    */
   public screenRegionToDataForRect(rect: NumericDataRect, visible: NumericDataRect, screenRegion: NumericDataRect): NumericDataRect {
-    const leftTop = rect.getMinXMinY();
-    const rightBottom = rect.getMaxXMaxY();
+    const minXminY = rect.getMinXMinY();
+    const maxXMaxY = rect.getMaxXMaxY();
 
-    const leftTopTransformed = this.screenRegionToDataXY(leftTop, visible, screenRegion);
-    const rightBottomTransformed = this.screenRegionToDataXY(rightBottom, visible, screenRegion);
+    const minXminYTransformed = this.screenRegionToDataXY(minXminY, visible, screenRegion);
+    const maxXMaxYTransformed = this.screenRegionToDataXY(maxXMaxY, visible, screenRegion);
 
-    return new NumericDataRect(leftTopTransformed.x, rightBottomTransformed.x, leftTopTransformed.y, rightBottomTransformed.y);
-  }
-
-  /**
-   * Transforms rectangle from XY coordinates in data coordinates to specified screen region.
-   * @param {NumericPoint} rect - NumericDataRect in data coords.
-   * @param {NumericDataRect} visible - Visible data rectangle.
-   * @param {NumericDataRect} screenRegion - Screen region.
-   * @returns {NumericDataRect}
-   */
-  public dataToScreenRegionForRect(rect: NumericDataRect, visible: NumericDataRect, screenRegion: NumericDataRect): NumericDataRect {
-
-    const leftTop = rect.getMinXMinY();
-    const rightBottom = rect.getMaxXMaxY();
-
-    let leftTopTransformed = this.dataToScreenRegionXY(leftTop, visible, screenRegion);
-    let rightBottomTransformed = this.dataToScreenRegionXY(rightBottom, visible, screenRegion);
-
-    return new NumericDataRect(leftTopTransformed.x, rightBottomTransformed.x, leftTopTransformed.y, rightBottomTransformed.y);
+    return new NumericDataRect(minXminYTransformed.x, maxXMaxYTransformed.x, maxXMaxYTransformed.y, minXminYTransformed.y);
   }
 
   /**
@@ -151,10 +133,10 @@ export class DataTransformation {
     const x = value.x;
     const y = value.y;
 
-    const leftTop = screenRegion.getMinXMinY();
+    const minXMinY = screenRegion.getMinXMinY();
 
-    const newX = leftTop.x + this.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
-    const newY = leftTop.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    const newX = minXMinY.x + this.dataToScreenX(x, visible.getHorizontalRange(), screenRegion.getHorizontalRange().getLength());
+    const newY = minXMinY.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
 
     return new NumericPoint(newX, newY);
   }
@@ -168,9 +150,9 @@ export class DataTransformation {
    */
   public dataToScreenRegionY(y: number, visible: NumericDataRect, screenRegion: NumericDataRect): number {
 
-    const leftTop = screenRegion.getMinXMinY();
+    const minXMinY = screenRegion.getMinXMinY();
 
-    return leftTop.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
+    return minXMinY.y + this.dataToScreenY(y, visible.getVerticalRange(), screenRegion.getVerticalRange().getLength());
   }
 
   /**
@@ -186,18 +168,45 @@ export class DataTransformation {
     return res;
   }
 
+  /**
+   * Transforms rectangle from XY coordinates in data coordinates to specified screen region.
+   * @param {NumericPoint} rect - NumericDataRect in data coords.
+   * @param {NumericDataRect} visible - Visible data rectangle.
+   * @param {NumericDataRect} screenRegion - Screen region.
+   * @returns {NumericDataRect}
+   */
+  public dataToScreenRegionForRect(rect: NumericDataRect, visible: NumericDataRect, screenRegion: NumericDataRect): NumericDataRect {
+
+    const minXminY = rect.getMinXMinY();
+    const maxXMaxY = rect.getMaxXMaxY();
+
+    let minXminYTransformed = this.dataToScreenRegionXY(minXminY, visible, screenRegion);
+    let maxXMaxYTransformed = this.dataToScreenRegionXY(maxXMaxY, visible, screenRegion);
+
+    return new NumericDataRect(minXminYTransformed.x, maxXMaxYTransformed.x, minXminYTransformed.y, maxXMaxYTransformed.y);
+  }
+
 
   public getRelativePointLocationOnScreen(origin: NumericPoint, relativeDataPoint: NumericPoint, visible: NumericDataRect, screen: NumericDataRect) {
+
+    let originOnScreen = this.dataToScreenRegionXY(origin, visible, screen);
+
     return this.dataToScreenRegionXY(relativeDataPoint.scalarPlus(origin), visible, screen)
-      .scalarPlus(origin.additiveInvert())
+      .scalarPlus(originOnScreen.additiveInvert())
   }
 
   public getRelativeYValueLocationOnScreen(origin: NumericPoint, yValue: number, visible: NumericDataRect, screen: NumericDataRect) {
-    return this.dataToScreenRegionY(yValue + origin.y, visible, screen) - origin.y;
+
+    let originOnScreen = this.dataToScreenRegionXY(origin, visible, screen);
+
+    return this.dataToScreenRegionY(yValue + origin.y, visible, screen) - originOnScreen.y;
   }
 
   public getRelativeRectLocationOnScreen(origin: NumericPoint, dataRect: NumericDataRect, visible: NumericDataRect, screen: NumericDataRect) {
-    return  this.dataToScreenRegionForRect(dataRect.addOffset(origin), visible, screen)
-      .addOffset(origin.additiveInvert());
+
+    let originOnScreen = this.dataToScreenRegionXY(origin, visible, screen);
+
+    return this.dataToScreenRegionForRect(dataRect.addOffset(origin), visible, screen)
+      .addOffset(originOnScreen.additiveInvert());
   }
 }

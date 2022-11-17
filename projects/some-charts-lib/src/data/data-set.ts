@@ -189,7 +189,7 @@ export class DataSet<TItemType,
 
   public getVectorMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): Array<number> | undefined {
     if (this.isVectorMetric(metricId)) {
-      return this.getMetricValue(metricId, x, y) as  Array<number> | undefined;
+      return this.getMetricValue(metricId, x, y) as Array<number> | undefined;
     } else throw DataSet.buildMetricIsNotVectorError(metricId);
   }
 
@@ -351,6 +351,12 @@ export class DataSet<TItemType,
         let yIdx = this.indexByYDimension && dimYValue ? this.indexByYDimension.get(dimYValue.primitiveValue) : undefined;
 
         let metricValue = metricFunc(element);
+
+        if(this.isVectorMetric(metricId)) {
+          metricValue = (metricValue as number[]).sort(function (l, r) {
+            return l - r;
+          });
+        }
 
         if (!isUndefined(xIdx) && !isUndefined(yIdx) && Array.isArray(metricValues[xIdx])) {
           let twoDMetricValues = (metricValues as Array<Array<number>>);
