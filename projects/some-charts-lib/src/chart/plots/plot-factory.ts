@@ -1,13 +1,13 @@
 import {Plot} from "./plot";
 import {DataSet} from "../../data";
-import {BarsPlot, MarkerPlot} from "./elementwise";
+import {BarsPlot, MarkerPlot, BoxPlot} from "./elementwise";
 
 import {
   BarsPlotOptions,
   MarkerPlotOptions,
   PlotOptions,
   PlotOptionsClass,
-  PlotKind
+  PlotKind, BoxPlotOptions
 } from "../../options";
 
 import {
@@ -28,6 +28,8 @@ export class PlotFactory {
       return new BarsPlot(dataSet, dataTransformation, <BarsPlotOptions>plotOptions)
     } else if (plotOptions.kind === PlotKind.Marker) {
       return new MarkerPlot(dataSet, dataTransformation, <MarkerPlotOptions>plotOptions);
+    } else if (plotOptions.kind === PlotKind.Box) {
+      return new BoxPlot(dataSet, dataTransformation, <BoxPlotOptions>plotOptions);
     } else return undefined;
   }
 

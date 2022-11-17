@@ -14,13 +14,13 @@ export interface BoxPlotOptions extends PlotOptions {
   * */
   metric: MetricOptions<Color | Palette>;
 
-  boxWidth: number;
+  boxWidth?: number;
 
-  whiskersWidth: number
+  whiskersWidth?: number
 
-  lineWidth: number;
+  lineWidth?: number;
 
-  stroke: Color;
+  stroke?: Color;
 }
 
 export class BoxPlotOptionsDefaults
@@ -31,7 +31,7 @@ export class BoxPlotOptionsDefaults
       caption: "",
       color: new Color('blue')
     },
-    kind: PlotKind.Marker,
+    kind: PlotKind.Box,
     boxWidth: 8,
     whiskersWidth: 5,
     lineWidth: 2,

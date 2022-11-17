@@ -1,11 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, BarsPlotOptions, Chart,, DataSet, PlotKind} from "some-charts";
+import {AxisTypes, BarsPlotOptions, Chart, DataSet, PlotKind} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
+import {Sorting} from "some-charts";
+import {BoxPlotOptions} from "some-charts";
 
 @Component({
   selector: 'box-demo',
-  templateUrl: './bars-demo.component.html'
+  templateUrl: './box-demo.component.html'
 })
 export class BoxDemoComponent implements OnInit {
 
@@ -33,7 +35,8 @@ export class BoxDemoComponent implements OnInit {
         y: {
           func: item => {
             return item.y
-          }
+          },
+          isVector: true
         }
       },
       item => {
@@ -56,12 +59,12 @@ export class BoxDemoComponent implements OnInit {
         },
         plots: [
           {
-            kind: PlotKind.Bars,
-            metrics: [{
+            kind: PlotKind.Box,
+            metric: {
               id: 'y',
               caption: 'Y',
               color: new Color("#AA0000")
-            }],
+            },
             animate: true
           } as BoxPlotOptions
         ],
