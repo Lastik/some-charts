@@ -97,6 +97,8 @@ export abstract class Plot<
 
   protected updateFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>) {
 
+    this.initOnDataSetUpdate();
+
     this.rebuildShapesFromDataSet(dataSetChange);
 
     this.clearPreCalculatedDataSetRelatedData();
@@ -105,6 +107,8 @@ export abstract class Plot<
       this.updateVisibleAndScreen(this.visible, this.screen);
     }
   }
+
+  protected initOnDataSetUpdate() { }
 
   /**
    * Sets visible and screen rectangle of plot
@@ -185,6 +189,13 @@ export abstract class Plot<
       return this.getMetricPoints1D(metricId) as Array<NumericPoint > | undefined;
     }
     else throw new Error(`DataSet metric ${metricId} is not scalar!`);
+  }
+
+  protected getVectorMetricPoints1D(metricId: string): Array<Array<NumericPoint >> | undefined {
+    if(this.dataSet.isVectorMetric(metricId)){
+      return this.getMetricPoints1D(metricId) as Array<Array<NumericPoint >> | undefined;
+    }
+    else throw new Error(`DataSet metric ${metricId} is not vector!`);
   }
 
   protected getScalarMetricPoint1D(metricId: string, xDimension: DimensionValue<XDimensionType>): NumericPoint | undefined {

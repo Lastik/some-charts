@@ -4,10 +4,10 @@ import {
   PlotOptionsClassFactory
 } from "../../../../options";
 import {DataSet, DimensionValue} from "../../../../data";
-import {DataTransformation, Margin, NumericPoint} from "../../../../geometry";
+import {DataTransformation, NumericPoint} from "../../../../geometry";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Box} from "./box";
-import {cloneDeep} from "lodash-es";
+import {cloneDeep, uniq} from "lodash-es";
 import {ElementwisePlot} from "../elementwise-plot";
 import {PlotErrorBuilder} from "../../plot-error-builder";
 
@@ -15,6 +15,8 @@ export class BoxPlot<TItemType,
   XDimensionType extends number | string | Date,
   YDimensionType extends number | string | Date | undefined = undefined>
   extends ElementwisePlot<BoxPlotOptions, BoxPlotOptionsClass, TItemType, XDimensionType, YDimensionType> {
+  private boxDataWidth: number = 0;
+  private whiskersDataWidth: number = 0;
 
   constructor(
     dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
@@ -24,6 +26,12 @@ export class BoxPlot<TItemType,
     super(dataSet, dataTransformation, options);
 
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BoxPlotOptionsDefaults.Instance), options)) as BoxPlotOptionsClass;
+  }
+
+  override initOnDataSetUpdate(){
+    let avgXDelta = this.getAvgXDelta(this.plotOptions.metric.id) ?? 0;
+    this.boxDataWidth = avgXDelta / 2;
+    this.whiskersDataWidth = avgXDelta / 3;
   }
 
   protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
@@ -39,8 +47,8 @@ export class BoxPlot<TItemType,
       points,
       boxColor,
       this.plotOptions.stroke,
-      this.plotOptions.boxWidth,
-      this.plotOptions.whiskersWidth,
+      this.boxDataWidth,
+      this.whiskersDataWidth,
       this.plotOptions.lineWidth)];
   }
 
@@ -57,9 +65,13 @@ export class BoxPlot<TItemType,
 
     let box = plotElt as Box;
 
+    let avgXDelta = this.getAvgXDelta(metricId) ?? 0;
+
     if (boxColor && points) {
       box.setDataPoints(points);
       box.fill = boxColor;
+      box.boxDataWidth = this.boxDataWidth;
+      box.whiskersDataWidth = this.whiskersDataWidth;
     }
   }
 
@@ -67,8 +79,17 @@ export class BoxPlot<TItemType,
     throw this.plotErrorBuilder.buildPlotDoesntSupport2DRendering(this.plotOptions.kind);
   }
 
-  override getFitToViewMargin(): Margin {
-    let eltWidth = Math.max(this.plotOptions.boxWidth + this.plotOptions.whiskersWidth);
-    return new Margin(0, eltWidth / 2, 0, eltWidth / 2)
+  protected getAvgXDelta(metricId: string): number | undefined {
+    let allXValues = uniq(this.getVectorMetricPoints1D(metricId)?.flatMap(p => p.map(pI => pI.x)).sort((l, r) => l - r));
+
+    if(allXValues) {
+      let sumXDelta = 0;
+      for (let i = 0; i < allXValues.length - 1; i++) {
+        sumXDelta += allXValues[i + 1] - allXValues[i];
+      }
+
+      return sumXDelta / (allXValues.length - 1);
+    }
+    else return undefined;
   }
 }

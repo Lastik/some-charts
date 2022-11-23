@@ -32,8 +32,6 @@ export class BoxPlotOptionsDefaults
       color: new Color('blue')
     },
     kind: PlotKind.Box,
-    boxWidth: 40,
-    whiskersWidth: 30,
     lineWidth: 2,
     stroke: new Color('white'),
     animate: false,

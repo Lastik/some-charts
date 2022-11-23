@@ -12,8 +12,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
   private readonly bottomWhiskerShape: Konva.Shape;
   private readonly avgLineShape: Konva.Shape;
 
-  private boxWidth: number;
-  private whiskersWidth: number
+  public boxDataWidth: number;
+  public whiskersDataWidth: number
   private lineWidth: number;
 
   private _fill: Color;
@@ -63,18 +63,20 @@ export class Box extends PlotDrawableElement<Konva.Group>{
               dataPoints: Array<NumericPoint>,
               fill: Color,
               stroke: Color,
-              boxWidth: number,
-              whiskersWidth: number,
+              boxDataWidth: number,
+              whiskersDataWidth: number,
               lineWidth: number) {
 
     let root = new Konva.Group();
 
-    let boxCenter = Box.calculateBoxCenter(dataPoints);
+    let percentile25 = Box.calculate25Percentile(dataPoints);
+    let percentile75 = Box.calculate75Percentile(dataPoints);
+    let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
 
     super(metricId, boxCenter, root);
 
-    this.boxWidth = boxWidth;
-    this.whiskersWidth = whiskersWidth;
+    this.boxDataWidth = boxDataWidth;
+    this.whiskersDataWidth = whiskersDataWidth;
     this.lineWidth = lineWidth;
 
     this._fill = fill;
@@ -83,14 +85,13 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.relative25Percentile = new AnimatedProperty<number>(Box.calculate25Percentile(dataPoints) - boxCenter.y);
     this.relative75Percentile = new AnimatedProperty<number>(Box.calculate75Percentile(dataPoints) - boxCenter.y);
     this.relativeAvg = new AnimatedProperty<number>(Box.calculateAvg(dataPoints) - boxCenter.y);
-    this.relativeMinY = new AnimatedProperty<number>(Box.calculateMinY(dataPoints) - boxCenter.y);
-    this.relativeMaxY = new AnimatedProperty<number>(Box.calculateMaxY(dataPoints) - boxCenter.y);
+    this.relativeMinY = new AnimatedProperty<number>(Box.calculateMinY(percentile25, percentile75) - boxCenter.y);
+    this.relativeMaxY = new AnimatedProperty<number>(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y);
 
     this.boxShape = new Konva.Rect({
       stroke: stroke.toString(),
       strokeWidth: lineWidth,
-      fill: fill.toString(),
-      width: boxWidth
+      fill: fill.toString()
     });
 
     let self = this;
@@ -98,6 +99,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.topWhiskerShape = new Konva.Shape({
       relative75Percentile: undefined,
       relativeMaxY: undefined,
+      whiskersRenderWidth: undefined,
       fill: self._fill.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
@@ -111,8 +113,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
         context.moveTo(0, shape.getAttr('relative75Percentile'));
         context.lineTo(0, shape.getAttr('relativeMaxY'));
 
-        context.moveTo(-self.whiskersWidth / 2, shape.getAttr('relativeMaxY'));
-        context.lineTo(self.whiskersWidth / 2, shape.getAttr('relativeMaxY'));
+        context.moveTo(-shape.getAttr('whiskersRenderWidth') / 2, shape.getAttr('relativeMaxY'));
+        context.lineTo(shape.getAttr('whiskersRenderWidth') / 2, shape.getAttr('relativeMaxY'));
 
         context.stroke();
         context.restore();
@@ -122,6 +124,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.bottomWhiskerShape = new Konva.Shape({
       relative25Percentile: undefined,
       relativeMinY: undefined,
+      whiskersRenderWidth: undefined,
       fill: self._fill.toString(),
       sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
 
@@ -135,8 +138,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
         context.moveTo(0, shape.getAttr('relative25Percentile'));
         context.lineTo(0, shape.getAttr('relativeMinY'));
 
-        context.moveTo(-self.whiskersWidth / 2, shape.getAttr('relativeMinY'));
-        context.lineTo(self.whiskersWidth / 2, shape.getAttr('relativeMinY'));
+        context.moveTo(-shape.getAttr('whiskersRenderWidth') / 2, shape.getAttr('relativeMinY'));
+        context.lineTo(shape.getAttr('whiskersRenderWidth') / 2, shape.getAttr('relativeMinY'));
 
         context.stroke();
         context.restore();
@@ -155,8 +158,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
         context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
-        context.moveTo(-self.boxWidth / 2, shape.getAttr('relativeAvg'));
-        context.lineTo(self.boxWidth / 2, shape.getAttr('relativeAvg'));
+        context.moveTo(-shape.getAttr('boxRenderWidth') / 2, shape.getAttr('relativeAvg'));
+        context.lineTo(shape.getAttr('boxRenderWidth') / 2, shape.getAttr('relativeAvg'));
 
         context.stroke();
         context.restore();
@@ -176,13 +179,15 @@ export class Box extends PlotDrawableElement<Konva.Group>{
   }
 
   public setDataPoints(dataPoints: Array<NumericPoint>, animate: boolean = false, animationDuration: number = 0){
-    let boxCenter = Box.calculateBoxCenter(dataPoints);
+    let percentile25 = Box.calculate25Percentile(dataPoints);
+    let percentile75 = Box.calculate75Percentile(dataPoints);
+    let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
     this.dataPoint.setValue(boxCenter, animate, animationDuration);
     this.relative25Percentile.setValue(Box.calculate25Percentile(dataPoints) - boxCenter.y);
     this.relative75Percentile.setValue(Box.calculate75Percentile(dataPoints) - boxCenter.y);
     this.relativeAvg.setValue(Box.calculateAvg(dataPoints) - boxCenter.y);
-    this.relativeMinY.setValue(Box.calculateMinY(dataPoints) - boxCenter.y);
-    this.relativeMaxY.setValue(Box.calculateMaxY(dataPoints) - boxCenter.y);
+    this.relativeMinY.setValue(Box.calculateMinY(percentile25, percentile75) - boxCenter.y);
+    this.relativeMaxY.setValue(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y);
   }
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
@@ -200,25 +205,35 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     let relativeMinYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMinY, visible, screen);
     let relativeMaxYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMaxY, visible, screen);
 
+    let boxXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x - this.boxDataWidth / 2, visible, screen);
+    let boxXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x + this.boxDataWidth / 2, visible, screen);
+    let boxWidth = boxXMax - boxXMin;
+
+    let whiskersXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x - this.whiskersDataWidth / 2, visible, screen);
+    let whiskersXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x + this.whiskersDataWidth / 2, visible, screen);
+
     this.boxShape.setAttrs({
-      x: - this.boxWidth / 2,
+      x: -boxWidth / 2,
       y: relative25PercentileOnScreen,
-      width: this.boxWidth,
+      width: boxWidth,
       height: relative75PercentileOnScreen - relative25PercentileOnScreen
     });
 
     this.topWhiskerShape.setAttrs({
       relative75Percentile: relative75PercentileOnScreen,
-      relativeMaxY: relativeMaxYOnScreen
+      relativeMaxY: relativeMaxYOnScreen,
+      whiskersRenderWidth: whiskersXMax - whiskersXMin,
     });
 
     this.bottomWhiskerShape.setAttrs({
       relative25Percentile: relative25PercentileOnScreen,
-      relativeMinY: relativeMinYOnScreen
+      relativeMinY: relativeMinYOnScreen,
+      whiskersRenderWidth: whiskersXMax - whiskersXMin
     });
 
     this.avgLineShape.setAttrs({
-      relativeAvg: relativeAvgOnScreen
+      relativeAvg: relativeAvgOnScreen,
+      boxRenderWidth: boxXMax - boxXMin
     });
   }
 
@@ -228,17 +243,15 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
     let minY = this.relativeMinY.displayedValue + boxOrigin.y;
     let maxY = this.relativeMaxY.displayedValue + boxOrigin.y;
-    let minX = boxOrigin.x;
-    let maxX = boxOrigin.x;
+    let minX = boxOrigin.x - this.boxDataWidth / 2;
+    let maxX = boxOrigin.x + this.boxDataWidth / 2;
     return new NumericDataRect(minX, maxX, minY, maxY);
   }
 
-  private static calculateBoxCenter(dataPoints: Array<NumericPoint>){
+  private static calculateBoxCenter(dataPoints: Array<NumericPoint>, percentile25: number, percentile75: number){
 
-    Box.checkForEmptyDataPoints(dataPoints);
-
-    let minY = Box.calculateMinY(dataPoints);
-    let maxY = Box.calculateMinY(dataPoints);
+    let minY = Box.calculateMinY(percentile25, percentile75);
+    let maxY = Box.calculateMinY(percentile25, percentile75);
 
     let centerY = (maxY - minY) / 2;
     let x = dataPoints[0].x;
@@ -246,14 +259,12 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     return new NumericPoint(x, centerY)
   }
 
-  private static calculateMinY(dataPoints: Array<NumericPoint>): number {
-    Box.checkForEmptyDataPoints(dataPoints);
-    return minBy(dataPoints, dp => dp.y)?.y!
+  private static calculateMinY(percentile25: number, percentile75: number): number {
+    return percentile25 - 1.5 * (percentile75 - percentile25);
   }
 
-  private static calculateMaxY(dataPoints: Array<NumericPoint>): number {
-    Box.checkForEmptyDataPoints(dataPoints);
-    return maxBy(dataPoints, dp => dp.y)?.y!;
+  private static calculateMaxY(percentile25: number, percentile75: number): number {
+    return percentile75 + 1.5 * (percentile75 - percentile25);
   }
 
   private static calculate25Percentile(dataPoints: Array<NumericPoint>): number{
