@@ -3,7 +3,6 @@ import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../../geometry";
 import * as Color from "color";
 import {AnimatedProperty} from "../../animated-property";
-import {maxBy, minBy, sumBy} from "lodash-es";
 
 export class Box extends PlotDrawableElement<Konva.Group>{
 
@@ -45,7 +44,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
   private readonly relative25Percentile: AnimatedProperty<number>;
   private readonly relative75Percentile: AnimatedProperty<number>;
-  private readonly relativeAvg: AnimatedProperty<number>;
+  private readonly relative50Percentile: AnimatedProperty<number>;
 
   private readonly relativeMinY: AnimatedProperty<number>;
   private readonly relativeMaxY: AnimatedProperty<number>;
@@ -54,7 +53,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     return [...super.animatedProperties,
       this.relative25Percentile,
       this.relative75Percentile,
-      this.relativeAvg,
+      this.relative50Percentile,
       this.relativeMinY,
       this.relativeMaxY];
   };
@@ -84,7 +83,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
     this.relative25Percentile = new AnimatedProperty<number>(Box.calculate25Percentile(dataPoints) - boxCenter.y);
     this.relative75Percentile = new AnimatedProperty<number>(Box.calculate75Percentile(dataPoints) - boxCenter.y);
-    this.relativeAvg = new AnimatedProperty<number>(Box.calculateAvg(dataPoints) - boxCenter.y);
+    this.relative50Percentile = new AnimatedProperty<number>(Box.calculate50Percentile(dataPoints) - boxCenter.y);
     this.relativeMinY = new AnimatedProperty<number>(Box.calculateMinY(percentile25, percentile75) - boxCenter.y);
     this.relativeMaxY = new AnimatedProperty<number>(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y);
 
@@ -183,34 +182,34 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     let percentile75 = Box.calculate75Percentile(dataPoints);
     let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
     this.dataPoint.setValue(boxCenter, animate, animationDuration);
-    this.relative25Percentile.setValue(Box.calculate25Percentile(dataPoints) - boxCenter.y);
-    this.relative75Percentile.setValue(Box.calculate75Percentile(dataPoints) - boxCenter.y);
-    this.relativeAvg.setValue(Box.calculateAvg(dataPoints) - boxCenter.y);
-    this.relativeMinY.setValue(Box.calculateMinY(percentile25, percentile75) - boxCenter.y);
-    this.relativeMaxY.setValue(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y);
+    this.relative25Percentile.setValue(Box.calculate25Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relative75Percentile.setValue(Box.calculate75Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relative50Percentile.setValue(Box.calculate50Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relativeMinY.setValue(Box.calculateMinY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
+    this.relativeMaxY.setValue(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
   }
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
     let relative25Percentile = this.relative25Percentile.displayedValue;
     let relative75Percentile = this.relative75Percentile.displayedValue;
-    let relativeAvg = this.relativeAvg.displayedValue;
+    let relative50Percentile = this.relative50Percentile.displayedValue;
 
     let relativeMinY = this.relativeMinY.displayedValue;
     let relativeMaxY = this.relativeMaxY.displayedValue;
 
     let relative25PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relative25Percentile, visible, screen);
+    let relative50PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relative50Percentile, visible, screen);
     let relative75PercentileOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relative75Percentile, visible, screen);
 
-    let relativeAvgOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeAvg, visible, screen);
     let relativeMinYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMinY, visible, screen);
     let relativeMaxYOnScreen = dataTransformation.getRelativeYValueLocationOnScreen(dataPoint, relativeMaxY, visible, screen);
 
-    let boxXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x - this.boxDataWidth / 2, visible, screen);
-    let boxXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x + this.boxDataWidth / 2, visible, screen);
+    let boxXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, dataPoint.x - this.boxDataWidth / 2, visible, screen);
+    let boxXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, dataPoint.x + this.boxDataWidth / 2, visible, screen);
     let boxWidth = boxXMax - boxXMin;
 
-    let whiskersXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x - this.whiskersDataWidth / 2, visible, screen);
-    let whiskersXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, this.dataPoint.displayedValue.x + this.whiskersDataWidth / 2, visible, screen);
+    let whiskersXMin = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, dataPoint.x - this.whiskersDataWidth / 2, visible, screen);
+    let whiskersXMax = dataTransformation.getRelativeXValueLocationOnScreen(dataPoint, dataPoint.x + this.whiskersDataWidth / 2, visible, screen);
 
     this.boxShape.setAttrs({
       x: -boxWidth / 2,
@@ -232,7 +231,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     });
 
     this.avgLineShape.setAttrs({
-      relativeAvg: relativeAvgOnScreen,
+      relativeAvg: relative50PercentileOnScreen,
       boxRenderWidth: boxXMax - boxXMin
     });
   }
@@ -282,8 +281,7 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     return dataPoints[percentileIndex].y;
   }
 
-  private static calculateAvg(dataPoints: Array<NumericPoint>): number{
-    Box.checkForEmptyDataPoints(dataPoints);
-    return sumBy(dataPoints, v => v.y) / dataPoints.length;
+  private static calculate50Percentile(dataPoints: Array<NumericPoint>): number{
+    return Box.calculatePercentile(dataPoints, 50);
   }
 }

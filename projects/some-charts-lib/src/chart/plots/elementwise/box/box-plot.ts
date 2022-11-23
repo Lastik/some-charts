@@ -65,10 +65,8 @@ export class BoxPlot<TItemType,
 
     let box = plotElt as Box;
 
-    let avgXDelta = this.getAvgXDelta(metricId) ?? 0;
-
     if (boxColor && points) {
-      box.setDataPoints(points);
+      box.setDataPoints(points, this.plotOptions.animate, this.plotOptions.animationDuration);
       box.fill = boxColor;
       box.boxDataWidth = this.boxDataWidth;
       box.whiskersDataWidth = this.whiskersDataWidth;
