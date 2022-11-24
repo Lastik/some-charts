@@ -3,6 +3,7 @@ import * as Color from "color";
 import {PlotDrawableElement} from "../../plot-drawable-element";
 import {NumericPoint} from "../../../../../geometry";
 import {PercentileHelper} from "../../../../../services";
+import {AnimatedProperty} from "../../../animated-property";
 
 export class BoxOutliers extends PlotDrawableElement {
   private readonly outliersShapes: Konva.Shape[];
@@ -20,13 +21,20 @@ export class BoxOutliers extends PlotDrawableElement {
     return this._color;
   }
 
+  private outliersRelativePositions!: Array<AnimatedProperty<NumericPoint>>;
+
+  override get animatedProperties(): Array<AnimatedProperty<any>>{
+    return [...super.animatedProperties, ...this.outliersRelativePositions];
+  };
+
   constructor(metricId: string, dataPoints: NumericPoint[], color: Color, size: number) {
     let origin = dataPoints.sort((l, r)=> l.y - r.y)[0];
     let root = new Konva.Group();
     super(metricId, origin, root);
+    this.outliersRelativePositions = dataPoints.map(dp => new AnimatedProperty<NumericPoint>( dp.scalarPlus(origin.additiveInvert())));
     this._color = color;
     this._size = size;
-    this.outliersShapes = dataPoints.map(dp => BoxOutliers.createMarkerShape(color, size, dp.scalarPlus(origin.additiveInvert())));
+    this.outliersShapes = this.outliersRelativePositions.map(pos => BoxOutliers.createMarkerShape(color, size, pos.displayedValue));
     this.outliersShapes.forEach(shape => root.add(shape));
   }
 
@@ -43,15 +51,14 @@ export class BoxOutliers extends PlotDrawableElement {
   }
 
   public setDataPoints(dataPoints: Array<NumericPoint>, animate: boolean = false, animationDuration: number = 0){
-    let percentile25 = PercentileHelper.calculate25Percentile(dataPoints);
-    let percentile75 = PercentileHelper.calculate75Percentile(dataPoints);
-    let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
-    this.dataPoint.setValue(boxCenter, animate, animationDuration);
-    this.relative25Percentile.setValue(PercentileHelper.calculate25Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relative75Percentile.setValue(PercentileHelper.calculate75Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relative50Percentile.setValue(PercentileHelper.calculate50Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relativeMinY.setValue(PercentileHelper.calculateMinY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
-    this.relativeMaxY.setValue(PercentileHelper.calculateMaxY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
+    let origin = dataPoints.sort((l, r)=> l.y - r.y)[0];
+
+    if(this.outliersRelativePositions.length === dataPoints.length){
+
+    }
+    else {
+
+    }
   }
 
   private static updateMarkerColor(shape: Konva.Shape, markerColor: Color){
