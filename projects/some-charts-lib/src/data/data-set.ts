@@ -94,12 +94,12 @@ export class DataSet<TItemType,
     return this.dimensionYFunc !== undefined;
   }
 
-  public isScalarMetric(metricId: string): boolean {
-    return !this.metrics[metricId]?.isVector;
+  public isSingleMetricValue(metricId: string): boolean {
+    return !this.metrics[metricId]?.isArrayLike;
   }
 
-  public isVectorMetric(metricId: string): boolean {
-    return !!this.metrics[metricId]?.isVector;
+  public isArrayMetricValue(metricId: string): boolean {
+    return !!this.metrics[metricId]?.isArrayLike;
   }
 
   public getMetricRange(metricId: string) {
@@ -114,7 +114,7 @@ export class DataSet<TItemType,
         let min = Number.MAX_VALUE;
         let max = Number.MIN_VALUE;
 
-        if (this.is2D || this.isVectorMetric(metricId)) {
+        if (this.is2D || this.isArrayMetricValue(metricId)) {
           let metricValues2D = <number[][]>metricValues;
 
           for (let i = 0; i < metricValues2D.length; i++) {
@@ -181,28 +181,28 @@ export class DataSet<TItemType,
     return this.metricsValues.get(metricId);
   }
 
-  public getScalarMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | undefined {
-    if (this.isScalarMetric(metricId)) {
+  public getSingleMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): number | undefined {
+    if (this.isSingleMetricValue(metricId)) {
       return this.getMetricValue(metricId, x, y) as number | undefined;
-    } else throw DataSet.buildMetricIsNotScalarError(metricId);
+    } else throw DataSet.buildMetricIsNotSingleError(metricId);
   }
 
-  public getVectorMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): Array<number> | undefined {
-    if (this.isVectorMetric(metricId)) {
+  public getArrayMetricValue(metricId: string, x: XDimensionType, y?: YDimensionType): Array<number> | undefined {
+    if (this.isArrayMetricValue(metricId)) {
       return this.getMetricValue(metricId, x, y) as Array<number> | undefined;
-    } else throw DataSet.buildMetricIsNotVectorError(metricId);
+    } else throw DataSet.buildMetricIsNotArrayError(metricId);
   }
 
-  public getScalarMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
-    if (this.isScalarMetric(metricId)) {
+  public getSingleMetricValueForDimensions(metricId: string, xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined): number | undefined {
+    if (this.isSingleMetricValue(metricId)) {
       return this.getMetricValueForDimensions(metricId, xDimVal, yDimVal) as number | undefined;
-    } else throw DataSet.buildMetricIsNotScalarError(metricId);
+    } else throw DataSet.buildMetricIsNotSingleError(metricId);
   }
 
-  public getScalarMetricValues(metricId: string): Array<number | Array<number>> | undefined {
-    if (this.isScalarMetric(metricId)) {
+  public getSingleMetricValues(metricId: string): Array<number | Array<number>> | undefined {
+    if (this.isSingleMetricValue(metricId)) {
       return this.metricsValues.get(metricId);
-    } else throw DataSet.buildMetricIsNotScalarError(metricId);
+    } else throw DataSet.buildMetricIsNotSingleError(metricId);
   }
 
   /**
@@ -352,7 +352,7 @@ export class DataSet<TItemType,
 
         let metricValue = metricFunc(element);
 
-        if(this.isVectorMetric(metricId)) {
+        if(this.isArrayMetricValue(metricId)) {
           metricValue = (metricValue as number[]).sort(function (l, r) {
             return l - r;
           });
@@ -546,13 +546,13 @@ export class DataSet<TItemType,
     return boundingRect;
   }
 
-  private static buildMetricIsNotScalarError(metricId: string): Error{
-    return new Error(`DataSet metric ${metricId} is not scalar!`)
+  private static buildMetricIsNotSingleError(metricId: string): Error{
+    return new Error(`DataSet metric ${metricId} is not single!`)
   }
 
-  private static buildMetricIsNotVectorError(metricId: string): Error{
-    return new Error(`DataSet metric ${metricId} is not vector!`)
+  private static buildMetricIsNotArrayError(metricId: string): Error{
+    return new Error(`DataSet metric ${metricId} is not array!`)
   }
 }
 
-type Metric<TItemType> = {func: (item: TItemType) => number | Array<number>, isVector?: boolean };
+type Metric<TItemType> = {func: (item: TItemType) => number | Array<number>, isArrayLike?: boolean };

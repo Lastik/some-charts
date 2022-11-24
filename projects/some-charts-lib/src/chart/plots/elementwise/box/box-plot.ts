@@ -39,7 +39,7 @@ export class BoxPlot<TItemType,
     let metricId = this.plotOptions.metric.id;
 
     let boxColor = this.getColor(this.plotOptions.metric.color, xDimVal);
-    let metricValue = this.dataSet.getVectorMetricValue(metricId, xDimVal.value)!;
+    let metricValue = this.dataSet.getArrayMetricValue(metricId, xDimVal.value)!;
 
     let points = metricValue.map(y => new NumericPoint(xDimVal.toNumericValue(), y));
     return [new Box(
@@ -60,7 +60,7 @@ export class BoxPlot<TItemType,
     let metricId = this.plotOptions.metric.id;
 
     let boxColor = this.getColor(this.plotOptions.metric.color, xDimVal);
-    let metricValue = this.dataSet.getVectorMetricValue(metricId, xDimVal.value);
+    let metricValue = this.dataSet.getArrayMetricValue(metricId, xDimVal.value);
     let points = metricValue?.map(y => new NumericPoint(xDimVal.toNumericValue(), y));
 
     let box = plotElt as Box;
@@ -78,7 +78,7 @@ export class BoxPlot<TItemType,
   }
 
   protected getAvgXDelta(metricId: string): number | undefined {
-    let allXValues = uniq(this.getVectorMetricPoints1D(metricId)?.flatMap(p => p.map(pI => pI.x)).sort((l, r) => l - r));
+    let allXValues = uniq(this.getArrayMetricPoints1D(metricId)?.flatMap(p => p.map(pI => pI.x)).sort((l, r) => l - r));
 
     if(allXValues) {
       let sumXDelta = 0;

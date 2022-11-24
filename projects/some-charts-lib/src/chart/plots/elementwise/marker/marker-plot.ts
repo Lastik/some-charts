@@ -39,7 +39,7 @@ export class MarkerPlot<TItemType,
 
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
     let markerSize = this.getMarkerSize(xDimVal);
-    let metricValue = this.dataSet.getScalarMetricValue(metricId, xDimVal.value)!;
+    let metricValue = this.dataSet.getSingleMetricValue(metricId, xDimVal.value)!;
 
     let point = new NumericPoint(xDimVal.toNumericValue(), metricValue);
     return [MarkerPlot.createElementForMarker(metricId, point, markerColor, markerSize)];
@@ -59,7 +59,7 @@ export class MarkerPlot<TItemType,
   protected update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
     let markerSize = this.getMarkerSize(xDimVal);
-    let metricValue = this.dataSet.getScalarMetricValue(this.plotOptions.metric.id, xDimVal.value);
+    let metricValue = this.dataSet.getSingleMetricValue(this.plotOptions.metric.id, xDimVal.value);
 
     let marker = plotElt as Marker;
 
