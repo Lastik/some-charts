@@ -36,7 +36,7 @@ export class BarsPlot<TItemType,
     this.barMaxWidthMap = new Map<string, number>();
   }
 
-  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
+  protected add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
     let drawableElements: PlotDrawableElement[] = [];
 
     for (let metricIdx = this.plotOptions.metrics.length - 1; metricIdx >= 0; metricIdx--) {
@@ -69,7 +69,7 @@ export class BarsPlot<TItemType,
     return drawableElements;
   }
 
-  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {
+  protected add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {
     throw new Error('Bars plot doesn\'t support 2D rendering');
   }
 

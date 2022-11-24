@@ -73,7 +73,7 @@ export abstract class ElementwisePlot<
       }
 
       for (let tuple of dataSetChange2D.added) {
-        let plotElt = this.add2DPlotElement(tuple[0], tuple[1]);
+        let plotElt = this.add2DPlotElements(tuple[0], tuple[1]);
         if (plotElt) {
           this.plotElements.push(...plotElt);
           added.push(...plotElt);
@@ -94,7 +94,7 @@ export abstract class ElementwisePlot<
       }
 
       for (let value of dataSetChange1D.added) {
-        let plotElt = this.add1DPlotElement(value);
+        let plotElt = this.add1DPlotElements(value);
         if (plotElt) {
           this.plotElements.push(...plotElt);
           added.push(...plotElt);
@@ -105,13 +105,13 @@ export abstract class ElementwisePlot<
     return {deleted: deleted, deletedIndexes: deletedIndexes, added: added};
   }
 
-  protected abstract add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[];
+  protected abstract add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[];
 
   protected abstract update1DPlotElement(plotElt: PlotDrawableElement,
                                          xDimVal: DimensionValue<XDimensionType>): void;
 
-  protected abstract add2DPlotElement(xDimVal: DimensionValue<XDimensionType>,
-                                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[];
+  protected abstract add2DPlotElements(xDimVal: DimensionValue<XDimensionType>,
+                                       yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[];
 
   protected abstract update2DPlotElement(plotElt: PlotDrawableElement,
                                          xDimVal: DimensionValue<XDimensionType>,

@@ -3,6 +3,7 @@ import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../../geometry";
 import * as Color from "color";
 import {AnimatedProperty} from "../../animated-property";
+import {PercentileHelper} from "../../../../services";
 
 export class Box extends PlotDrawableElement<Konva.Group>{
 
@@ -68,8 +69,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
     let root = new Konva.Group();
 
-    let percentile25 = Box.calculate25Percentile(dataPoints);
-    let percentile75 = Box.calculate75Percentile(dataPoints);
+    let percentile25 = PercentileHelper.calculate25Percentile(dataPoints);
+    let percentile75 = PercentileHelper.calculate75Percentile(dataPoints);
     let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
 
     super(metricId, boxCenter, root);
@@ -81,11 +82,11 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this._fill = fill;
     this.stroke = stroke;
 
-    this.relative25Percentile = new AnimatedProperty<number>(Box.calculate25Percentile(dataPoints) - boxCenter.y);
-    this.relative75Percentile = new AnimatedProperty<number>(Box.calculate75Percentile(dataPoints) - boxCenter.y);
-    this.relative50Percentile = new AnimatedProperty<number>(Box.calculate50Percentile(dataPoints) - boxCenter.y);
-    this.relativeMinY = new AnimatedProperty<number>(Box.calculateMinY(percentile25, percentile75) - boxCenter.y);
-    this.relativeMaxY = new AnimatedProperty<number>(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y);
+    this.relative25Percentile = new AnimatedProperty<number>(PercentileHelper.calculate25Percentile(dataPoints) - boxCenter.y);
+    this.relative75Percentile = new AnimatedProperty<number>(PercentileHelper.calculate75Percentile(dataPoints) - boxCenter.y);
+    this.relative50Percentile = new AnimatedProperty<number>(PercentileHelper.calculate50Percentile(dataPoints) - boxCenter.y);
+    this.relativeMinY = new AnimatedProperty<number>(PercentileHelper.calculateMinY(percentile25, percentile75) - boxCenter.y);
+    this.relativeMaxY = new AnimatedProperty<number>(PercentileHelper.calculateMaxY(percentile25, percentile75) - boxCenter.y);
 
     this.boxShape = new Konva.Rect({
       stroke: stroke.toString(),
@@ -171,22 +172,16 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     root.add(this.avgLineShape);
   }
 
-  private static checkForEmptyDataPoints(dataPoints: Array<NumericPoint>){
-    if(dataPoints.length === 0){
-      throw new Error('Array of dataPoints shouldn\'t be empty!');
-    }
-  }
-
   public setDataPoints(dataPoints: Array<NumericPoint>, animate: boolean = false, animationDuration: number = 0){
-    let percentile25 = Box.calculate25Percentile(dataPoints);
-    let percentile75 = Box.calculate75Percentile(dataPoints);
+    let percentile25 = PercentileHelper.calculate25Percentile(dataPoints);
+    let percentile75 = PercentileHelper.calculate75Percentile(dataPoints);
     let boxCenter = Box.calculateBoxCenter(dataPoints, percentile25, percentile75);
     this.dataPoint.setValue(boxCenter, animate, animationDuration);
-    this.relative25Percentile.setValue(Box.calculate25Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relative75Percentile.setValue(Box.calculate75Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relative50Percentile.setValue(Box.calculate50Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
-    this.relativeMinY.setValue(Box.calculateMinY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
-    this.relativeMaxY.setValue(Box.calculateMaxY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
+    this.relative25Percentile.setValue(PercentileHelper.calculate25Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relative75Percentile.setValue(PercentileHelper.calculate75Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relative50Percentile.setValue(PercentileHelper.calculate50Percentile(dataPoints) - boxCenter.y, animate, animationDuration);
+    this.relativeMinY.setValue(PercentileHelper.calculateMinY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
+    this.relativeMaxY.setValue(PercentileHelper.calculateMaxY(percentile25, percentile75) - boxCenter.y, animate, animationDuration);
   }
 
   override updateShapesForAnimationFrame(dataPoint: NumericPoint, dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect){
@@ -249,39 +244,12 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
   private static calculateBoxCenter(dataPoints: Array<NumericPoint>, percentile25: number, percentile75: number){
 
-    let minY = Box.calculateMinY(percentile25, percentile75);
-    let maxY = Box.calculateMinY(percentile25, percentile75);
+    let minY = PercentileHelper.calculateMinY(percentile25, percentile75);
+    let maxY = PercentileHelper.calculateMinY(percentile25, percentile75);
 
     let centerY = (maxY - minY) / 2;
     let x = dataPoints[0].x;
 
     return new NumericPoint(x, centerY)
-  }
-
-  private static calculateMinY(percentile25: number, percentile75: number): number {
-    return percentile25 - 1.5 * (percentile75 - percentile25);
-  }
-
-  private static calculateMaxY(percentile25: number, percentile75: number): number {
-    return percentile75 + 1.5 * (percentile75 - percentile25);
-  }
-
-  private static calculate25Percentile(dataPoints: Array<NumericPoint>): number{
-    return Box.calculatePercentile(dataPoints, 25);
-  }
-
-  private static calculate75Percentile(dataPoints: Array<NumericPoint>): number{
-    return Box.calculatePercentile(dataPoints, 75);
-  }
-
-  private static calculatePercentile(dataPoints: Array<NumericPoint>, percentilePercent: number): number{
-    Box.checkForEmptyDataPoints(dataPoints);
-    let dataPointsCount = dataPoints.length;
-    let percentileIndex = Math.max(Math.round(percentilePercent / 100 * dataPointsCount) - 1, 0);
-    return dataPoints[percentileIndex].y;
-  }
-
-  private static calculate50Percentile(dataPoints: Array<NumericPoint>): number{
-    return Box.calculatePercentile(dataPoints, 50);
   }
 }

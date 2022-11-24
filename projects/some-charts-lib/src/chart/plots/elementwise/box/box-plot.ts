@@ -28,13 +28,13 @@ export class BoxPlot<TItemType,
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(BoxPlotOptionsDefaults.Instance), options)) as BoxPlotOptionsClass;
   }
 
-  override initOnDataSetUpdate(){
+  override reinitOnDataSetUpdate(){
     let avgXDelta = this.getAvgXDelta(this.plotOptions.metric.id) ?? 0;
     this.boxDataWidth = avgXDelta / 2;
     this.whiskersDataWidth = avgXDelta / 3;
   }
 
-  protected add1DPlotElement(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
+  protected add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
 
     let metricId = this.plotOptions.metric.id;
 
@@ -52,7 +52,7 @@ export class BoxPlot<TItemType,
       this.plotOptions.lineWidth)];
   }
 
-  protected add2DPlotElement(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): [PlotDrawableElement] {
+  protected add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): [PlotDrawableElement] {
     throw this.plotErrorBuilder.buildPlotDoesntSupport2DRendering(this.plotOptions.kind);
   }
 

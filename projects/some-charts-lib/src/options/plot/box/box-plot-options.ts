@@ -29,7 +29,7 @@ export class BoxPlotOptionsDefaults
     metric: {
       id: "",
       caption: "",
-      color: new Color('blue')
+      color: new Color('#CF2734')
     },
     kind: PlotKind.Box,
     lineWidth: 2,

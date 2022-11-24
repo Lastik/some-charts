@@ -4,6 +4,7 @@ import * as Color from "color";
 import {XY} from "./model/x-y";
 import {Sorting} from "some-charts";
 import {BoxPlotOptions} from "some-charts";
+import {BoxOutliersPlotOptions} from "some-charts/types/options/plot/marker/box-outliers-plot-options";
 
 @Component({
   selector: 'box-demo',
@@ -36,7 +37,7 @@ export class BoxDemoComponent implements OnInit {
           func: item => {
             return item.y
           },
-          isVector: true
+          isArrayLike: true
         }
       },
       item => {
@@ -79,10 +80,19 @@ export class BoxDemoComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Y',
-              color: new Color("#AA0000")
+              color: new Color("#CF2734")
             },
             animate: true
-          } as BoxPlotOptions
+          } as BoxPlotOptions,
+          {
+            kind: PlotKind.BoxOutliers,
+            metric: {
+              id: 'y',
+              caption: 'Y',
+              color: new Color("#66AADE")
+            },
+            animate: false
+          } as BoxOutliersPlotOptions
         ],
         axes: {
           horizontal: {

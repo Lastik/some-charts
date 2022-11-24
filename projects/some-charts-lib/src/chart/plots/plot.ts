@@ -97,7 +97,7 @@ export abstract class Plot<
 
   protected updateFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>) {
 
-    this.initOnDataSetUpdate();
+    this.reinitOnDataSetUpdate();
 
     this.rebuildShapesFromDataSet(dataSetChange);
 
@@ -108,7 +108,7 @@ export abstract class Plot<
     }
   }
 
-  protected initOnDataSetUpdate() { }
+  protected reinitOnDataSetUpdate() { }
 
   /**
    * Sets visible and screen rectangle of plot

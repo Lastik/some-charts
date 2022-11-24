@@ -13,6 +13,8 @@ import {
 import {
   DataTransformation,
 } from "../../geometry";
+import {BoxOutliersPlot} from "./elementwise";
+import {BoxOutliersPlotOptions} from "../../options";
 
 export class PlotFactory {
 
@@ -30,6 +32,8 @@ export class PlotFactory {
       return new MarkerPlot(dataSet, dataTransformation, <MarkerPlotOptions>plotOptions);
     } else if (plotOptions.kind === PlotKind.Box) {
       return new BoxPlot(dataSet, dataTransformation, <BoxPlotOptions>plotOptions);
+    } else if (plotOptions.kind === PlotKind.BoxOutliers) {
+      return new BoxOutliersPlot(dataSet, dataTransformation, <BoxOutliersPlotOptions>plotOptions);
     } else return undefined;
   }
 

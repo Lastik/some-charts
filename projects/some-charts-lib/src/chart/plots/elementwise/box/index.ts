@@ -1,2 +1,2 @@
 export * from './box-plot';
-export * from './box'
+export * from './outlier';
