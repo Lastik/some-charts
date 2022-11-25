@@ -52,7 +52,7 @@ export class BoxOutliers extends PlotDrawableElement {
   public setDataPoints(dataPoints: Array<NumericPoint>, animate: boolean = false, animationDuration: number = 0) {
     let origin = BoxOutliers.getOrigin(dataPoints);
 
-    if (this.outliersRelativePositions.length === dataPoints.length) {
+    if (this.outliersRelativePositions.length !== dataPoints.length) {
       this.outliersRelativePositions = dataPoints.map(dp => new AnimatedProperty<NumericPoint>(dp.scalarPlus(origin.additiveInvert())));
       this.outliersShapes.forEach(shape => {
         shape.remove();
