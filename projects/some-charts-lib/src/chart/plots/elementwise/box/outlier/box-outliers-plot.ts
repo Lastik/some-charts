@@ -1,24 +1,17 @@
 import merge from "lodash-es/merge";
 import {
-  BarsPlotOptions,
-  BarsPlotOptionsDefaults,
-  MarkerPlotOptions,
+  BoxOutliersPlotOptions, BoxOutliersPlotOptionsClass, BoxOutliersPlotOptionsDefaults,
   PlotOptionsClassFactory
 } from "../../../../../options";
 import {DataSet, DimensionValue} from "../../../../../data";
 import {DataTransformation, NumericPoint, NumericRange} from "../../../../../geometry";
 import {PlotDrawableElement} from "../../plot-drawable-element";
-import {Marker} from "../../marker/marker";
 import {cloneDeep} from "lodash-es";
-import {
-  BoxOutliersPlotOptions,
-  BoxOutliersPlotOptionsDefaults
-} from "../../../../../options";
-import {BoxOutliersPlotOptionsClass} from "../../../../../options";
 import {Plot} from "../../../plot";
 import {PercentileHelper} from "../../../../../services";
 import {ElementwisePlot} from "../../elementwise-plot";
 import * as Color from "color";
+import {BoxOutliers} from "./box-outliers";
 
 export class BoxOutliersPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -48,17 +41,24 @@ export class BoxOutliersPlot<TItemType,
     this.statRangeByMetricId.clear();
   }
 
-  override add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
+  override add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
 
     let metricId = this.plotOptions.metric.id;
 
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
-    let markerSize = this.getMarkerSize(xDimVal);
-    let metricPoints = this.dataSet.getArrayMetricValue(metricId, xDimVal.value)!.map(y => new NumericPoint(xDimVal.toNumericValue(), y));
+    let markerSize = this.plotOptions.markerSize;
+
     let statRange = this.getYStatisticalRange(metricId, xDimVal);
 
-    return metricPoints.map((point, idx) => BoxOutliersPlot.createElement(metricId, point, markerColor, markerSize,
-      idx, point.y < statRange.min || point.y > statRange.max));
+    let metricPoints =
+      this.dataSet.getArrayMetricValue(metricId, xDimVal.value)!
+        .filter(mv => mv < statRange.min || mv > statRange.max)
+        .map(y => new NumericPoint(xDimVal.toNumericValue(), y));
+
+    return [new BoxOutliers(
+      metricId,
+      metricPoints,
+      markerColor, markerSize)];
   }
 
   override add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {
@@ -67,24 +67,20 @@ export class BoxOutliersPlot<TItemType,
 
   override update1DPlotElement(plotElt: PlotDrawableElement, xDimVal: DimensionValue<XDimensionType>) {
     let markerColor = this.getColor(this.plotOptions.metric.color, xDimVal);
-    let markerSize = this.getMarkerSize(xDimVal);
+    let markerSize = this.plotOptions.markerSize;
 
     let metricId = this.plotOptions.metric.id;
 
-    let metricValues = this.dataSet.getArrayMetricValue(metricId, xDimVal.value)!;
-
-    let marker = plotElt as Marker;
-
-    let metricValue = metricValues[marker.indexInDataSetValue!]
-
     let statRange = this.getYStatisticalRange(metricId, xDimVal);
 
+    let metricValues = this.dataSet.getArrayMetricValue(metricId, xDimVal.value)!.
+      filter(mv => mv < statRange.min || mv > statRange.max)
+
+    let boxOutliers = plotElt as BoxOutliers;
+
     if (markerColor && markerSize && metricValues) {
-      marker.dataPoint.setValue(new NumericPoint(marker.dataPoint.actualValue.x, metricValue),
+      boxOutliers.setDataPoints(metricValues.map(mv => new NumericPoint(xDimVal.toNumericValue(), mv)),
         this.plotOptions.animate, this.plotOptions.animationDuration);
-      marker.isVisible = metricValue < statRange.min || metricValue > statRange.max;
-      marker.size = markerSize;
-      marker.color = markerColor;
     }
   }
 
@@ -117,14 +113,7 @@ export class BoxOutliersPlot<TItemType,
     throw new Error(Plot.errors.doesntSupport2DData);
   }
 
-  protected getMarkerSize(xDimVal: DimensionValue<XDimensionType>,
-                          yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): number {
-    return typeof this.plotOptions.markerSize === 'number' ? this.plotOptions.markerSize :
-      this.getDependantNumericValueForMetricValue(this.plotOptions.markerSize, xDimVal, yDimVal)!;
-  }
-
-  protected static createElement(metricId: string, dataPoint: NumericPoint, markerColor: Color, markerSize: number,
-                                 indexInDataSetValue: number | undefined = undefined, isVisible: boolean = true): PlotDrawableElement {
-    return new Marker(metricId, dataPoint, markerColor, markerSize, indexInDataSetValue);
+  protected static createElement(metricId: string, dataPoints: Array<NumericPoint>, markerColor: Color, markerSize: number): PlotDrawableElement {
+    return new BoxOutliers(metricId, dataPoints, markerColor, markerSize);
   }
 }

@@ -1,9 +1,9 @@
 import {PlotOptions} from "./plot-options";
 import {PlotKind} from "./plot-kind";
-import {BoxOutliersPlotOptions, BoxOutliersPlotOptionsClass, MarkerPlotOptions, MarkerPlotOptionsClass} from "./marker";
+import {MarkerPlotOptions, MarkerPlotOptionsClass} from "./marker";
 import {BarsPlotOptions, BarsPlotOptionsClass} from "./bars";
 import {PlotOptionsClass} from "./plot-options-class";
-import {BoxPlotOptions, BoxPlotOptionsClass} from "./box";
+import {BoxOutliersPlotOptions, BoxOutliersPlotOptionsClass, BoxPlotOptions, BoxPlotOptionsClass} from "./box";
 
 export class PlotOptionsClassFactory {
   static buildPlotOptionsClass(plotOptions: PlotOptions): PlotOptionsClass {

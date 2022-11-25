@@ -3,7 +3,7 @@ import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} f
 import {DataSet, DimensionValue} from "../../../../data";
 import {DataTransformation, NumericPoint} from "../../../../geometry";
 import * as Color from "color";
-import {MarkerPlotOptionsClass} from "../../../../options/plot/marker";
+import {MarkerPlotOptionsClass} from "../../../../options";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Marker} from "./marker";
 import {cloneDeep} from "lodash-es";
@@ -26,9 +26,8 @@ export class MarkerPlot<
     this.plotOptions = PlotOptionsClassFactory.buildPlotOptionsClass(merge(cloneDeep(MarkerPlotOptionsDefaults.Instance), options)) as MarkerPlotOptionsClassType;
   }
 
-  protected static createElementForMarker(metricId: string, dataPoint: NumericPoint, markerColor: Color, markerSize: number,
-                                          indexInDataSetValue: number | undefined = undefined, isVisible: boolean = true): PlotDrawableElement {
-    return new Marker(metricId, dataPoint, markerColor, markerSize, indexInDataSetValue, isVisible);
+  protected static createElementForMarker(metricId: string, dataPoint: NumericPoint, markerColor: Color, markerSize: number): PlotDrawableElement {
+    return new Marker(metricId, dataPoint, markerColor, markerSize);
   }
 
   protected getMarkerSize(xDimVal: DimensionValue<XDimensionType>,
@@ -37,7 +36,7 @@ export class MarkerPlot<
       this.getDependantNumericValueForMetricValue(this.plotOptions.markerSize, xDimVal, yDimVal)!;
   }
 
-  protected add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): PlotDrawableElement[] {
+  protected add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
 
     let metricId = this.plotOptions.metric.id;
 
@@ -49,7 +48,7 @@ export class MarkerPlot<
     return [MarkerPlot.createElementForMarker(metricId, point, markerColor, markerSize)];
   }
 
-  protected add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {
+  protected add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): [PlotDrawableElement] {
 
     let metricId = this.plotOptions.metric.id;
 

@@ -4,7 +4,7 @@ import * as Color from "color";
 import {XY} from "./model/x-y";
 import {Sorting} from "some-charts";
 import {BoxPlotOptions} from "some-charts";
-import {BoxOutliersPlotOptions} from "some-charts/types/options/plot/marker/box-outliers-plot-options";
+import {BoxOutliersPlotOptions} from "some-charts";
 
 @Component({
   selector: 'box-demo',

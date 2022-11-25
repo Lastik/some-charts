@@ -10,8 +10,6 @@ export class Marker extends PlotDrawableElement {
   private _size: number;
   private _color: Color;
 
-  public readonly indexInDataSetValue: number | undefined;
-
   public get size(){
     return this._size;
   }
@@ -30,13 +28,12 @@ export class Marker extends PlotDrawableElement {
     Marker.updateMarkerColor(this.markerShape, value);
   }
 
-  constructor(metricId: string, dataPoint: NumericPoint, color: Color, size: number, indexInDataSetValue: number| undefined = undefined) {
+  constructor(metricId: string, dataPoint: NumericPoint, color: Color, size: number) {
     let markerShape = Marker.createMarkerShape(color, size);
     super(metricId, dataPoint, markerShape);
     this.markerShape = markerShape;
     this._color = color;
     this._size = size;
-    this.indexInDataSetValue = indexInDataSetValue;
   }
 
   private static createMarkerShape(markerColor: Color, markerSize: number){
