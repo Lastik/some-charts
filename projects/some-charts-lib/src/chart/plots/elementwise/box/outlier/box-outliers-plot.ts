@@ -41,7 +41,7 @@ export class BoxOutliersPlot<TItemType,
     this.statRangeByMetricId.clear();
   }
 
-  override add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] {
+  override add1DPlotElements(xDimVal: DimensionValue<XDimensionType>): [PlotDrawableElement] | [] {
 
     let metricId = this.plotOptions.metric.id;
 
@@ -55,10 +55,10 @@ export class BoxOutliersPlot<TItemType,
         .filter(mv => mv < statRange.min || mv > statRange.max)
         .map(y => new NumericPoint(xDimVal.toNumericValue(), y));
 
-    return [new BoxOutliers(
+    return metricPoints.length !== 0 ? [new BoxOutliers(
       metricId,
       metricPoints,
-      markerColor, markerSize)];
+      markerColor, markerSize)] : [];
   }
 
   override add2DPlotElements(xDimVal: DimensionValue<XDimensionType>, yDimVal: DimensionValue<Exclude<YDimensionType, undefined>>): PlotDrawableElement[] {

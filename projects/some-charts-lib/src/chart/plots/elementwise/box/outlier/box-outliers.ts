@@ -4,7 +4,6 @@ import {PlotDrawableElement} from "../../plot-drawable-element";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../../../../geometry";
 import {AnimatedProperty} from "../../../animated-property";
 import {zip} from "lodash-es";
-import {PercentileHelper} from "../../../../../services";
 
 export class BoxOutliers extends PlotDrawableElement {
   private outliersShapes: Konva.Shape[];
@@ -50,24 +49,33 @@ export class BoxOutliers extends PlotDrawableElement {
   }
 
   public setDataPoints(dataPoints: Array<NumericPoint>, animate: boolean = false, animationDuration: number = 0) {
-    let origin = BoxOutliers.getOrigin(dataPoints);
-
-    if (this.outliersRelativePositions.length !== dataPoints.length) {
-      this.outliersRelativePositions = dataPoints.map(dp => new AnimatedProperty<NumericPoint>(dp.scalarPlus(origin.additiveInvert())));
+    if (dataPoints.length !== 0) {
+      let origin = BoxOutliers.getOrigin(dataPoints);
+      this.dataPoint.setValue(origin,
+        animate, animationDuration);
+      if (this.outliersRelativePositions.length !== dataPoints.length) {
+        this.outliersRelativePositions = dataPoints.map(dp => new AnimatedProperty<NumericPoint>(dp.scalarPlus(origin.additiveInvert())));
+        this.outliersShapes.forEach(shape => {
+          shape.remove();
+        });
+        this.outliersShapes = this.outliersRelativePositions.map(pos => BoxOutliers.createMarkerShape(this.color, this.size, pos.displayedValue));
+        this.outliersShapes.forEach(shape => (this.rootDrawable as Konva.Group).add(shape));
+      } else {
+        zip(this.outliersRelativePositions, dataPoints, this.outliersShapes)
+          .map(([relativePosition, dataPoint, shape]) => {
+            relativePosition?.setValue(dataPoint?.scalarPlus(origin.additiveInvert())!, animate, animationDuration);
+            shape!.setAttrs({
+              x: relativePosition!.displayedValue.x,
+              y: relativePosition!.displayedValue.y,
+            })
+          })
+      }
+    } else {
+      this.outliersRelativePositions = [];
       this.outliersShapes.forEach(shape => {
         shape.remove();
       });
-      this.outliersShapes = this.outliersRelativePositions.map(pos => BoxOutliers.createMarkerShape(this.color, this.size, pos.displayedValue));
-      this.outliersShapes.forEach(shape => (this.rootDrawable as Konva.Group).add(shape));
-    } else {
-      zip(this.outliersRelativePositions, dataPoints, this.outliersShapes)
-        .map(([relativePosition, dataPoint, shape]) => {
-          relativePosition?.setValue(dataPoint?.scalarPlus(origin.additiveInvert())!, animate, animationDuration);
-          shape!.setAttrs({
-            x: relativePosition!.displayedValue.x,
-            y: relativePosition!.displayedValue.y,
-          })
-        })
+      this.outliersShapes = [];
     }
   }
 
@@ -98,7 +106,7 @@ export class BoxOutliers extends PlotDrawableElement {
 
   private static getOrigin(dataPoints: Array<NumericPoint>): NumericPoint {
     if (dataPoints.length === 0) {
-      return new NumericPoint(0, 0)
+      throw new Error('Failed to get box outliers origin. DataPoints array is empty!')
     }
     return dataPoints.sort((l, r) => l.y - r.y)[0];
   }

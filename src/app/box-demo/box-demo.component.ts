@@ -59,7 +59,7 @@ export class BoxDemoComponent implements OnInit {
         y: [610, 680, 660, 660, 520, 540, 410, 660, 770, 750, 660, 710, 630, 670, 640, 640, 650, 630],
       }, {
         x: 'fourth',
-        y: [10, 10, 10, 10, 10, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
+        y: [100, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
       }])
     }, 2000)
 
@@ -91,7 +91,7 @@ export class BoxDemoComponent implements OnInit {
               caption: 'Y',
               color: new Color("#66AADE")
             },
-            animate: false
+            animate: true
           } as BoxOutliersPlotOptions
         ],
         axes: {
