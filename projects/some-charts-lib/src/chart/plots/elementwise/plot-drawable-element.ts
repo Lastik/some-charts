@@ -9,9 +9,14 @@ import {IDisposable} from "../../../i-disposable";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> implements IDisposable {
 
+
+
   public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
   public readonly dataPoint: AnimatedProperty<NumericPoint>;
+
+  private visible: NumericDataRect | undefined;
+  private screen: NumericDataRect | undefined;
 
   protected get animatedProperties(): Array<AnimatedProperty<any>>{
     return [this.dataPoint];
@@ -35,6 +40,9 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
   updateShapes(dataTransformation: DataTransformation, visible: NumericDataRect, screen: NumericDataRect): void {
 
+    this.visible = visible;
+    this.screen = screen;
+
     let animationsIds = this.animatedProperties.map(p => p.animationId).filter(v => v !== undefined) as Array<number>;
 
     this.updateRootDrawableRenderLocation(this.dataPoint.displayedValue, dataTransformation, visible, screen);
@@ -51,8 +59,8 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
 
         self.tickAnimations(frame?.time);
 
-        self.updateRootDrawableRenderLocation(self.dataPoint.displayedValue, dataTransformation, visible, screen);
-        self.updateShapesForAnimationFrame(self.dataPoint.displayedValue, dataTransformation, visible, screen);
+        self.updateRootDrawableRenderLocation(self.dataPoint.displayedValue, dataTransformation, self.visible!, self.screen!);
+        self.updateShapesForAnimationFrame(self.dataPoint.displayedValue, dataTransformation, self.visible!, self.screen!);
 
         self.eventTarget.fireEvent({type: AnimationEventType.Tick});
 
