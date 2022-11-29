@@ -23,7 +23,7 @@ export interface LabelOptions extends TextOptions {
 
 export class LabelOptionsDefaults
 {
-  private static _instance: LabelOptions = {
+  public static readonly Instance: LabelOptions = {
     text: '',
     font: {
       size: 16,
@@ -33,10 +33,5 @@ export class LabelOptionsDefaults
     foregroundColor: new Color("white"),
     verticalPadding: 6,
     textAlignment: HorizontalAlignment.Center
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

@@ -3,13 +3,19 @@
  */
 import {FontInPx} from "../../font";
 import {AxisTypes} from "../../chart/axis/axis-types";
-import {NumericAxisOptions, NumericAxisScaleType} from "./numeric";
+import {Skin} from "../skin";
+import {cloneDeep} from "lodash-es";
 
-export interface AxisOptions {
+export interface AxisOptions extends AxisMajorOptions, AxisSkin { }
+
+export interface AxisMajorOptions {
   /**
    * Axis type
    */
   axisType: AxisTypes;
+}
+
+export interface AxisSkin {
   /**
    * Axis foreground color
    */
@@ -36,26 +42,26 @@ export interface AxisOptions {
   drawBorder?: boolean;
 }
 
-export class AxisOptionsDefaults
-{
-  private static _instance: NumericAxisOptions = {
-    axisType: AxisTypes.NumericAxis,
-    scale: {
-      scaleType: NumericAxisScaleType.Linear
-    },
-    foregroundColor: 'white',
-    backgroundColor: '#111111',
-    font: {
-      size: 13,
-      family: 'Calibri'
-    },
-    majorTickHeight: 6,
-    minorTickHeight: 3,
-    drawBorder: false
+export class AxisOptionsDefaults {
+  public static readonly Skins: { [key: string]: AxisSkin } = {
+    [Skin.Default]: {
+      foregroundColor: 'white',
+      backgroundColor: '#111111',
+      font: {
+        size: 13,
+        family: 'Calibri'
+      },
+      majorTickHeight: 6,
+      minorTickHeight: 3,
+      drawBorder: false
+    }
   }
 
-  public static get Instance()
-  {
-    return this._instance;
+  public static readonly MajorOptions: AxisMajorOptions = {
+    axisType: AxisTypes.NumericAxis
+  }
+
+  public static applyTo<AxisOptionsType extends AxisOptions>(options: AxisOptionsType, skin: Skin = Skin.Default, majorOptions: AxisMajorOptions = AxisOptionsDefaults.MajorOptions): AxisOptionsType {
+    return {...cloneDeep(majorOptions), ...cloneDeep(this.Skins[skin]), ...cloneDeep(options)};
   }
 }

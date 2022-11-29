@@ -20,7 +20,7 @@ export interface BoxOutliersPlotOptions extends PlotOptions {
 
 export class BoxOutliersPlotOptionsDefaults
 {
-  private static _instance: BoxOutliersPlotOptions = {
+  public static readonly Instance:  BoxOutliersPlotOptions = {
     metric: {
       id: "",
       caption: "",
@@ -30,10 +30,5 @@ export class BoxOutliersPlotOptionsDefaults
     kind: PlotKind.BoxOutliers,
     animate: false,
     animationDuration: 600
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

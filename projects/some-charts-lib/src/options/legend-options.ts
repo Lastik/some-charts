@@ -26,16 +26,11 @@ export interface LegendOptions {
 
 export class LegendOptionsDefaults
 {
-  private static _instance: LegendOptions = {
+  public static readonly Instance: LegendOptions = {
     offsetRight: 27,
     offsetTop: 50,
     opacity: 0.6,
     fontSize: 12,
     rectangleSize: 13
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

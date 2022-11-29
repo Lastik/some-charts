@@ -42,17 +42,12 @@ export interface ChartOptions {
 
 export class ChartOptionsDefaults
 {
-  private static _instance: ChartOptions = {
+  public static readonly Instance:  ChartOptions = {
     navigation: cloneDeep(NavigationOptionsDefaults.Instance),
     renderer: cloneDeep(RendererOptionsDefaults.Instance),
     axes: cloneDeep(AxesOptionsDefaults.Instance),
     grid: cloneDeep(GridOptionsDefaults.Instance),
     legend: cloneDeep(LegendOptionsDefaults.Instance),
     plots: []
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

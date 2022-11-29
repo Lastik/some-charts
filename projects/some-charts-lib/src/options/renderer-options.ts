@@ -14,13 +14,8 @@ export interface RendererOptions {
 
 export class RendererOptionsDefaults
 {
-  private static _instance: RendererOptions = {
+  public static readonly Instance:  RendererOptions = {
     backgroundColor: "#111111",
     borderStyle: "1px solid #000000"
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

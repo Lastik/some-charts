@@ -14,13 +14,8 @@ export interface GridOptions {
 
 export class GridOptionsDefaults
 {
-  private static _instance: GridOptions = {
+  public static readonly Instance:  GridOptions = {
     foregroundColor: 'white',
     backgroundColor: '#303030'
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

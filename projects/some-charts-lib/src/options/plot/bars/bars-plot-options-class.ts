@@ -4,6 +4,7 @@ import {BarsPlotOptions, BarsPlotOptionsDefaults} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
 import {Palette} from "../../../chart/plots";
+import {Skin} from "../../skin";
 
 /**
  * Bars plot options class
@@ -19,12 +20,15 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
 
   constructor(barsPlotOptions: BarsPlotOptions) {
     super(barsPlotOptions);
+
+    let defaultSkin = BarsPlotOptionsDefaults.Skins[Skin.Default];
+
     this.metrics = barsPlotOptions.metrics;
-    this.drawLabelsOnBars = barsPlotOptions.drawLabelsOnBars ?? BarsPlotOptionsDefaults.Instance.drawLabelsOnBars!;
+    this.drawLabelsOnBars = barsPlotOptions.drawLabelsOnBars ?? defaultSkin.drawLabelsOnBars!;
     this.font = barsPlotOptions.font!;
     this.foregroundColor = barsPlotOptions.foregroundColor! ;
-    this.labelsPrecision = barsPlotOptions.labelsPrecision ?? BarsPlotOptionsDefaults.Instance.labelsPrecision!;
-    this.useDarkerBorder = barsPlotOptions.useDarkerBorder ?? BarsPlotOptionsDefaults.Instance.useDarkerBorder!;
+    this.labelsPrecision = barsPlotOptions.labelsPrecision ?? defaultSkin.labelsPrecision!;
+    this.useDarkerBorder = barsPlotOptions.useDarkerBorder ?? defaultSkin.useDarkerBorder!;
   }
 
   get metricsOptions(): Array<MetricOptions<Color | Palette>> {

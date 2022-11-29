@@ -19,14 +19,9 @@ export interface NavigationOptions {
 
 export class NavigationOptionsDefaults
 {
-  private static _instance: NavigationOptions = {
+  public static readonly Instance:  NavigationOptions = {
     isEnabled: true,
     isFitToViewModeEnabled: false,
     fixedTopBound: undefined,
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

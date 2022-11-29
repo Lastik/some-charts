@@ -2,7 +2,7 @@
  * Chart renderer options
  */
 import {AxisOptions, AxisOptionsDefaults} from "./axis-options";
-import {cloneDeep} from "lodash-es";
+import {Skin} from "../skin";
 
 export interface AxesOptions {
   /**
@@ -17,13 +17,10 @@ export interface AxesOptions {
 
 export class AxesOptionsDefaults
 {
-  private static _instance: AxesOptions = {
-    horizontal: cloneDeep(AxisOptionsDefaults.Instance),
-    vertical: cloneDeep(AxisOptionsDefaults.Instance)
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
+  public static applyTo<AxesOptionsType extends AxesOptions>(options: AxesOptionsType, skin: Skin = Skin.Default): AxesOptionsType {
+    return {
+      horizontal: AxisOptionsDefaults.applyTo(options.horizontal, skin),
+      vertical: AxisOptionsDefaults.applyTo(options.vertical, skin)
+    } as AxesOptionsType;
   }
 }

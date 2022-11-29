@@ -3,6 +3,7 @@ import {PlotOptionsClass} from "../plot-options-class";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
 import {BoxPlotOptions, BoxPlotOptionsDefaults} from "./box-plot-options";
+import {Skin} from "../../skin";
 
 /**
  * Marker plot options class
@@ -15,9 +16,12 @@ export class BoxPlotOptionsClass extends PlotOptionsClass implements BoxPlotOpti
 
   constructor(boxPlotOptions: BoxPlotOptions) {
     super(boxPlotOptions);
+
+    let defaultSkin = BoxPlotOptionsDefaults.Skins[Skin.Default];
+
     this.metric = boxPlotOptions.metric;
-    this.lineWidth = boxPlotOptions.lineWidth ?? BoxPlotOptionsDefaults.Instance.lineWidth!;
-    this.stroke = boxPlotOptions.stroke ?? BoxPlotOptionsDefaults.Instance.stroke!;
+    this.lineWidth = boxPlotOptions.lineWidth ?? defaultSkin.lineWidth!;
+    this.stroke = boxPlotOptions.stroke ?? defaultSkin.stroke!;
   }
 
   get metricsOptions(): Array<MetricOptions<Color | Palette>> {

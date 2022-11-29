@@ -22,7 +22,7 @@ export interface MarkerPlotOptions extends PlotOptions {
 
 export class MarkerPlotOptionsDefaults
 {
-  private static _instance: MarkerPlotOptions = {
+  public static readonly Instance:  MarkerPlotOptions = {
     metric: {
       id: "",
       caption: "",
@@ -32,10 +32,5 @@ export class MarkerPlotOptionsDefaults
     kind: PlotKind.Marker,
     animate: false,
     animationDuration: 600
-  }
-
-  public static get Instance()
-  {
-    return this._instance;
   }
 }

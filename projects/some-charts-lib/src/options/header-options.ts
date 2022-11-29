@@ -9,10 +9,5 @@ export interface HeaderOptions extends LabelOptions {
 
 export class HeaderOptionsDefaults
 {
-  private static _instance: HeaderOptions = cloneDeep(LabelOptionsDefaults.Instance);
-
-  public static get Instance()
-  {
-    return this._instance;
-  }
+  public static readonly Instance: HeaderOptions = cloneDeep(LabelOptionsDefaults.Instance);
 }
