@@ -5,17 +5,18 @@ import {FontInPx} from "../../font";
 import {AxisTypes} from "../../chart/axis/axis-types";
 import {Skin} from "../skin";
 import {cloneDeep} from "lodash-es";
+import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
 
 export interface AxisOptions extends AxisMajorOptions, AxisSkin { }
 
-export interface AxisMajorOptions {
+export interface AxisMajorOptions extends MajorOptions{
   /**
    * Axis type
    */
   axisType: AxisTypes;
 }
 
-export interface AxisSkin {
+export interface AxisSkin extends SkinOptions {
   /**
    * Axis foreground color
    */
@@ -42,8 +43,13 @@ export interface AxisSkin {
   drawBorder?: boolean;
 }
 
-export class AxisOptionsDefaults {
-  public static readonly Skins: { [key: string]: AxisSkin } = {
+export class AxisOptionsDefaults extends OptionsDefaults<AxisSkin, AxisMajorOptions, AxisOptions> {
+
+  private constructor() {
+    super();
+  }
+
+  public readonly skins: { [key: string]: AxisSkin } = {
     [Skin.Default]: {
       foregroundColor: 'white',
       backgroundColor: '#111111',
@@ -57,11 +63,9 @@ export class AxisOptionsDefaults {
     }
   }
 
-  public static readonly MajorOptions: AxisMajorOptions = {
+  public readonly majorOptions: AxisMajorOptions = {
     axisType: AxisTypes.NumericAxis
   }
 
-  public static applyTo<AxisOptionsType extends AxisOptions>(options: AxisOptionsType, skin: Skin = Skin.Default, majorOptions: AxisMajorOptions = AxisOptionsDefaults.MajorOptions): AxisOptionsType {
-    return {...cloneDeep(majorOptions), ...cloneDeep(this.Skins[skin]), ...cloneDeep(options)};
-  }
+  public static readonly Instance = new AxisOptionsDefaults();
 }

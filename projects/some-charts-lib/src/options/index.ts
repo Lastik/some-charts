@@ -7,3 +7,4 @@ export * from './header-options';
 export * from './renderer-options';
 export * from './chart-options';
 export * from './skin';
+export * from './options-defaults';

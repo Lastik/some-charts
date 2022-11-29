@@ -4,8 +4,8 @@ import {PlotKind} from "../plot-kind";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
 import {Skin} from "../../skin";
-import {cloneDeep} from "lodash-es";
 import {CommonOptionsValues} from "../../common";
+import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 
 /**
  * Bars plot options
@@ -13,14 +13,14 @@ import {CommonOptionsValues} from "../../common";
 export interface BarsPlotOptions extends BarsPlotMajorOptions, BarsPlotSkin { }
 
 
-export interface BarsPlotMajorOptions extends PlotOptions{
+export interface BarsPlotMajorOptions extends PlotOptions, MajorOptions{
   /**
    * Array of metrics options.
    * */
   metrics: Array<MetricOptions<Color>>;
 }
 
-export interface BarsPlotSkin {
+export interface BarsPlotSkin extends SkinOptions{
   /**
    * True, if labels must be drawn on bars. Otherwise, false.
    */
@@ -43,9 +43,12 @@ export interface BarsPlotSkin {
   foregroundColor?: Color;
 }
 
-export class BarsPlotOptionsDefaults
-{
-  public static readonly Skins: { [key: string]: BarsPlotSkin } = {
+export class BarsPlotOptionsDefaults extends OptionsDefaults<BarsPlotSkin, BarsPlotMajorOptions, BarsPlotOptions> {
+  private constructor() {
+    super();
+  }
+
+  public readonly skins: { [key: string]: BarsPlotSkin } = {
     [Skin.Default]: {
       drawLabelsOnBars: true,
       labelsPrecision: 2,
@@ -58,16 +61,12 @@ export class BarsPlotOptionsDefaults
     }
   }
 
-  public static readonly MajorOptions: BarsPlotMajorOptions = {
+  public readonly majorOptions: BarsPlotMajorOptions = {
     metrics: [],
     kind: PlotKind.Bars,
     animate: CommonOptionsValues.Animate,
     animationDuration: CommonOptionsValues.AnimationDuration
   }
 
-  public static applyTo<BarsPlotOptionsType extends BarsPlotOptions>(options: BarsPlotOptionsType,
-                                                                     skin: Skin = Skin.Default,
-                                                                     majorOptions: BarsPlotMajorOptions = BarsPlotOptionsDefaults.MajorOptions): BarsPlotOptionsType {
-    return {...cloneDeep(majorOptions), ...cloneDeep(this.Skins[skin]), ...cloneDeep(options)};
-  }
+  public static readonly Instance = new BarsPlotOptionsDefaults();
 }

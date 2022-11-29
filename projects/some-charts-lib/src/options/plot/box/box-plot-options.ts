@@ -6,21 +6,22 @@ import {MetricOptions} from "../metric-options";
 import {Skin} from "../../skin";
 import {cloneDeep} from "lodash-es";
 import {CommonOptionsValues} from "../../common";
+import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 
 /**
- * Bars plot options
+ * Box plot options
  */
 export interface BoxPlotOptions extends BoxPlotMajorOptions, BoxPlotSkin { }
 
 
-export interface BoxPlotMajorOptions extends PlotOptions{
+export interface BoxPlotMajorOptions extends PlotOptions, MajorOptions {
   /*
-    * Marker plot metric with it's color.
+    * Box plot metric with it's color.
     * */
   metric: MetricOptions<Color | Palette>;
 }
 
-export interface BoxPlotSkin {
+export interface BoxPlotSkin extends SkinOptions {
   boxWidth?: number;
 
   whiskersWidth?: number
@@ -30,16 +31,20 @@ export interface BoxPlotSkin {
   stroke?: Color;
 }
 
-export class BoxPlotOptionsDefaults
+export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlotMajorOptions, BoxPlotOptions>
 {
-  public static readonly Skins: { [key: string]: BoxPlotSkin } = {
+  private constructor() {
+    super();
+  }
+
+  public readonly skins: { [key: string]: BoxPlotSkin } = {
     [Skin.Default]: {
       lineWidth: 2,
       stroke: new Color('white')
     }
   }
 
-  public static readonly MajorOptions: BoxPlotMajorOptions = {
+  public readonly majorOptions: BoxPlotMajorOptions = {
     kind: PlotKind.Box,
     metric: {
       id: "",
@@ -50,9 +55,5 @@ export class BoxPlotOptionsDefaults
     animationDuration: CommonOptionsValues.AnimationDuration
   }
 
-  public static applyTo<BoxPlotOptionsType extends BoxPlotOptions>(options: BoxPlotOptionsType,
-                                                                     skin: Skin = Skin.Default,
-                                                                     majorOptions: BoxPlotMajorOptions = BoxPlotOptionsDefaults.MajorOptions): BoxPlotOptionsType {
-    return {...cloneDeep(majorOptions), ...cloneDeep(this.Skins[skin]), ...cloneDeep(options)};
-  }
+  public static readonly Instance = new BoxPlotOptionsDefaults();
 }
