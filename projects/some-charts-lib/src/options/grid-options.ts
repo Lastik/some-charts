@@ -1,7 +1,11 @@
+import {OptionsDefaults, SkinOptions} from "./options-defaults";
+import {Skin} from "./skin";
+
+
 /**
  * Chart grid options
  */
-export interface GridOptions {
+export interface GridOptions extends SkinOptions {
   /**
    * Grid foreground color
    */
@@ -12,10 +16,20 @@ export interface GridOptions {
   backgroundColor: string;
 }
 
-export class GridOptionsDefaults
+export class GridOptionsDefaults extends OptionsDefaults<GridOptions, undefined, GridOptions>
 {
-  public static readonly Instance:  GridOptions = {
-    foregroundColor: 'white',
-    backgroundColor: '#303030'
+  protected constructor() {
+    super();
   }
+
+  majorOptions = undefined;
+
+  public readonly skins: { [key: string]: GridOptions } = {
+    [Skin.Default]: {
+      foregroundColor: 'white',
+      backgroundColor: '#303030'
+    }
+  }
+
+  public static readonly Instance = new GridOptionsDefaults();
 }

@@ -5,10 +5,11 @@ export interface SkinOptions { }
 
 export interface MajorOptions { }
 
-export abstract class OptionsDefaults<SkinOptionsType extends SkinOptions, MajorOptionsType extends MajorOptions | undefined, OptionsType extends SkinOptionsType & MajorOptionsType> {
+export abstract class OptionsDefaults<SkinOptionsType extends SkinOptions, MajorOptionsType extends MajorOptions | undefined,
+  OptionsType extends (MajorOptionsType extends undefined ? SkinOptionsType : SkinOptionsType & MajorOptionsType)> {
   public abstract get skins(): { [key: string]: SkinOptionsType };
 
-  public abstract get majorOptions(): MajorOptionsType;
+  public abstract majorOptions: MajorOptionsType;
 
   public applyTo(options: OptionsType, skin: Skin, majorOptions: MajorOptionsType | undefined = undefined): OptionsType {
     return {...(majorOptions ? cloneDeep(majorOptions) : {}), ...cloneDeep(this.skins[skin]), ...cloneDeep(options)};

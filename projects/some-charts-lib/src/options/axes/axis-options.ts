@@ -4,7 +4,6 @@
 import {FontInPx} from "../../font";
 import {AxisTypes} from "../../chart/axis/axis-types";
 import {Skin} from "../skin";
-import {cloneDeep} from "lodash-es";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
 
 export interface AxisOptions extends AxisMajorOptions, AxisSkin { }

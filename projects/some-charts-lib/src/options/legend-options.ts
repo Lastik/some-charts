@@ -1,7 +1,11 @@
+import {OptionsDefaults, SkinOptions} from "./options-defaults";
+import {Skin} from "./skin";
+import {GridOptions} from "./grid-options";
+
 /**
 * Chart legend options
 */
-export interface LegendOptions {
+export interface LegendOptions extends SkinOptions {
   /**
    * Offset of chart legend from right border.
    */
@@ -24,13 +28,23 @@ export interface LegendOptions {
   rectangleSize: number;
 }
 
-export class LegendOptionsDefaults
+export class LegendOptionsDefaults extends OptionsDefaults<LegendOptions, undefined, LegendOptions>
 {
-  public static readonly Instance: LegendOptions = {
-    offsetRight: 27,
-    offsetTop: 50,
-    opacity: 0.6,
-    fontSize: 12,
-    rectangleSize: 13
+  protected constructor() {
+    super();
   }
+
+  majorOptions = undefined;
+
+  public readonly skins: { [key: string]: LegendOptions } = {
+    [Skin.Default]: {
+      offsetRight: 27,
+      offsetTop: 50,
+      opacity: 0.6,
+      fontSize: 12,
+      rectangleSize: 13
+    }
+  }
+
+  public static readonly Instance = new LegendOptionsDefaults();
 }

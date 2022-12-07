@@ -8,7 +8,7 @@ import {MajorOptions, OptionsDefaults, SkinOptions} from "../../../options-defau
 /**
  * Box outliers plot options
  */
-export interface BoxOutliersOptions extends BoxOutliersMajorOptions, BoxOutliersSkin { }
+export interface BoxOutliersPlotOptions extends BoxOutliersMajorOptions, BoxOutliersSkin { }
 
 
 export interface BoxOutliersMajorOptions extends PlotOptions, MajorOptions {
@@ -25,7 +25,7 @@ export interface BoxOutliersSkin extends SkinOptions {
   markerSize: number;
 }
 
-export class BoxOutliersPlotOptionsDefaults extends OptionsDefaults<BoxOutliersSkin, BoxOutliersMajorOptions, BoxOutliersOptions>
+export class BoxOutliersPlotOptionsDefaults extends OptionsDefaults<BoxOutliersSkin, BoxOutliersMajorOptions, BoxOutliersPlotOptions>
 {
   private constructor() {
     super();

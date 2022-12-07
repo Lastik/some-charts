@@ -17,7 +17,7 @@ export class BoxPlotOptionsClass extends PlotOptionsClass implements BoxPlotOpti
   constructor(boxPlotOptions: BoxPlotOptions) {
     super(boxPlotOptions);
 
-    let defaultSkin = BoxPlotOptionsDefaults.Skins[Skin.Default];
+    let defaultSkin = BoxPlotOptionsDefaults.Instance.skins[Skin.Default];
 
     this.metric = boxPlotOptions.metric;
     this.lineWidth = boxPlotOptions.lineWidth ?? defaultSkin.lineWidth!;

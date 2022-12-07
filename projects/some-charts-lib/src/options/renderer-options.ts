@@ -1,7 +1,10 @@
+import {OptionsDefaults, SkinOptions} from "./options-defaults";
+import {Skin} from "./skin";
+
 /**
 * Chart renderer options
 */
-export interface RendererOptions {
+export interface RendererOptions extends SkinOptions {
   /**
    * Renderer background color.
    */
@@ -12,10 +15,20 @@ export interface RendererOptions {
   borderStyle?: string;
 }
 
-export class RendererOptionsDefaults
+export class RendererOptionsDefaults extends OptionsDefaults<RendererOptions, undefined, RendererOptions>
 {
-  public static readonly Instance:  RendererOptions = {
-    backgroundColor: "#111111",
-    borderStyle: "1px solid #000000"
+  protected constructor() {
+    super();
   }
+
+  majorOptions = undefined;
+
+  public readonly skins: { [key: string]: RendererOptions } = {
+    [Skin.Default]: {
+      backgroundColor: "#111111",
+      borderStyle: "1px solid #000000"
+    }
+  }
+
+  public static readonly Instance = new RendererOptionsDefaults();
 }
