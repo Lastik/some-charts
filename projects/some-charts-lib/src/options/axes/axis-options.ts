@@ -5,6 +5,7 @@ import {FontInPx} from "../../font";
 import {AxisTypes} from "../../chart/axis/axis-types";
 import {Skin} from "../skin";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
+import {NumericAxisMajorOptions, NumericAxisScaleType} from "./numeric";
 
 export interface AxisOptions extends AxisMajorOptions, AxisSkin { }
 
@@ -59,11 +60,25 @@ export class AxisOptionsDefaults extends OptionsDefaults<AxisSkin, AxisMajorOpti
       majorTickHeight: 6,
       minorTickHeight: 3,
       drawBorder: false
+    },
+    [Skin.Light]: {
+      foregroundColor: 'black',
+      backgroundColor: '#EEEEEE',
+      font: {
+        size: 13,
+        family: 'Calibri'
+      },
+      majorTickHeight: 6,
+      minorTickHeight: 3,
+      drawBorder: false
     }
   }
 
-  public readonly majorOptions: AxisMajorOptions = {
-    axisType: AxisTypes.NumericAxis
+  public readonly majorOptions: AxisMajorOptions | NumericAxisMajorOptions = {
+    axisType: AxisTypes.NumericAxis,
+    scale: {
+      scaleType: NumericAxisScaleType.Linear
+    }
   }
 
   public static readonly Instance = new AxisOptionsDefaults();

@@ -84,7 +84,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
     this.majorTicksScreenCoords = [];
     this.minorTicksScreenCoords = [];
 
-    this.options = AxisOptionsDefaults.applyTo(options);
+    this.options = AxisOptionsDefaults.Instance.applyTo(options);
 
     this.majorTicksGenerator = this.createMajorTicksGenerator();
     this.minorTicksGenerator = this.createMinorTicksGenerator();

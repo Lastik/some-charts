@@ -36,7 +36,7 @@ export class Legend {
 
     container.append(this.uiElt);
 
-    this.options = options ?? LegendOptionsDefaults.Instance;
+    this.options = LegendOptionsDefaults.Instance.applyTo(options);
   }
 
   /**

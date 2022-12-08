@@ -1,3 +1,4 @@
 export enum Skin {
-  Default = 'default'
+  Default = 'default',
+  Light = 'light'
 }

@@ -2,7 +2,7 @@ import {GridOptions, GridOptionsDefaults} from "./grid-options";
 import {HeaderOptions, HeaderOptionsDefaults} from "./header-options";
 import {LegendOptions, LegendOptionsDefaults} from "./legend-options";
 import {RendererOptions, RendererOptionsDefaults} from "./renderer-options";
-import {AxesOptions, AxesOptionsDefaults, AxisOptionsDefaults} from "./axes";
+import {AxesOptions, AxesOptionsDefaults} from "./axes";
 import {PlotOptions, PlotOptionsDefaults} from "./plot";
 import {NavigationOptions, NavigationOptionsDefaults} from "./navigation";
 import {cloneDeep} from "lodash-es";
@@ -43,8 +43,11 @@ export interface ChartOptions {
 
 export class ChartOptionsDefaults {
 
-  public static applyTo(options: ChartOptions, skin: Skin = Skin.Default): ChartOptions {
+  public static skin: Skin = Skin.Default;
+
+  public static applyTo(options: ChartOptions, skin: Skin = ChartOptionsDefaults.skin): ChartOptions {
     return {
+      header: HeaderOptionsDefaults.Instance.applyTo(options.header),
       navigation: cloneDeep(NavigationOptionsDefaults.Instance),
       renderer: RendererOptionsDefaults.Instance.applyTo(options.renderer, skin),
       axes: AxesOptionsDefaults.applyTo(options.axes, skin),
