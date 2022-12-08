@@ -18,10 +18,10 @@ export interface AxesOptions extends MajorOptions, SkinOptions {
 
 export class AxesOptionsDefaults
 {
-  public static applyTo<AxesOptionsType extends AxesOptions>(options: AxesOptionsType, skin: Skin = Skin.Default): AxesOptionsType {
+  public static applyTo(options: AxesOptions | undefined, skin: Skin = Skin.Default): AxesOptions {
     return {
-      horizontal: AxisOptionsDefaults.Instance.applyTo(options.horizontal, skin),
-      vertical: AxisOptionsDefaults.Instance.applyTo(options.vertical, skin)
-    } as AxesOptionsType;
+      horizontal: AxisOptionsDefaults.Instance.applyTo(options?.horizontal, skin),
+      vertical: AxisOptionsDefaults.Instance.applyTo(options?.vertical, skin)
+    } as AxesOptions;
   }
 }

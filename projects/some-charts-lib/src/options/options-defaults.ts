@@ -11,7 +11,7 @@ export abstract class OptionsDefaults<SkinOptionsType extends SkinOptions, Major
 
   public abstract majorOptions: MajorOptionsType;
 
-  public applyTo(options: OptionsType, skin: Skin, majorOptions: MajorOptionsType | undefined = undefined): OptionsType {
-    return {...(majorOptions ? cloneDeep(majorOptions) : {}), ...cloneDeep(this.skins[skin]), ...cloneDeep(options)};
+  public applyTo(options: OptionsType | undefined, skin: Skin): OptionsType {
+    return {...(this.majorOptions ? cloneDeep(this.majorOptions) : {}), ...cloneDeep(this.skins[skin]), ...(options ? cloneDeep(options) : {})} as OptionsType;
   }
 }
