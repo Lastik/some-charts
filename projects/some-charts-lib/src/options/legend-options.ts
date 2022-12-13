@@ -36,7 +36,7 @@ export class LegendOptionsDefaults extends OptionsDefaults<LegendOptions, undefi
 
   majorOptions = undefined;
 
-  public readonly skins: { [key: string]: LegendOptions } = {
+  protected readonly skins: { [key: string]: LegendOptions } = {
     [Skin.Default]: {
       offsetRight: 27,
       offsetTop: 50,

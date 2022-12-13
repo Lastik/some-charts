@@ -33,13 +33,13 @@ export class MarkerPlotOptionsDefaults extends OptionsDefaults<MarkerPlotSkin, M
     super();
   }
 
-  public readonly skins: { [key: string]: MarkerPlotSkin } = {
+  protected readonly skins: { [key: string]: MarkerPlotSkin } = {
     [Skin.Default]: {
       markerSize: 5
     }
   }
 
-  public readonly majorOptions: MarkerPlotMajorOptions = {
+  protected readonly majorOptions: MarkerPlotMajorOptions = {
     kind: PlotKind.Marker,
     metric: {
       id: "",

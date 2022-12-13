@@ -1,22 +1,16 @@
-import {LabelPlotOptions, LabelOptionsDefaults} from "./plot";
-import {cloneDeep} from "lodash-es";
-import {OptionsDefaults} from "./options-defaults";
-
 /**
  * Chart header options
  */
-export interface HeaderOptions extends LabelPlotOptions {
+import {LabelOptions, LabelOptionsDefaults} from "./plot/label-options";
+
+export interface HeaderOptions extends LabelOptions {
 }
 
-export class HeaderOptionsDefaults extends OptionsDefaults<HeaderOptions, undefined, HeaderOptions>
+export class HeaderOptionsDefaults extends LabelOptionsDefaults<HeaderOptions>
 {
   protected constructor() {
     super();
   }
 
-  majorOptions = undefined;
-
-  public readonly skins: { [key: string]: LabelPlotOptions } = cloneDeep(LabelOptionsDefaults.Instance.skins);
-
-  public static readonly Instance = new HeaderOptionsDefaults();
+  public static override readonly Instance = new HeaderOptionsDefaults();
 }

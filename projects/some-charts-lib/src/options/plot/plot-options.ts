@@ -15,19 +15,19 @@ export interface PlotOptions {
 
 export class PlotOptionsDefaults{
 
-  public static applyTo(options: PlotOptions, skin: Skin = Skin.Default): PlotOptions {
+  public static extendWith(options: PlotOptions, skin: Skin = Skin.Default): PlotOptions {
 
     if(options.kind === PlotKind.BoxOutliers){
-      return BoxOutliersPlotOptionsDefaults.Instance.applyTo(options as BoxOutliersPlotOptions, skin);
+      return BoxOutliersPlotOptionsDefaults.Instance.extendWith(options as BoxOutliersPlotOptions, skin);
     }
     else if(options.kind === PlotKind.Box){
-      return BoxPlotOptionsDefaults.Instance.applyTo(options as BoxPlotOptions, skin);
+      return BoxPlotOptionsDefaults.Instance.extendWith(options as BoxPlotOptions, skin);
     }
     else if(options.kind === PlotKind.Marker){
-      return MarkerPlotOptionsDefaults.Instance.applyTo(options as MarkerPlotOptions, skin);
+      return MarkerPlotOptionsDefaults.Instance.extendWith(options as MarkerPlotOptions, skin);
     }
     else if(options.kind === PlotKind.Bars){
-      return BarsPlotOptionsDefaults.Instance.applyTo(options as BarsPlotOptions, skin);
+      return BarsPlotOptionsDefaults.Instance.extendWith(options as BarsPlotOptions, skin);
     }
     else throw new Error(`Plot of ${options.kind} kind is not supported!`);
   }

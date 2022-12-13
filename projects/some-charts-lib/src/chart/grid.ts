@@ -33,7 +33,7 @@ export class Grid extends ChartRenderableItem<Konva.Shape> {
     this.location = location;
     this.size = size;
 
-    this.options = GridOptionsDefaults.Instance.applyTo(options);
+    this.options = GridOptionsDefaults.Instance.extendWith(options);
 
     this.horizontalLinesCoords = [];
     this.verticalLinesCoords = [];

@@ -37,14 +37,17 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
     super();
   }
 
-  public readonly skins: { [key: string]: BoxPlotSkin } = {
+  protected readonly skins: { [key: string]: BoxPlotSkin } = {
     [Skin.Default]: {
       lineWidth: 2,
-      stroke: new Color('white')
+      stroke: new Color(this.defaultSkinConsts.foregroundColor)
+    },
+    [Skin.Light]: {
+      stroke: new Color(this.lightSkinConsts.foregroundColor)
     }
   }
 
-  public readonly majorOptions: BoxPlotMajorOptions = {
+  protected readonly majorOptions: BoxPlotMajorOptions = {
     kind: PlotKind.Box,
     metric: {
       id: "",

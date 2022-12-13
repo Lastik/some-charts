@@ -9,7 +9,10 @@ import {cloneDeep} from "lodash-es";
 import {Skin} from "./skin";
 
 export interface ChartOptions {
-
+  /**
+   * Chart skin.
+   */
+  skin?: Skin;
   /**
    * Chart navigation options.
    */
@@ -42,18 +45,18 @@ export interface ChartOptions {
 
 
 export class ChartOptionsDefaults {
+  public static extendWith(options: ChartOptions): ChartOptions {
 
-  public static skin: Skin = Skin.Default;
+    let skin = options.skin ?? Skin.Default;
 
-  public static applyTo(options: ChartOptions, skin: Skin = ChartOptionsDefaults.skin): ChartOptions {
     return {
-      header: HeaderOptionsDefaults.Instance.applyTo(options.header),
+      header: HeaderOptionsDefaults.Instance.extendWith(options.header),
       navigation: cloneDeep(NavigationOptionsDefaults.Instance),
-      renderer: RendererOptionsDefaults.Instance.applyTo(options.renderer, skin),
-      axes: AxesOptionsDefaults.applyTo(options.axes, skin),
-      grid: GridOptionsDefaults.Instance.applyTo(options.grid, skin),
-      legend: LegendOptionsDefaults.Instance.applyTo(options.legend, skin),
-      plots: options.plots?.map(plotOptions => PlotOptionsDefaults.applyTo(plotOptions, skin)) ?? []
+      renderer: RendererOptionsDefaults.Instance.extendWith(options.renderer, skin),
+      axes: AxesOptionsDefaults.extendWith(options.axes, skin),
+      grid: GridOptionsDefaults.Instance.extendWith(options.grid, skin),
+      legend: LegendOptionsDefaults.Instance.extendWith(options.legend, skin),
+      plots: options.plots?.map(plotOptions => PlotOptionsDefaults.extendWith(plotOptions, skin)) ?? []
     } as ChartOptions;
   }
 }

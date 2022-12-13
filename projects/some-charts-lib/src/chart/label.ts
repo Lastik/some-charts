@@ -1,17 +1,17 @@
 ﻿import merge from "lodash-es/merge";
 import Konva from "konva";
 import {NumericPoint, Size} from "../geometry";
-import {LabelPlotOptions, LabelOptionsDefaults} from "../options";
 import {FontHelper, TextMeasureUtils} from "../services";
 import {LayerId} from "../layer-id";
 import {HorizontalAlignment} from "../alignment";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {cloneDeep} from "lodash-es";
+import {LabelOptions, LabelOptionsDefaults} from "../options/plot/label-options";
 
 export class Label extends ChartRenderableItem<Konva.Shape> {
   private location: NumericPoint;
   private width: number;
-  private options: LabelPlotOptions;
+  private options: LabelOptions;
 
   private textSize: Size;
   private textTopBottomOffset: number;
@@ -24,7 +24,7 @@ export class Label extends ChartRenderableItem<Konva.Shape> {
     return this.textSize.height + this.textTopBottomOffset * 2;
   }
 
-  constructor(location: NumericPoint, width: number, options: LabelPlotOptions,
+  constructor(location: NumericPoint, width: number, options: LabelOptions,
               private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
     super();
     this.location = location;

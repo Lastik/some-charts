@@ -31,13 +31,13 @@ export class BoxOutliersPlotOptionsDefaults extends OptionsDefaults<BoxOutliersS
     super();
   }
 
-  public readonly skins: { [key: string]: BoxOutliersSkin } = {
+  protected readonly skins: { [key: string]: BoxOutliersSkin } = {
     [Skin.Default]: {
       markerSize: 5,
     }
   }
 
-  public readonly majorOptions: BoxOutliersMajorOptions = {
+  protected readonly majorOptions: BoxOutliersMajorOptions = {
     metric: {
       id: "",
       caption: "",

@@ -1,6 +1,7 @@
 import {OptionsDefaults, SkinOptions} from "./options-defaults";
 import {Skin} from "./skin";
-
+import {ConstantsDefaults} from "./skins";
+import {keys} from "lodash-es";
 
 /**
  * Chart grid options
@@ -24,11 +25,15 @@ export class GridOptionsDefaults extends OptionsDefaults<GridOptions, undefined,
 
   majorOptions = undefined;
 
-  public readonly skins: { [key: string]: GridOptions } = {
+  protected readonly skins: { [key: string]: GridOptions } = {
     [Skin.Default]: {
-      foregroundColor: 'white',
-      backgroundColor: '#303030'
-    }
+      foregroundColor: this.constantsDefaults.bySkin[Skin.Default].foregroundColor,
+      backgroundColor: this.constantsDefaults.bySkin[Skin.Default].backgroundColor
+    },
+    [Skin.Light]: {
+      foregroundColor: this.constantsDefaults.bySkin[Skin.Light].foregroundColor,
+      backgroundColor: this.constantsDefaults.bySkin[Skin.Light].backgroundColor
+    },
   }
 
   public static readonly Instance = new GridOptionsDefaults();

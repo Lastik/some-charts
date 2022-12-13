@@ -1,1 +1,1 @@
-export * from './default-skin';
+export * from './constants';

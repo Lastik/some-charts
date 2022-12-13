@@ -21,7 +21,7 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
   constructor(barsPlotOptions: BarsPlotOptions) {
     super(barsPlotOptions);
 
-    let defaultSkin = BarsPlotOptionsDefaults.Instance.skins[Skin.Default];
+    let defaultSkin = BarsPlotOptionsDefaults.Instance.defaultSkin;
 
     this.metrics = barsPlotOptions.metrics;
     this.drawLabelsOnBars = barsPlotOptions.drawLabelsOnBars ?? defaultSkin.drawLabelsOnBars!;

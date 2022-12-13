@@ -23,10 +23,14 @@ export class RendererOptionsDefaults extends OptionsDefaults<RendererOptions, un
 
   majorOptions = undefined;
 
-  public readonly skins: { [key: string]: RendererOptions } = {
+  protected readonly skins: { [key: string]: RendererOptions } = {
     [Skin.Default]: {
-      backgroundColor: "#111111",
-      borderStyle: "1px solid #000000"
+      backgroundColor: this.defaultSkinConsts.backgroundColor,
+      borderStyle: `1px solid ${this.defaultSkinConsts.foregroundColor}`
+    },
+    [Skin.Light]: {
+      backgroundColor: this.lightSkinConsts.backgroundColor,
+      borderStyle: `1px solid ${this.lightSkinConsts.foregroundColor}`
     }
   }
 

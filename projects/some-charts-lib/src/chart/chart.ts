@@ -154,7 +154,7 @@ export class Chart<TItemType = any,
 
     this._id = Chart.getNextId();
 
-    this.options = ChartOptionsDefaults.applyTo(options);
+    this.options = ChartOptionsDefaults.extendWith(options);
 
     this._renderer = new Renderer(elementSelector, this.size, this.options!.renderer!);
 

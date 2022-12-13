@@ -48,20 +48,24 @@ export class BarsPlotOptionsDefaults extends OptionsDefaults<BarsPlotSkin, BarsP
     super();
   }
 
-  public readonly skins: { [key: string]: BarsPlotSkin } = {
+  protected readonly skins: { [key: string]: BarsPlotSkin } = {
     [Skin.Default]: {
       drawLabelsOnBars: true,
       labelsPrecision: 2,
       useDarkerBorder: false,
       font: {
-        family: 'Calibri',
+        family: this.defaultSkinConsts.fontFamily,
         size: 13
       },
-      foregroundColor: new Color("white"),
+      foregroundColor: new Color(this.defaultSkinConsts.foregroundColor),
+    },
+    [Skin.Light]: {
+      useDarkerBorder: true,
+      foregroundColor: new Color(this.lightSkinConsts.foregroundColor)
     }
   }
 
-  public readonly majorOptions: BarsPlotMajorOptions = {
+  protected readonly majorOptions: BarsPlotMajorOptions = {
     metrics: [],
     kind: PlotKind.Bars,
     animate: CommonOptionsValues.Animate,

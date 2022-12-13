@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Chart, DataRect, MarkerPlotOptions, NumericPoint, PlotKind, Size, DataSet} from "some-charts";
+import {Chart, DataSet, MarkerPlotOptions, PlotKind, Skin} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 
@@ -70,6 +70,7 @@ export class ChartDemoComponent implements OnInit {
       "#chart-element",
       dataSet,
       {
+        skin: Skin.Light,
         navigation: {
           isFitToViewModeEnabled: true
         },

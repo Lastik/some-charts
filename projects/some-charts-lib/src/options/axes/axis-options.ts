@@ -6,6 +6,7 @@ import {AxisTypes} from "../../chart/axis/axis-types";
 import {Skin} from "../skin";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
 import {NumericAxisMajorOptions, NumericAxisScaleType} from "./numeric";
+import {Constants, ConstantsDefaults} from "../skins";
 
 export interface AxisOptions extends AxisMajorOptions, AxisSkin { }
 
@@ -49,32 +50,25 @@ export class AxisOptionsDefaults extends OptionsDefaults<AxisSkin, AxisMajorOpti
     super();
   }
 
-  public readonly skins: { [key: string]: AxisSkin } = {
+  protected readonly skins: { [key: string]: AxisSkin } = {
     [Skin.Default]: {
-      foregroundColor: 'white',
-      backgroundColor: '#111111',
+      foregroundColor: this.defaultSkinConsts.foregroundColor,
+      backgroundColor: this.defaultSkinConsts.backgroundColor,
       font: {
         size: 13,
-        family: 'Calibri'
+        family: this.defaultSkinConsts.fontFamily
       },
       majorTickHeight: 6,
       minorTickHeight: 3,
       drawBorder: false
     },
     [Skin.Light]: {
-      foregroundColor: 'black',
-      backgroundColor: '#EEEEEE',
-      font: {
-        size: 13,
-        family: 'Calibri'
-      },
-      majorTickHeight: 6,
-      minorTickHeight: 3,
-      drawBorder: false
+      foregroundColor: this.lightSkinConsts.foregroundColor,
+      backgroundColor: this.lightSkinConsts.backgroundColor
     }
   }
 
-  public readonly majorOptions: AxisMajorOptions | NumericAxisMajorOptions = {
+  protected readonly majorOptions: AxisMajorOptions | NumericAxisMajorOptions = {
     axisType: AxisTypes.NumericAxis,
     scale: {
       scaleType: NumericAxisScaleType.Linear

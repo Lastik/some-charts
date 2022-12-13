@@ -36,7 +36,7 @@ export class Legend {
 
     container.append(this.uiElt);
 
-    this.options = LegendOptionsDefaults.Instance.applyTo(options);
+    this.options = LegendOptionsDefaults.Instance.extendWith(options);
   }
 
   /**
