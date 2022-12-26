@@ -1,10 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, BarsPlotOptions, Chart, DataSet, PlotKind} from "some-charts";
+import {AxisTypes, BoxOutliersPlotOptions, BoxPlotOptions, Chart, DataSet, PlotKind, Skin, Sorting} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
-import {Sorting} from "some-charts";
-import {BoxPlotOptions} from "some-charts";
-import {BoxOutliersPlotOptions} from "some-charts";
 
 @Component({
   selector: 'box-demo',
@@ -31,6 +28,9 @@ export class BoxDemoComponent implements OnInit {
       }, {
         x: 'fourth',
         y: [10, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
+      }, {
+        x: 'fifth',
+        y: [50, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
       }],
       {
         y: {
@@ -60,6 +60,9 @@ export class BoxDemoComponent implements OnInit {
       }, {
         x: 'fourth',
         y: [100, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
+      }, {
+        x: 'fifth',
+        y: [200, 640, 610, 620, 500, 570, 560, 540, 750, 560, 710, 420, 690, 460, 640, 520, 640, 610],
       }])
     }, 2000)
 
@@ -68,11 +71,12 @@ export class BoxDemoComponent implements OnInit {
       '#chart-element',
       dataSet,
       {
+        skin: Skin.Light,
         navigation: {
           isFitToViewModeEnabled: true
         },
         header: {
-          text: 'Заголовок графика'
+          text: 'Box chart'
         },
         plots: [
           {
@@ -80,7 +84,7 @@ export class BoxDemoComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Y',
-              color: new Color("#CF2734")
+              color: new Color("#ff392e")
             },
             animate: true
           } as BoxPlotOptions,

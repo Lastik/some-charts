@@ -49,22 +49,28 @@ export class ChartDemoComponent implements OnInit {
       }
     );
 
-    let requestAnimationFrame = window.requestAnimationFrame ||
-    function (callback: any) {
-      window.setTimeout(callback, 1000 / 60);
-    };
+    let requestAnimationFrame = window.requestAnimationFrame;
 
-    let updateChartData = function(){
+    let prevTime = 0;
 
-      data.shift()
-      data.push(generateSinData(origin, 1)[0]);
-      origin++;
-      dataSet.update(data);
+    let updateChartData = function(time: number){
+
+      let timePassed = time - prevTime;
+
+      if(timePassed > 1000 / 60) {
+
+        data.shift()
+        data.push(generateSinData(origin, 1)[0]);
+        origin++;
+        dataSet.update(data);
+
+        prevTime = time;
+      }
 
       requestAnimationFrame(updateChartData);
     }
 
-    updateChartData();
+    updateChartData(prevTime);
 
     let chart = new Chart<XY, number>(
       "#chart-element",
@@ -75,7 +81,7 @@ export class ChartDemoComponent implements OnInit {
           isFitToViewModeEnabled: true
         },
         header: {
-          text: "Заголовок графика"
+          text: "Sin Plot"
         },
         plots: [
           {
@@ -83,9 +89,9 @@ export class ChartDemoComponent implements OnInit {
             metric: {
               id: "y",
               caption: "Y",
-              color: new Color("#AA0000")
+              color: new Color("#ff392e")
             },
-            markerSize: 7
+            markerSize: 5
           } as MarkerPlotOptions
         ]
       }

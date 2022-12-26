@@ -16,7 +16,7 @@ export class DateTimeAxisComponent implements OnInit {
   ngOnInit(): void {
 
     let amplitude = 40;
-    let frequency = 20;
+    let frequency = 7;
     let width = 100;
     let height = 200;
 
@@ -31,7 +31,7 @@ export class DateTimeAxisComponent implements OnInit {
     }
 
     let origin = 0;
-    let count = 300;
+    let count = 200;
 
     let data = generateSinData(0, count);
 
@@ -63,7 +63,7 @@ export class DateTimeAxisComponent implements OnInit {
       dataSet,
       {
         header: {
-          text: 'Заголовок графика'
+          text: 'Date Time Axis'
         },
         plots: [
           {
@@ -71,9 +71,9 @@ export class DateTimeAxisComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Y',
-              color: new Color("#AA0000")
+              color: new Color("#ff392e")
             },
-            markerSize: 10
+            markerSize: 6
           } as MarkerPlotOptions
         ],
         axes: {

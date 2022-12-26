@@ -33,6 +33,10 @@ export class BarsDemoComponent implements OnInit {
         x: 'fourth',
         y1: 15,
         y2: 20,
+      }, {
+        x: 'fifth',
+        y1: 20,
+        y2: 30,
       }],
       {
         y1: {
@@ -70,6 +74,10 @@ export class BarsDemoComponent implements OnInit {
         x: 'fourth',
         y1: 10,
         y2: 16,
+      }, {
+        x: 'fifth',
+        y1: 12,
+        y2: 17,
       }])
     }, 2000)
 
@@ -82,7 +90,7 @@ export class BarsDemoComponent implements OnInit {
           isFitToViewModeEnabled: true
         },
         header: {
-          text: 'Заголовок графика'
+          text: 'Bars Plot'
         },
         plots: [
           {

@@ -27,11 +27,11 @@ export class GridOptionsDefaults extends OptionsDefaults<GridOptions, undefined,
 
   protected readonly skins: { [key: string]: GridOptions } = {
     [Skin.Default]: {
-      foregroundColor: this.constantsDefaults.bySkin[Skin.Default].foregroundColor,
+      foregroundColor: this.constantsDefaults.bySkin[Skin.Default].gridColor,
       backgroundColor: this.constantsDefaults.bySkin[Skin.Default].backgroundColor
     },
     [Skin.Light]: {
-      foregroundColor: this.constantsDefaults.bySkin[Skin.Light].foregroundColor,
+      foregroundColor: this.constantsDefaults.bySkin[Skin.Light].gridColor,
       backgroundColor: this.constantsDefaults.bySkin[Skin.Light].backgroundColor
     },
   }
