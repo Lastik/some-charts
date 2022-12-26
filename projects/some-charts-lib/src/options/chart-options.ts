@@ -50,7 +50,7 @@ export class ChartOptionsDefaults {
     let skin = options.skin ?? Skin.Default;
 
     return {
-      header: HeaderOptionsDefaults.Instance.extendWith(options.header),
+      header: HeaderOptionsDefaults.Instance.extendWith(options.header, skin),
       navigation: cloneDeep(NavigationOptionsDefaults.Instance),
       renderer: RendererOptionsDefaults.Instance.extendWith(options.renderer, skin),
       axes: AxesOptionsDefaults.extendWith(options.axes, skin),

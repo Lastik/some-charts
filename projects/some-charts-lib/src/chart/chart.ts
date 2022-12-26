@@ -342,7 +342,7 @@ export class Chart<TItemType = any,
 
       this.horizontalAxis.update(
         new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0),
-          this._location.y + (verticalAxisSize?.height ?? 0) + offsetYAfterHeader - (this.options.header?.verticalPadding ?? 0)),
+          this._location.y + (verticalAxisSize?.height ?? 0) + offsetYAfterHeader),
         axisRange,
         this._size.width - (verticalAxisSize?.width ?? 0), undefined);
     }

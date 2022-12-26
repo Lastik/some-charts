@@ -6,8 +6,7 @@ import {LabelOptions, LabelOptionsDefaults} from "./plot/label-options";
 export interface HeaderOptions extends LabelOptions {
 }
 
-export class HeaderOptionsDefaults extends LabelOptionsDefaults<HeaderOptions>
-{
+export class HeaderOptionsDefaults extends LabelOptionsDefaults<HeaderOptions> {
   protected constructor() {
     super();
   }

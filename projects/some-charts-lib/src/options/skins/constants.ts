@@ -20,7 +20,7 @@ export class ConstantsDefaults {
       fontFamily: this.fontFamily
     },
     [Skin.Light]: {
-      foregroundColor: '#707070',
+      foregroundColor: '#464646',
       backgroundColor: 'white',
       fontFamily: this.fontFamily
     },

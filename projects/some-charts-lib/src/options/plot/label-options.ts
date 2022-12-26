@@ -51,7 +51,7 @@ export class LabelOptionsDefaults<LabelOptionsType extends LabelOptions>
       textAlignment: HorizontalAlignment.Center
     } as LabelSkinOptions,
     [Skin.Light]:{
-      foregroundColor: new Color(this.defaultSkinConsts.foregroundColor),
+      foregroundColor: new Color(this.lightSkinConsts.foregroundColor),
     } as LabelSkinOptions
   }
 
