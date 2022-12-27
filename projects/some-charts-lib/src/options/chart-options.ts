@@ -51,7 +51,7 @@ export class ChartOptionsDefaults {
 
     return {
       header: HeaderOptionsDefaults.Instance.extendWith(options.header, skin),
-      navigation: cloneDeep(NavigationOptionsDefaults.Instance),
+      navigation: {...cloneDeep(NavigationOptionsDefaults.Instance), ...cloneDeep(options.navigation) },
       renderer: RendererOptionsDefaults.Instance.extendWith(options.renderer, skin),
       axes: AxesOptionsDefaults.extendWith(options.axes, skin),
       grid: GridOptionsDefaults.Instance.extendWith(options.grid, skin),

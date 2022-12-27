@@ -419,6 +419,9 @@ export class Chart<TItemType = any,
         if (this.options.navigation!.fixedTopBound) {
           chartBoundingRect = chartBoundingRect.withHeight((this.options.navigation!.fixedTopBound - chartBoundingRect.minY) * (1 + coeff));
         }
+        else if(this.options.navigation!.relativePadding){
+          chartBoundingRect = chartBoundingRect.addRelativePadding(this.options.navigation!.relativePadding)
+        }
         if (chartBoundingRect.height == 0) {
           chartBoundingRect = chartBoundingRect.withHeight(1);
         }

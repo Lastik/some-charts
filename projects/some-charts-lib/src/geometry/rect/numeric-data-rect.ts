@@ -119,6 +119,19 @@ export class NumericDataRect extends DataRect<number, number> {
   }
 
   /**
+   * Adds relative padding to rect coordinates.
+   * @param {Margin} padding - Relative padding.
+   * @returns {NumericDataRect}
+   */
+  addRelativePadding(padding: Margin): NumericDataRect {
+    return new NumericDataRect(
+      this.minX - this.width * padding.left,
+      this.maxX + this.width * padding.right,
+      this.minY - this.height * padding.top,
+      this.maxY + this.height * padding.bottom);
+  }
+
+  /**
    * Returns horizontal range for this data rectangle.
    * @returns {Range}
    */

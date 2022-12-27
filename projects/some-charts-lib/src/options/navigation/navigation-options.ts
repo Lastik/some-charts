@@ -1,3 +1,5 @@
+import {Margin} from "../../geometry";
+
 export interface NavigationOptions {
 
   /**
@@ -14,6 +16,11 @@ export interface NavigationOptions {
    * If top bound while fitting to view must be fixed, pass specific value to this property.
    * */
   fixedTopBound?: number
+
+  /**
+   * Relative padding, in parts, while fitting to view
+   * */
+  relativePadding?: Margin
 }
 
 
@@ -21,7 +28,6 @@ export class NavigationOptionsDefaults
 {
   public static readonly Instance:  NavigationOptions = {
     isEnabled: true,
-    isFitToViewModeEnabled: false,
-    fixedTopBound: undefined,
+    isFitToViewModeEnabled: false
   }
 }

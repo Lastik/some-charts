@@ -1,5 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, BoxOutliersPlotOptions, BoxPlotOptions, Chart, DataSet, PlotKind, Skin, Sorting} from "some-charts";
+import {
+  AxisTypes,
+  BoxOutliersPlotOptions,
+  BoxPlotOptions,
+  Chart,
+  DataSet,
+  Margin,
+  PlotKind,
+  Skin,
+  Sorting
+} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 
@@ -28,9 +38,6 @@ export class BoxDemoComponent implements OnInit {
       }, {
         x: 'fourth',
         y: [10, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
-      }, {
-        x: 'fifth',
-        y: [50, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
       }],
       {
         y: {
@@ -60,9 +67,6 @@ export class BoxDemoComponent implements OnInit {
       }, {
         x: 'fourth',
         y: [100, 640, 610, 620, 600, 570, 560, 540, 550, 560, 710, 720, 690, 660, 640, 520, 640, 610],
-      }, {
-        x: 'fifth',
-        y: [200, 640, 610, 620, 500, 570, 560, 540, 750, 560, 710, 420, 690, 460, 640, 520, 640, 610],
       }])
     }, 2000)
 
@@ -73,7 +77,8 @@ export class BoxDemoComponent implements OnInit {
       {
         skin: Skin.Light,
         navigation: {
-          isFitToViewModeEnabled: true
+          isFitToViewModeEnabled: true,
+          relativePadding: new Margin(0, 0.2, 0, 0.2)
         },
         header: {
           text: 'Box chart'
