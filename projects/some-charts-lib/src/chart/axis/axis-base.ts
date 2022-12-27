@@ -19,7 +19,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
    * Vertical multiplier, which must be used for defining an offset for fillText canvas method.
    * Each text must be shifted by this constant in top direction (Y axis).
    */
-  public static readonly textVerticalOffsetMultiplier: number = 0.17;
+  public static readonly textVerticalOffsetMultiplier: number = 0.0;
 
   protected location: NumericPoint;
   protected range: Range<DataType>;
@@ -84,7 +84,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
     this.majorTicksScreenCoords = [];
     this.minorTicksScreenCoords = [];
 
-    this.options = options;
+    this.options = options;0
 
     this.majorTicksGenerator = this.createMajorTicksGenerator();
     this.minorTicksGenerator = this.createMinorTicksGenerator();
@@ -133,8 +133,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
 
         let majorTicksCount = self.majorTicks.length;
 
-        let majorTicksScreenXCoords = self.majorTicksScreenCoords;
-        let minorTicksScreenXCoords = self.minorTicksScreenCoords;
+        let majorTicksScreenCoords = self.majorTicksScreenCoords;
 
         let axisRenderOriginX = MathHelper.optimizeValue(self.location.x);
         let axisRenderOriginY = MathHelper.optimizeValue(self.location.y);
@@ -163,14 +162,14 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
           for (let i = 0; i < majorTicksCount; i++) {
             let tick = majorTicks[i];
 
-            let tickScreenXCoord = majorTicksScreenXCoords[i];
+            let tickScreenCoord = majorTicksScreenCoords[i];
             let labelSize = self.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
-              self.location.x + tickScreenXCoord - labelSize.width / 2,
+              self.location.x + tickScreenCoord - labelSize.width / 2,
               self.location.y + tick.length - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
 
-            let xVal = MathHelper.optimizeValue(self.location.x + tickScreenXCoord);
+            let xVal = MathHelper.optimizeValue(self.location.x + tickScreenCoord);
             let yVal = MathHelper.optimizeValue(self.location.y);
             context.moveTo(xVal, yVal);
             yVal = MathHelper.optimizeValue(self.location.y + tick.length);
@@ -185,7 +184,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
           for (let i = 0; i < majorTicksCount; i++) {
             let tick = majorTicks[i];
 
-            let tickScreenXCoord = majorTicksScreenXCoords[i];
+            let tickScreenXCoord = majorTicksScreenCoords[i];
             let labelSize = self.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
