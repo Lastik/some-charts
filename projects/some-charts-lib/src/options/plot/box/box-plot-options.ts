@@ -44,7 +44,7 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
     },
     [Skin.Light]: {
       lineWidth: 1,
-      stroke: new Color(this.lightSkinConsts.foregroundColor)
+      stroke: new Color(this.lightSkinConsts.foregroundColor).darken(1.5),
     }
   }
 

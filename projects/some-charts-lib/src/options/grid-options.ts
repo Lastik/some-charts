@@ -1,7 +1,6 @@
 import {OptionsDefaults, SkinOptions} from "./options-defaults";
 import {Skin} from "./skin";
-import {ConstantsDefaults} from "./skins";
-import {keys} from "lodash-es";
+import * as Color from "color";
 
 /**
  * Chart grid options
@@ -27,12 +26,12 @@ export class GridOptionsDefaults extends OptionsDefaults<GridOptions, undefined,
 
   protected readonly skins: { [key: string]: GridOptions } = {
     [Skin.Default]: {
-      foregroundColor: this.constantsDefaults.bySkin[Skin.Default].gridColor,
-      backgroundColor: this.constantsDefaults.bySkin[Skin.Default].backgroundColor
+      foregroundColor: this.defaultSkinConsts.foregroundColor,
+      backgroundColor: this.defaultSkinConsts.backgroundColor
     },
     [Skin.Light]: {
-      foregroundColor: this.constantsDefaults.bySkin[Skin.Light].gridColor,
-      backgroundColor: this.constantsDefaults.bySkin[Skin.Light].backgroundColor
+      foregroundColor: new Color(this.lightSkinConsts.foregroundColor).lighten(1.5).hex(),
+      backgroundColor: this.lightSkinConsts.backgroundColor
     },
   }
 

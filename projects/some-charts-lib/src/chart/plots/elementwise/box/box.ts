@@ -91,7 +91,8 @@ export class Box extends PlotDrawableElement<Konva.Group>{
     this.boxShape = new Konva.Rect({
       stroke: stroke.toString(),
       strokeWidth: lineWidth,
-      fill: fill.toString()
+      fill: fill.toString(),
+      shadowForStrokeEnabled: false
     });
 
     let self = this;

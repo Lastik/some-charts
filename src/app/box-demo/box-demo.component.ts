@@ -78,7 +78,7 @@ export class BoxDemoComponent implements OnInit {
         skin: Skin.Light,
         navigation: {
           isFitToViewModeEnabled: true,
-          relativePadding: new Margin(0, 0.2, 0, 0.2)
+          relativePadding: new Margin(0, 0.1, 0, 0.1)
         },
         header: {
           text: 'Box chart'
@@ -89,7 +89,7 @@ export class BoxDemoComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Y',
-              color: new Color("#ff392e")
+              color: new Color("#F47174")
             },
             animate: true
           } as BoxPlotOptions,

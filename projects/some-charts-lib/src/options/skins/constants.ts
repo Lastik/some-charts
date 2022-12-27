@@ -4,7 +4,6 @@ export interface Constants {
   foregroundColor: string;
   backgroundColor: string;
   outerBorderColor?: string;
-  gridColor: string;
   fontFamily: string;
 }
 
@@ -20,13 +19,11 @@ export class ConstantsDefaults {
       foregroundColor: 'white',
       backgroundColor: '#303030',
       outerBorderColor: 'black',
-      gridColor: 'white',
       fontFamily: this.fontFamily
     },
     [Skin.Light]: {
       foregroundColor: '#464646',
       backgroundColor: 'white',
-      gridColor: '#b3b3b3',
       fontFamily: this.fontFamily
     },
   }
