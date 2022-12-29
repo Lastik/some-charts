@@ -7,6 +7,7 @@ import {ChartDemoComponent} from "./chart-demo/chart-demo.component";
 import {DateTimeAxisComponent} from "./date-time-axis/date-time-axis.component";
 import {BarsDemoComponent} from "./bars-demo/bars-demo.component";
 import {BoxDemoComponent} from "./box-demo/box-demo.component";
+import {MathHelperService} from "./services/math-helper.service";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import {BoxDemoComponent} from "./box-demo/box-demo.component";
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [MathHelperService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

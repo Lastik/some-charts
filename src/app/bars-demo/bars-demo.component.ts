@@ -3,6 +3,7 @@ import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin} from
 import * as Color from "color";
 import {XY} from "./model/x-y";
 import {Sorting} from "../../../projects/some-charts-lib/src";
+import {MathHelperService} from "../services/math-helper.service";
 
 @Component({
   selector: 'bars-demo',
@@ -11,10 +12,12 @@ import {Sorting} from "../../../projects/some-charts-lib/src";
 export class BarsDemoComponent implements OnInit {
 
 
-  constructor() {
+  constructor(private mathHelperService: MathHelperService) {
   }
 
   ngOnInit(): void {
+
+    let self = this;
 
     let dataSet = new DataSet<XY, string>(
       [{
@@ -53,25 +56,28 @@ export class BarsDemoComponent implements OnInit {
       Sorting.None
     );
 
-    setTimeout(()=>{
+    function updateDataSet() {
       dataSet.update([{
         x: 'first',
-        y1: 14,
-        y2: 17,
+        y1: self.mathHelperService.getRandomInt(8, 12),
+        y2: self.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'second',
-        y1: 23,
-        y2: 30,
+        y1: self.mathHelperService.getRandomInt(8, 12),
+        y2: self.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'third',
-        y1: 20,
-        y2: 25,
+        y1: self.mathHelperService.getRandomInt(8, 12),
+        y2: self.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'fourth',
-        y1: 10,
-        y2: 16,
+        y1: self.mathHelperService.getRandomInt(8, 12),
+        y2: self.mathHelperService.getRandomInt(15, 20),
       }])
-    }, 2000)
+      setTimeout(updateDataSet, 4000);
+    }
+
+    setTimeout(updateDataSet, 4000);
 
     let chart = new Chart<XY, string>(
 
@@ -92,11 +98,11 @@ export class BarsDemoComponent implements OnInit {
             metrics: [{
               id: 'y1',
               caption: 'Y1',
-              color: new Color("#d41f1f")
+              color: new Color("#D24E4D")
             },{
               id: 'y2',
               caption: 'Y2',
-              color: new Color("#3aa371")
+              color: new Color("#43bc82")
             }],
             animate: true
           } as BarsPlotOptions
