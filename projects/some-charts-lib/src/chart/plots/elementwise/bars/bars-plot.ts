@@ -176,28 +176,16 @@ export class BarsPlot<TItemType,
 
   private getBarsColoring(fill: Color): BarsColoring {
 
-    let maxColorComponent = Math.max(Math.max(fill.red(), fill.green()), fill.blue());
-    let offset = maxColorComponent * 0.3;
 
-    let fromFillColor: Color = Color.rgb(
-      Math.min(Math.round(fill.red() + offset), 255),
-      Math.min(Math.round(fill.green() + offset), 255),
-      Math.min(Math.round(fill.blue() + offset), 255)
-    );
+    let fromFillColor: Color = fill.lighten(0.3).rgb();
 
     let toFillColor: Color = fill;
+    let strokeColor: Color;
 
     if (!this.plotOptions.useDarkerBorder)
-      offset = -maxColorComponent * 0.2;
+      strokeColor = fill.darken(0.1).rgb();
     else
-      offset = -maxColorComponent * 0.78;
-
-
-    let strokeColor: Color = Color.rgb(
-      Math.min(Math.round(fill.red() + offset), 255),
-      Math.min(Math.round(fill.green() + offset), 255),
-      Math.min(Math.round(fill.blue() + offset), 255)
-    );
+      strokeColor = fill.darken(0.3).rgb();
 
     return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
   }

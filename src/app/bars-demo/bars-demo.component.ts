@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, BarsPlotOptions, Chart, DataRect, DataSet, MarkerPlotOptions, PlotKind} from "some-charts";
+import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 import {Sorting} from "../../../projects/some-charts-lib/src";
@@ -78,8 +78,10 @@ export class BarsDemoComponent implements OnInit {
       '#chart-element',
       dataSet,
       {
+        skin: Skin.Light,
         navigation: {
-          isFitToViewModeEnabled: true
+          isFitToViewModeEnabled: true,
+          relativePadding: new Margin(0, 0.1, 0, 0.1)
         },
         header: {
           text: 'Bars Plot'
@@ -90,11 +92,11 @@ export class BarsDemoComponent implements OnInit {
             metrics: [{
               id: 'y1',
               caption: 'Y1',
-              color: new Color("#AA0000")
+              color: new Color("#d41f1f")
             },{
               id: 'y2',
               caption: 'Y2',
-              color: new Color("#00AA00")
+              color: new Color("#3aa371")
             }],
             animate: true
           } as BarsPlotOptions

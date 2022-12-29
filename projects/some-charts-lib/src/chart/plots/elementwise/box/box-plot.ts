@@ -30,7 +30,7 @@ export class BoxPlot<TItemType,
 
   override reinitOnDataSetUpdate(){
     let avgXDelta = this.getAvgXDelta(this.plotOptions.metric.id) ?? 0;
-    this.boxDataWidth = avgXDelta / 2;
+    this.boxDataWidth = avgXDelta / 2.5;
     this.whiskersDataWidth = avgXDelta / 3;
   }
 
