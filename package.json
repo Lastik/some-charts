@@ -1,5 +1,5 @@
 {
-  "name": "some-charts-demo",
+  "name": "some-charts-project",
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
@@ -31,7 +31,7 @@
     "moment": "^2.29.4",
     "reflect-metadata": "^0.1.13",
     "save": "^2.5.0",
-    "some-charts": "dist/some-charts/some-charts-0.0.368.tgz",
+    "some-charts": "~0.0.0",
     "tslib": "^2.3.0",
     "typedi": "^0.10.0",
     "zone.js": "~0.11.4"

@@ -3,7 +3,8 @@
   "version": "0.0.368",
   "scripts": {
     "build-dev": "webpack --env=development && tsc --declaration --project tsconfig.lib.json",
-    "build": "webpack --env=production && tsc --declaration --project tsconfig.lib.json"
+    "build": "webpack --env=production && tsc --declaration --project tsconfig.lib.json",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@types/color": "^3.0.3",
@@ -16,6 +17,7 @@
     "typedi": "^0.10.0",
     "zone.js": "~0.11.4",
     "jquery": "^3.6.1",
-    "css-element-queries": "^1.2.3"
+    "css-element-queries": "^1.2.3",
+    "moment": "^2.29.4"
   }
 }

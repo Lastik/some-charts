@@ -13,25 +13,25 @@
           "strict": true
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/some-charts-demo",
+      "sourceRoot": "projects/some-charts-demo/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/some-charts-demo",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
+            "index": "projects/some-charts-demo/src/index.html",
+            "main": "projects/some-charts-demo/src/main.ts",
+            "polyfills": "projects/some-charts-demo/src/polyfills.ts",
+            "tsConfig": "projects/some-charts-demo/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/some-charts-demo/src/favicon.ico",
+              "projects/some-charts-demo/src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/some-charts-demo/src/styles.scss"
             ],
             "scripts": []
           },
@@ -51,8 +51,8 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "projects/some-charts-demo/src/environments/environment.ts",
+                  "with": "projects/some-charts-demo/src/environments/environment.prod.ts"
                 }
               ],
               "outputHashing": "all"
@@ -89,17 +89,17 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
+            "main": "projects/some-charts-demo/src/test.ts",
+            "polyfills": "projects/some-charts-demo/src/polyfills.ts",
+            "tsConfig": "projects/some-charts-demo/tsconfig.spec.json",
+            "karmaConfig": "projects/some-charts-demo/karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/some-charts-demo/src/favicon.ico",
+              "projects/some-charts-demo/src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/some-charts-demo/src/styles.scss"
             ],
             "scripts": []
           }
