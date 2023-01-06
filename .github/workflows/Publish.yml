@@ -1,6 +1,5 @@
 name: Publish
-on:
-  release
+on: release
 
 jobs:
   test:
