@@ -1,5 +1,7 @@
 name: Publish
-on: release
+on:
+  release:
+    types: [published]
 
 jobs:
   test:
@@ -27,13 +29,13 @@ jobs:
       - run: npm run build
 
       - name: Publish beta
-        if: github.event.prerelease == true
+        if: github.event.release.prerelease == true
         run: (cd dist/some-charts; npm publish --tag beta)
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm}}
 
       - name: Publish stable
-        if: github.event.prerelease == false
+        if: github.event.release.prerelease == false
         run: (cd dist/some-charts; npm publish)
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm}}
