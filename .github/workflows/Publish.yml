@@ -12,8 +12,8 @@ jobs:
         with:
           node-version: '18.x'
       - run: npm ci
-      - run: (cd projects/some-charts-lib && npm ci);
       - run: npm run build
+      - run: npm test
 
   publish:
     needs: test
@@ -26,8 +26,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - run: npm ci
-      - run: (cd projects/some-charts-lib && npm ci);
       - run: npm run build
+      - run: npm test
 
       - name: Publish beta
         if: github.event.prerelease == true
