@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin} from "some-charts";
 import * as Color from "color";
 import {XY} from "./model/x-y";
-import {Sorting} from "../../../../some-charts-lib/src";
+import {Sorting} from "../../../projects/some-charts-lib/src";
 import {MathHelperService} from "../services/math-helper.service";
 
 @Component({
