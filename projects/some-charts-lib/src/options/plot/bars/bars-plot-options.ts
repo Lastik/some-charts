@@ -9,7 +9,7 @@ import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults
 
 /**
  * Bars plot options
- */
+ * */
 export interface BarsPlotOptions extends BarsPlotMajorOptions, BarsPlotSkin { }
 
 

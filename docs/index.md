@@ -10,7 +10,7 @@ description:  HTML5 canvas js charting library
 [Configuration](https://olivier3lanc.github.io/Jekyll-LibDoc/libdoc-config.html)
 
 
-<iframe src="https://codesandbox.io/embed/some-charts-box-demo-9c3kii?fontsize=14&hidenavigation=1&theme=dark"
+<iframe src="https://codesandbox.io/embed/some-charts-box-demo-9c3kii?fontsize=14&hidenavigation=1&theme=light"
 style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
 title="Some Charts Box Demo"
 allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"

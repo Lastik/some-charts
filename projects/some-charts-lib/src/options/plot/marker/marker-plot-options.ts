@@ -15,7 +15,7 @@ export interface MarkerPlotOptions extends MarkerPlotMajorOptions, MarkerPlotSki
 
 export interface MarkerPlotMajorOptions extends PlotOptions, MajorOptions {
   /*
-  * Marker plot metric with it's color.
+  * Marker plot metric with its color.
   * */
   metric: MetricOptions<Color | Palette>;
 }

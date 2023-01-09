@@ -6,7 +6,6 @@ import {AxisTypes} from "../../chart/axis/axis-types";
 import {Skin} from "../skin";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
 import {NumericAxisMajorOptions, NumericAxisScaleType} from "./numeric";
-import {Constants, ConstantsDefaults} from "../skins";
 
 export interface AxisOptions extends AxisMajorOptions, AxisSkin { }
 

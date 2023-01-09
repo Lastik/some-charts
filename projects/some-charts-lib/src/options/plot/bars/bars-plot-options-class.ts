@@ -4,11 +4,10 @@ import {BarsPlotOptions, BarsPlotOptionsDefaults} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
 import {Palette} from "../../../chart/plots";
-import {Skin} from "../../skin";
 
 /**
  * Bars plot options class
- */
+ * */
 export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOptions {
   metrics: Array<MetricOptions<Color>>;
 

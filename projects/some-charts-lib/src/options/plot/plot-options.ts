@@ -8,8 +8,17 @@ import {MarkerPlotOptions, MarkerPlotOptionsDefaults} from "./marker";
 import {BarsPlotOptions, BarsPlotOptionsDefaults} from "./bars";
 
 export interface PlotOptions {
+  /**
+   * Plot kind. The supported ones are in {@link PlotKind} enum.
+   * */
   kind: PlotKind;
+  /**
+   * Animate plot after data change? The default is {@link CommonOptionsValues.Animate}.
+   * */
   animate?: boolean;
+  /**
+   * Animation duration. The default is {@link CommonOptionsValues.AnimationDuration}.
+   * */
   animationDuration?: number;
 }
 

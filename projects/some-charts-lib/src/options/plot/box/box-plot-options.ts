@@ -10,13 +10,13 @@ import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults
 
 /**
  * Box plot options
- */
+ * */
 export interface BoxPlotOptions extends BoxPlotMajorOptions, BoxPlotSkin { }
 
 
 export interface BoxPlotMajorOptions extends PlotOptions, MajorOptions {
   /*
-    * Box plot metric with it's color.
+    * Box plot metric with its color.
     * */
   metric: MetricOptions<Color | Palette>;
 }

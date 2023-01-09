@@ -1,6 +1,6 @@
 /**
  * Chart renderer options
- */
+ **/
 import {AxisOptions, AxisOptionsDefaults} from "./axis-options";
 import {Skin} from "../skin";
 import {MajorOptions, SkinOptions} from "../options-defaults";
