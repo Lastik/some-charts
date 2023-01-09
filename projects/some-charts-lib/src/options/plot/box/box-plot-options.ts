@@ -22,12 +22,14 @@ export interface BoxPlotMajorOptions extends PlotOptions, MajorOptions {
 }
 
 export interface BoxPlotSkin extends SkinOptions {
-  boxWidth?: number;
-
-  whiskersWidth?: number
-
+  /**
+   * Width of plot lines in pixels.
+   **/
   lineWidth?: number;
 
+  /**
+   * Color of plot stroke lines.
+   **/
   stroke?: Color;
 }
 
@@ -39,12 +41,12 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
 
   protected readonly skins: { [key: string]: BoxPlotSkin } = {
     [Skin.Default]: {
-      lineWidth: 2,
-      stroke: new Color(this.defaultSkinConsts.foregroundColor)
-    },
-    [Skin.Light]: {
       lineWidth: 1,
-      stroke: new Color(this.lightSkinConsts.foregroundColor).darken(1.5),
+      stroke: new Color(this.defaultSkinConsts.foregroundColor).darken(1.5),
+    },
+    [Skin.Dark]: {
+      lineWidth: 2,
+      stroke: new Color(this.darkSkinConsts.foregroundColor)
     }
   }
 

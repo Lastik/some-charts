@@ -1,13 +1,13 @@
-import {Font, FontInUnits} from "../../index";
+import {FontInUnits} from "../../index";
 import * as Color from "color";
 
 export interface TextOptions {
   /**
-   * Font
+   * Text font.
    */
   font?: FontInUnits;
   /**
-   * Foreground color
+   * Text foreground color
    */
   foregroundColor?: Color;
 }

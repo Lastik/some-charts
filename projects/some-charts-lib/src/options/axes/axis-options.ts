@@ -61,9 +61,9 @@ export class AxisOptionsDefaults extends OptionsDefaults<AxisSkin, AxisMajorOpti
       minorTickHeight: 3,
       drawBorder: false
     },
-    [Skin.Light]: {
-      foregroundColor: this.lightSkinConsts.foregroundColor,
-      backgroundColor: this.lightSkinConsts.backgroundColor
+    [Skin.Dark]: {
+      foregroundColor: this.darkSkinConsts.foregroundColor,
+      backgroundColor: this.darkSkinConsts.backgroundColor
     }
   }
 

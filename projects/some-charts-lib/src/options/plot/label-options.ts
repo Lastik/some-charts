@@ -50,8 +50,8 @@ export class LabelOptionsDefaults<LabelOptionsType extends LabelOptions>
       verticalPadding: 6,
       textAlignment: HorizontalAlignment.Center
     } as LabelSkinOptions,
-    [Skin.Light]:{
-      foregroundColor: new Color(this.lightSkinConsts.foregroundColor),
+    [Skin.Dark]: {
+      foregroundColor: new Color(this.darkSkinConsts.foregroundColor)
     } as LabelSkinOptions
   }
 

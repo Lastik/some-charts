@@ -11,9 +11,9 @@ export abstract class OptionsDefaults<SkinOptionsType extends SkinOptions, Major
 
   protected constructor(
     protected constantsDefaults: ConstantsDefaults = ConstantsDefaults.Instance,
-
     protected defaultSkinConsts: Constants = constantsDefaults.bySkin[Skin.Default],
-    protected lightSkinConsts: Constants = constantsDefaults.bySkin[Skin.Light]
+    protected darkSkinConsts: Constants = constantsDefaults.bySkin[Skin.Dark],
+    protected lightSkinConsts: Constants = defaultSkinConsts
   ) {
   }
 

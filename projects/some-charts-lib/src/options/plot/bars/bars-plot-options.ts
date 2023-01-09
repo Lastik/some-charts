@@ -15,7 +15,7 @@ export interface BarsPlotOptions extends BarsPlotMajorOptions, BarsPlotSkin { }
 
 export interface BarsPlotMajorOptions extends PlotOptions, MajorOptions{
   /**
-   * Array of metrics options.
+   * Array of options for each of stacked bar metrics.
    * */
   metrics: Array<MetricOptions<Color>>;
 }
@@ -26,7 +26,7 @@ export interface BarsPlotSkin extends SkinOptions{
    */
   drawLabelsOnBars?: boolean;
   /**
-   * Bars labels precision.
+   * Bars labels precision (amount of digits after zero).
    */
   labelsPrecision?: number;
   /**
@@ -34,11 +34,11 @@ export interface BarsPlotSkin extends SkinOptions{
    */
   useDarkerBorder?: boolean;
   /**
-   * Font
+   * Font of labels on bars
    */
   font?: Font;
   /**
-   * Foreground color
+   * Color of labels bars
    */
   foregroundColor?: Color;
 }
@@ -52,16 +52,16 @@ export class BarsPlotOptionsDefaults extends OptionsDefaults<BarsPlotSkin, BarsP
     [Skin.Default]: {
       drawLabelsOnBars: true,
       labelsPrecision: 2,
-      useDarkerBorder: false,
       font: {
         family: this.defaultSkinConsts.fontFamily,
         size: 13
       },
-      foregroundColor: new Color(this.defaultSkinConsts.foregroundColor),
-    },
-    [Skin.Light]: {
       useDarkerBorder: true,
       foregroundColor: new Color(this.lightSkinConsts.foregroundColor)
+    },
+    [Skin.Dark]: {
+      useDarkerBorder: false,
+      foregroundColor: new Color(this.darkSkinConsts.foregroundColor),
     }
   }
 

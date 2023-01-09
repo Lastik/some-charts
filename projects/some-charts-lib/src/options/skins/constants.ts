@@ -16,14 +16,14 @@ export class ConstantsDefaults {
 
   public readonly bySkin: { [key: string]: Constants } = {
     [Skin.Default]: {
-      foregroundColor: 'white',
-      backgroundColor: '#303030',
-      outerBorderColor: 'black',
-      fontFamily: this.fontFamily
-    },
-    [Skin.Light]: {
       foregroundColor: '#464646',
       backgroundColor: 'white',
+      fontFamily: this.fontFamily,
+      outerBorderColor: 'black',
+    },
+    [Skin.Dark]: {
+      foregroundColor: 'white',
+      backgroundColor: '#303030',
       fontFamily: this.fontFamily
     },
   }

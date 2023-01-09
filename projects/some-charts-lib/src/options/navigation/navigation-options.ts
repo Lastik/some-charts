@@ -13,12 +13,14 @@ export interface NavigationOptions {
   isFitToViewModeEnabled?: boolean
 
   /**
-   * If top bound while fitting to view must be fixed, pass specific value to this property.
+   * This value specifies fixed top bound of chart displayed area.
+   * Whenever fit to view is triggered, this value will be used instead of actual top bound from the data.
    * */
   fixedTopBound?: number
 
   /**
-   * Relative padding, in parts, while fitting to view
+   * Relative padding, in parts.
+   * It's being added to actual data bounds whenever fit to view is triggered.
    * */
   relativePadding?: Margin
 }

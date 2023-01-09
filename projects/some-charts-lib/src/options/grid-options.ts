@@ -26,13 +26,13 @@ export class GridOptionsDefaults extends OptionsDefaults<GridOptions, undefined,
 
   protected readonly skins: { [key: string]: GridOptions } = {
     [Skin.Default]: {
-      foregroundColor: this.defaultSkinConsts.foregroundColor,
+      foregroundColor: new Color(this.defaultSkinConsts.foregroundColor).lighten(1.5).hex(),
       backgroundColor: this.defaultSkinConsts.backgroundColor
     },
-    [Skin.Light]: {
-      foregroundColor: new Color(this.lightSkinConsts.foregroundColor).lighten(1.5).hex(),
-      backgroundColor: this.lightSkinConsts.backgroundColor
-    },
+    [Skin.Dark]: {
+      foregroundColor: this.darkSkinConsts.foregroundColor,
+      backgroundColor: this.darkSkinConsts.backgroundColor
+    }
   }
 
   public static readonly Instance = new GridOptionsDefaults();

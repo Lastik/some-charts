@@ -15,14 +15,14 @@ export interface MarkerPlotOptions extends MarkerPlotMajorOptions, MarkerPlotSki
 
 export interface MarkerPlotMajorOptions extends PlotOptions, MajorOptions {
   /*
-  * Marker plot metric with its color.
+  * Marker plot metric metadata with its color or palette.
   * */
   metric: MetricOptions<Color | Palette>;
 }
 
 export interface MarkerPlotSkin extends SkinOptions {
   /**
-   * Marker size.
+   * Marker size in pixels.
    */
   markerSize: number | MetricDependantValue<number>;
 }
