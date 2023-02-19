@@ -15,7 +15,7 @@ export class LogPointXTransformation implements CoordinateTransformation {
   }
 
   unapplyX(x: number): number {
-    return Math.pow(this.base, x);
+    return this.base ** x;
   }
 
   unapplyY(y: number): number {

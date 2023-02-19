@@ -1,7 +1,6 @@
 ﻿import {UagentUtils} from "./uagent-utils";
 import {NumericPoint} from "../geometry";
 
-
 /**
  * Helps to perform math operations with values.
  */
@@ -45,7 +44,7 @@ export class MathHelper {
   }
 
   public static toFixed(num: number, digits: number) {
-    return Math.round(num * Math.pow(10, digits)) / Math.pow(10, digits);
+    return Math.round(num * 10 ** digits) / 10 ** digits;
   }
 
   public static log10(number: number) {
@@ -64,10 +63,10 @@ export class MathHelper {
    * @returns {number}
    * */
   public static calcNiceNumber(number: number, round: boolean): number {
-    let exponent = Math.floor(Math.log10(number));
-    let fraction = number / Math.pow(10, exponent);
+    const exponent = Math.floor(Math.log10(number));
+    const fraction = number / 10 ** exponent;
 
-    let niceFraction: number | undefined = undefined;
+    let niceFraction: number;
 
     if (round) {
       if (fraction < 1.5)
@@ -89,6 +88,6 @@ export class MathHelper {
         niceFraction = 10;
     }
 
-    return niceFraction * Math.pow(10, exponent);
+    return niceFraction * 10 ** exponent;
   }
 }

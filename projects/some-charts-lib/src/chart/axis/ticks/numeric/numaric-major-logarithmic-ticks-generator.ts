@@ -21,7 +21,7 @@ export class NumericMajorLogarithmicTicksGenerator extends MajorTicksGenerator<n
     let ticks = Array(actualTicksCount);
     for (let i = 0; i < actualTicksCount; i++) {
       ticks[i] = new Tick(
-        Math.pow(this.logarithmBase, firstTickValue + i),
+        this.logarithmBase ** (firstTickValue + i),
         this.tickHeight,
         i);
     }
