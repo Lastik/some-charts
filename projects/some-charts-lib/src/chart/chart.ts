@@ -37,7 +37,6 @@ import {Label} from "./label";
 import {ResizeSensor} from "css-element-queries";
 
 import * as $ from 'jquery'
-import {cloneDeep} from "lodash-es";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,

@@ -4,14 +4,24 @@ permalink: index.html # To avoid: Warning: Empty `slug` generated for '/'.
 unlisted: true
 ---
 
-## Some Charts Demo
+## Some Charts
 
-Some Charts is a libdary for ....
-This file contains short starting guide with demo code fot the Box Plot library:
+Some Charts js library.
+Some Charts is a javascipt library consisting of set of components to create enriched dynamic data visualizations. The set of supported plots for now consists of 
+- [Marker Plot](demo/marker-plot)
+- Bubble Plot
+- [Bars Plot](demo/bars-plot)
+- [Box Plot](demo/box-plot). 
+It is planned to further extend this list with other popular complex 1D and 2D plots.
 
-- [Box Plot demo](demo/box-plot) contains  code sample and playground for Box Plot ...
-- [Bars Plot demo](demo/bars-plot) contains  code sample and playground for Bars Plot ...
-- [Date Time Axis demo](demo/date-time-axis) contains  code sample and playground for Date Time Axis...
-- [Marker Plot demo](demo/marker-plot) contains  code sample and playground for Marker Plot ...
+Along with Numeric and Labeled axes, this library also supports Date Time axis (see [Date Time Axis Demo](demo/date-time-axis))
 
-Full documentation is available in [typedoc](typedoc/index.html)
+## Installation
+
+To install the library to your project, simply run
+
+```sh
+npm install some-charts
+```
+
+API documentation is available [here](typedoc/index.html)
