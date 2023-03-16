@@ -5,10 +5,10 @@ title: Bars Plot
 category: Demos
 ---
 
-## Bars-Plot demo
-
-This page contains description of the Bars Plot demo.
+See the code below for a simple example of Bars Plot visualization.
 Full documentation is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-bars-demo-3g0jf6?file=/src/app/bars-demo/bars-demo.component.ts)
+
+To have a better understanding how it works, have a look at the entire code of the demo with an explanation of all the objects and attributes after it.
 
 ```javascript
 import {Component, OnInit} from '@angular/core';
@@ -134,57 +134,40 @@ export class BarsDemoComponent implements OnInit {
 }
 ```
 
-The code snippet of `bars-demo.component.ts` above starts with import statements that provide needed bindings from  external modules:
+Please take a look into the Angular `ngOnInit` method, where we create and initialize all the stuff:
 
-
-- Angular/core bindings (`Component`, `OnInit`);
-- some-charts bindings (`AxisTypes`, `BarsPlotOptions`, `Chart`, `DataSet`, `Margin`, `PlotKind`, `Skin`, `Sorting`);
-
-Angular component
- ```javascript  
-@Component({
-  selector: 'bars-demo',
-  templateUrl: './bars-demo.component.html'
-}) ...
-```
-defines ”placeholder” for the demo component on the webpage.
-
-In the Angular `ngOnInit` method implements creation and initializations needed for the demo objects:
-
-- `dataSet` defines initial values for displayed data, interfaces and options;
+- `dataSet` defines initial state of a single-dimensional `DataSet` with a dimension **x** and two metrics **y1** and **y2** defined on that dimension;
 - function `updateDataSet` implements randomized data update by timer.
-- `setTimeout(updateDataSet, 4000)` sets dataset update interval to 4 seconds (4000 milliseconds)
 
-`new Chart<XY, Date>('#chart-element',...)`  creates chart for given data, options and attributes by calling [Chart constructor](typedoc/classes/Chart.html) with needed parameters:
-- `elementSelector`: string `"#chart-element"`
-- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType>, contains data for this chart;
-- `options`: ChartOptions - [Chart options](typedoc/interfaces/ChartOptions.html).  
-  ChartOptions in this demo contains:
+Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a given data and provided options and attributes by calling [Chart constructor](typedoc/classes/Chart.html) with the following set of parameters:
+- `elementSelector`: string `"#chart-element"`, which specifies selector to an HTML element where chart should be rendered
+- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType> specified data set for this chart;
+- `options`: Options object which specifies how to render this chart in a declarative way (see [Chart options](typedoc/interfaces/ChartOptions.html)).  
 
-- navigation object
- ```javascript 
- navigation: {
-          isFitToViewModeEnabled: true,
-          relativePadding: new Margin(0, 0.1, 0, 0.1)
-        }
-```
-has two properties 	`isFitToViewModeEnabled` that enables .... and `relativePadding` that defines margins for the plot area;
+`ChartOptions` for this demo is initialized with the following set of attributes:
 
-- `header` objects defines text displayed on the top of chart;
-- plots object is array of one object `BarsPlotOptions` that defines options to fraw boxes.
+- `navigation` object with the following attributes:
+    - `isFitToViewModeEnabled` which specifies that all the chart data must be fitted vertically and horizontally within the chart viewport
+    - `relativePadding` which specifies additional padding applied from chart grid to chart data. This padding is specified in relative units.
+
+- `header` objects defines text displayed on top of the chart;
+- An array of plots to display on this chart. For this demo, we render a Bars plot, so we need to create a new `BarsPlotOptions` object, which specifies options for the Bars plot.
 
 Object `BarsPlotOptions` has three properties:
 
-`kind` - defines selected type of drawing (in this example - `PlotKind.Box`)
+- `kind` - defines kind of a plot to draw (in this demo - `PlotKind.Box`)
 
-`metric` defines Y ????? and color as RGB color value `Color('#F47174')`(light red)
+- `metrics` - an array of metrics for the plot. For Bars plot, this can be one or multiple metrics, because bars can be *stacked* on top of each other. For each metric,
+  - `id` specifies metric id in the Data Set
+  - `caption` specifies metric caption in legend and in other places.
+  - `color` specifies metric color, when it's been visualized on a plot.
 
-`animate` defines if smooth drawing update when data has changed is needed
+- `animate` specifies if transitions of data in the `DataSet` between updates should be animated
 
 
-The `axes` object defines kind of labels for horizontal axis as text labels  (`AxisTypes.LabeledAxis`) and vertical as axis with numeric labels (`AxisTypes.NumericAxis`)
+The `axes` object defines types of axes to use for a horizontal and vertical axes. In this Demo, we use Labeled horizontal ( we use `AxisTypes.LabeledAxis`) and numeric vertical (we use `AxisTypes.NumericAxis`) axes.
 
-Playground iframe for this demo is shown on the right pane
+Live demo with a sandbox is shown on the right pane
 ```html
 <iframe src="https://codesandbox.io/embed/some-charts-bars-demo-3g0jf6?fontsize=14&hidenavigation=1&theme=dark" 
      style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
