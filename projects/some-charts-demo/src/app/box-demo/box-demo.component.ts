@@ -47,7 +47,7 @@ export class BoxDemoComponent implements OnInit {
           func: item => {
             return item.y
           },
-          isArrayLike: true
+          isArray: true
         }
       },
       item => {

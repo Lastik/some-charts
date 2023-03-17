@@ -137,7 +137,14 @@ export class BarsDemoComponent implements OnInit {
 Please take a look into the Angular `ngOnInit` method, where we create and initialize all the stuff:
 
 - `dataSet` defines initial state of a single-dimensional `DataSet` with a dimension **x** and two metrics **y1** and **y2** defined on that dimension;
-- function `updateDataSet` implements randomized data update by timer.
+  - `elements` an array which specifies initial DataSet data
+  - `metrics` a dictionary of metrics by their id's. Each metric is defined by:
+    - `func` a function which extracts metric value from `DataSet` data.
+    - `isArray` a boolean property indicating whether metric value is an array of values or not. For this demo it has false value.
+    - `dimensionXFunc` a function to extract first dimension value out of an array of elements,
+    - `dimensionYFunc` a function to extract second dimension value out of an array of elements. Only relevant for 2D Data Sets so in this example it's undefined.
+    - `dimensionsSorting` a sorting function being applied to both dimensions values to place them in order. For this demo, we have string `x` dimension, so we don't want our dimensions to be sorted. Therefore, we use `Sorting.None` value here.
+- function `updateDataSet` performs randomized data update by timer.
 
 Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a given data and provided options and attributes by calling [Chart constructor](typedoc/classes/Chart.html) with the following set of parameters:
 - `elementSelector`: string `"#chart-element"`, which specifies selector to an HTML element where chart should be rendered

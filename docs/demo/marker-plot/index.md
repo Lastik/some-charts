@@ -5,9 +5,7 @@ title: Marker Plot
 category: Demos
 ---
 
-## Marker-Sin demo
-
-This page contains description of the Marker Sin demo.
+See the code below for a simple example of Marker Plot visualization.
 Full code of this demo is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-marker-sin-demo-vith96?file=/src/app/marker-sin-demo/marker-sin-demo.component.ts)
 
 ```javascript
@@ -107,24 +105,17 @@ export class MarkerSinDemoComponent implements OnInit {
 }
 ```
 
-The code snippet of `marker-sin-demo.component.ts` above starts with import statements that provide needed bindings from  external modules:
+Please take a look into the Angular `ngOnInit` method, where we create and initialize all the stuff:
 
-
-- Angular/core bindings (`Component`, `OnInit`);
-- some-charts bindings (`AxisTypes`, `BarsPlotOptions`, `Chart`, `DataSet`, `Margin`, `PlotKind`, `Skin`, `Sorting`);
-
-Angular component
- ```javascript  
-@Component({
-  selector: 'bars-demo',
-  templateUrl: './bars-demo.component.html'
-}) ...
-```
-defines ”placeholder” for the demo component on the webpage.
-
-In the Angular `ngOnInit` method implements creation and initializations needed for the demo objects:
-
-- function `updateChartData ` implements data update every sevond using generateSinData.
+- `dataSet` defines initial state of a single-dimensional `DataSet` with a dimension **x** and a metric **y** defined on that dimension;
+- `elements` an array which specifies initial DataSet data.
+- `metrics` a dictionary of metrics by their id's. Each metric is defined by:
+  - `func` a function which extracts metric value from `DataSet` data.
+  - `isArray` a boolean property indicating whether metric value is an array of values or not. For this demo it has true value.
+  - `dimensionXFunc` a function to extract first dimension value out of an array of elements,
+  - `dimensionYFunc` a function to extract second dimension value out of an array of elements. Only relevant for 2D Data Sets so in this example it's undefined.
+  - `dimensionsSorting` a sorting function being applied to both dimensions values to place them in order. For this demo, we have string `x` dimension, so we don't want our dimensions to be sorted. Therefore, we use `Sorting.None` value here.
+- function `updateChartData` performs a data update operation once every second.
 
 `let chart = new Chart<XY, string>(...);`  calls [Chart constructor](typedoc/classes/Chart.html) to create new Chart for given data, options and attributes:
 - `elementSelector`: string `"#chart-element"`

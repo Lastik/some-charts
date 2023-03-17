@@ -95,11 +95,11 @@ export class DataSet<TItemType,
   }
 
   public isSingleMetricValue(metricId: string): boolean {
-    return !this.metrics[metricId]?.isArrayLike;
+    return !this.metrics[metricId]?.isArray;
   }
 
   public isArrayMetricValue(metricId: string): boolean {
-    return !!this.metrics[metricId]?.isArrayLike;
+    return !!this.metrics[metricId]?.isArray;
   }
 
   public getMetricRange(metricId: string) {
@@ -555,4 +555,4 @@ export class DataSet<TItemType,
   }
 }
 
-type Metric<TItemType> = {func: (item: TItemType) => number | Array<number>, isArrayLike?: boolean };
+type Metric<TItemType> = {func: (item: TItemType) => number | Array<number>, isArray?: boolean };
