@@ -155,7 +155,7 @@ Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a giv
 
 Object `BarsPlotOptions` has three properties:
 
-- `kind` - defines kind of a plot to draw (in this demo - `PlotKind.Box`)
+- `kind` - defines kind of a plot to draw (in this demo - `PlotKind.Bars`)
 
 - `metrics` - an array of metrics for the plot. For Bars plot, this can be one or multiple metrics, because bars can be *stacked* on top of each other. For each metric,
   - `id` specifies metric id in the Data Set

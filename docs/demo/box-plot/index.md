@@ -5,9 +5,7 @@ title: Box Plot
 category: Demos
 ---
 
-## Box-Plot demo
-
-This page contains description of the Box Plot demo code.
+See the code below for a simple example of Bars Plot visualization.
 Full documentation is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-box-demo-9c3kii?from-embed)
 
 ```javascript
@@ -140,68 +138,50 @@ export class BoxDemoComponent implements OnInit {
 }
 ```
 
-The code snippet of `box-demo.component.ts` above starts with import statements that provide needed bindings from  external modules:
+Please take a look into the Angular `ngOnInit` method, where we create and initialize all the stuff:
 
-
-- Angular/core bindings (`Component`, `OnInit`);
-- some-charts bindings (`AxisTypes`, `BoxOutliersPlotOptions`,  `BoxPlotOptions`,  `Chart`, `DataSet`, `Margin`, `PlotKind`, `Skin`, `Sorting`);
-
-Angular component
- ```javascript  
-	@Component({
-	selector: 'box-demo',
-    templateUrl: './box-demo.component.html'
-    }) ...
-```
-defines ”placeholder” for the demo component on the webpage.
-
-In the Angular `ngOnInit` method implements creation and initializations needed for the demo objects:
-
-- `dataSet` defines initial values for displayed data, interfaces and options;
+- `dataSet` defines initial state of a single-dimensional `DataSet` with a dimension **x** (with string values) and an array metric **y** defined on that dimension;
 - function `updateDataSet` implements randomized data update by timer.
-- `setTimeout(updateDataSet, 4000)` sets dataset update interval to 4 seconds (4000 milliseconds)
 
-`new Chart<XY, Date>('#chart-element',...)`  creates chart for given data, options and attributes using [Chart constructor](typedoc/classes/Chart.html) with needed parameters:
-- `elementSelector`: string `"#chart-element"`
-- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType>, contains data for this chart;
-- `options`: ChartOptions - [Chart options](typedoc/interfaces/ChartOptions.html).
+Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a given data and provided options and attributes by calling [Chart constructor](typedoc/classes/Chart.html) with the following set of parameters:
+- `elementSelector`: string `"#chart-element"`, which specifies selector to an HTML element where chart should be rendered
+- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType> specified data set for this chart;
+- `options`: Options object which specifies how to render this chart in a declarative way (see [Chart options](typedoc/interfaces/ChartOptions.html)).
 
-ChartOptions in this demo contains:
-- navigation object
- ```javascript 
- navigation: {
-                isFitToViewModeEnabled: true,
-                relativePadding: new Margin(0, 0.1, 0, 0.1)
-            },
-```
-has two properties 	`isFitToViewModeEnabled` that enables .... and `relativePadding` that defines margins for the plot area;
+`ChartOptions` for this demo is initialized with the following set of attributes:
 
-- `header` objects defines text displayed on the top of chart;
-- plots object is array of two elements:
+- `navigation` object with the following attributes:
+  - `isFitToViewModeEnabled` which specifies that all the chart data must be fitted vertically and horizontally within the chart viewport
+  - `relativePadding` which specifies additional padding applied from chart grid to chart data. This padding is specified in relative units.
 
-  `BoxPlotOptions` used to set options for displaying boxes and
-
-  `BoxOutliersPlotOptions` used to set options for displaying point that  are out of the box and its «whiskers» areas.
+- `header` objects defines text displayed on top of the chart;
+- An array of plots to display on this chart. For this demo, we render a `Box` plot with `Outliers` which visualize points that are out of the box and its "whiskers" areas. So we need to create a new `BoxPlotOptions` object, which specifies options for the Box plot, and a new `BoxOutliersPlotOptions` object which specifies options for the Box Outliers plot.
 
 The `BoxPlotOptions` has three properties:
 
-`kind` - defines selected type of drawing (in this example - `PlotKind.Box`)
+- `kind` - defines kind of a plot to draw (in this demo - `PlotKind.Box`)
 
-`metric` defines Y ????? and color as RGB color value `Color('#F47174')`(light red)
+- `metric` - a metric for the plot. For Box plot, each metric value should be an array of numeric values representing all the data gathered for the corresponding dimension.
+  - `id` specifies metric id in the Data Set
+  - `caption` specifies metric caption in legend and in other places.
+  - `color` specifies metric color, when it's been visualized on a plot.
 
-`animate` defines if smooth drawing update when data has changed is needed
+- `animate` specifies if transitions of data in the `DataSet` between updates should be animated
 
 
 The `BoxOutliersPlotOptions` object has three properties also:
 
-`kind` defines selected type of drawing (PlotKind.BoxOutliers);
+- `kind` - defines kind of a plot to draw (in this demo - `PlotKind.BoxOutliers`)
 
-`metric` defines Y ????? and RGB drawing color `Color('#66AADE')` (light blue);
+- `metric` - a metric for for the plot. For Outlier plot, each metric value should be an array of numeric values representing all the data gathered for the corresponding dimension.
+  - `id` specifies metric id in the Data Set
+  - `caption` specifies metric caption in legend and in other places.
+  - `color` specifies metric color, when it's been visualized on a plot.
 
-`animate` defines smooth drawing update mode
+- `animate` specifies if transitions of data in the `DataSet` between updates should be animated
 
 
-The `axes` object defines kind of labels for horizontal axis as text labels  (`AxisTypes.LabeledAxis`) and vertical as axis with numeric labels (`AxisTypes.NumericAxis`)
+The `axes` object defines types of axes to use for a horizontal and vertical axes. In this Demo, we use Labeled horizontal ( we use `AxisTypes.LabeledAxis`) and numeric vertical (we use `AxisTypes.NumericAxis`) axes.
 
 Playground iframe for this demo is shown on the right pane.
 ```html
