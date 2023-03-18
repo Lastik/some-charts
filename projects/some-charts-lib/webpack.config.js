@@ -13,7 +13,7 @@ module.exports = env => {
     target: 'web',
     devtool: 'source-map',
     entry: './src/index.ts',
-    mode:  env === "production" ? "production" : "development",
+    mode:  env.production ? "production" : "development",
     externalsPresets: {node: true}, // in order to ignore built-in modules like path, fs, etc.
     externals: [nodeExternals({
       modulesDir: path.resolve(__dirname, './../../node_modules')
@@ -28,7 +28,7 @@ module.exports = env => {
       umdNamedDefine: true,
     },
     optimization: {
-      minimize:  env === "production",
+      minimize:  env.production,
       minimizer: [
         new TerserPlugin({extractComments: false}),
         new CssMinimizerPlugin()
