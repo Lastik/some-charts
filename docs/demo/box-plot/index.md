@@ -8,6 +8,8 @@ category: Demos
 See the code below for a simple example of Bars Plot visualization.
 Full documentation is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-box-demo-9c3kii?from-embed)
 
+To have a better understanding how it works, have a look at the entire code of the demo with an explanation of all the objects and attributes after it.
+
 ```javascript
 import { Component, OnInit } from '@angular/core';
 import {
@@ -51,7 +53,7 @@ export class BoxDemoComponent implements OnInit {
                     func: (item) => {
                         return item.y;
                     },
-                    isArrayLike: true
+                    isArray: true
                 }
             },
             (item) => {
@@ -150,10 +152,10 @@ Please take a look into the Angular `ngOnInit` method, where we create and initi
     - `dimensionsSorting` a sorting function being applied to both dimensions values to place them in order. For this demo, we have string `x` dimension, so we don't want our dimensions to be sorted. Therefore, we use `Sorting.None` value here.
 - function `updateDataSet` performs randomized data update by timer.
 
-Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a given data and provided options and attributes by calling [Chart constructor](typedoc/classes/Chart.html) with the following set of parameters:
+Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a given data and provided options and attributes by calling [Chart constructor](/typedoc/classes/Chart.html) with the following set of parameters:
 - `elementSelector`: string `"#chart-element"`, which specifies selector to an HTML element where chart should be rendered
 - `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType> specified data set for this chart;
-- `options`: Options object which specifies how to render this chart in a declarative way (see [Chart options](typedoc/interfaces/ChartOptions.html)).
+- `options`: `ChartOptions` object which specifies how to render this chart in a declarative way (see [Chart options](/typedoc/interfaces/ChartOptions.html)).
 
 `ChartOptions` for this demo is initialized with the following set of attributes:
 
@@ -161,8 +163,8 @@ Constructor `new Chart<XY, Date>('#chart-element',...)`  creates chart for a giv
   - `isFitToViewModeEnabled` which specifies that all the chart data must be fitted vertically and horizontally within the chart viewport
   - `relativePadding` which specifies additional padding applied from chart grid to chart data. This padding is specified in relative units.
 
-- `header` objects defines text displayed on top of the chart;
-- An array of plots to display on this chart. For this demo, we render a `Box` plot with `Outliers` which visualize points that are out of the box and its "whiskers" areas. So we need to create a new `BoxPlotOptions` object, which specifies options for the Box plot, and a new `BoxOutliersPlotOptions` object which specifies options for the Box Outliers plot.
+- `header` attribute defines text displayed on top of the chart;
+- `plots` - an array of plots to display on this chart. For this demo, we render a `Box` plot with `Outliers` which visualize points that are out of the box and its "whiskers" areas. So we need to create a new `BoxPlotOptions` object, which specifies options for the Box plot, and a new `BoxOutliersPlotOptions` object which specifies options for the Box Outliers plot.
 
 The `BoxPlotOptions` has three properties:
 

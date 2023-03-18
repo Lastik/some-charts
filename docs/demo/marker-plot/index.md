@@ -8,6 +8,8 @@ category: Demos
 See the code below for a simple example of Marker Plot visualization.
 Full code of this demo is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-marker-sin-demo-vith96?file=/src/app/marker-sin-demo/marker-sin-demo.component.ts)
 
+To have a better understanding how it works, have a look at the entire code of the demo with an explanation of all the objects and attributes after it.
+
 ```javascript
 import {Component, OnInit} from '@angular/core';
 import {Chart, DataSet, MarkerPlotOptions, PlotKind, Skin} from "some-charts";
@@ -117,31 +119,32 @@ Please take a look into the Angular `ngOnInit` method, where we create and initi
   - `dimensionsSorting` a sorting function being applied to both dimensions values to place them in order. For this demo, we have string `x` dimension, so we don't want our dimensions to be sorted. Therefore, we use `Sorting.None` value here.
 - function `updateChartData` performs a data update operation once every second.
 
-`let chart = new Chart<XY, string>(...);`  calls [Chart constructor](typedoc/classes/Chart.html) to create new Chart for given data, options and attributes:
+`let chart = new Chart<XY, string>(...);`  calls [Chart constructor](/typedoc/classes/Chart.html) to create new Chart for given data, options and attributes:
 - `elementSelector`: string `"#chart-element"`
 - `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType>, contains data for this chart;
-- `options`: ChartOptions - [Chart options](typedoc/interfaces/ChartOptions.html).  
-  ChartOptions in this demo contains
-- `navigation` object
- ```javascript 
- navigation: {
-          isFitToViewModeEnabled: true
-        }
-```
-- `header` - test to be shown on top of Chart ("Sin Plot")
+- `options`: `ChartOptions` object which specifies how to render this chart in a declarative way (see [Chart options](/typedoc/interfaces/ChartOptions.html)).
 
-- `plots` - object is array of one object `MarkerPlotOptions` that defines options to fraw boxes.
+`ChartOptions` for this demo is initialized with the following set of attributes:
 
-Object [MarkerPlotOptions](typedoc/classes/MarkerPlotOptionsClass.html) has three properties:
+- `navigation` object with the following attributes:
+  - `isFitToViewModeEnabled` which specifies that all the chart data must be fitted vertically and horizontally within the chart viewport
 
-`kind` - defines selected type of drawing (in this example - `PlotKind.Marker`)
+- `header` attribute defines text displayed on top of the chart;
+- `plots` - an array of plots to display on this chart. For this demo, we render a `Marker` plot. So we need to create a new `MarkerPlotOptions` object, which specifies options for the Marker plot.
 
-`metric` defines Y ????? and color as RGB color value `Color('#ff392e')`(red)
+Object [MarkerPlotOptions](/typedoc/classes/MarkerPlotOptionsClass.html) has three properties:
 
-`markerSize` defines size in pixels
+`kind` - defines kind of a plot to draw (in this demo - `PlotKind.Marker`)
+
+- `metric` - a metric for the plot. For metric, the following attributes must be specified,
+  - `id` specifies metric id in the Data Set
+  - `caption` specifies metric caption in legend and in other places.
+  - `color` specifies metric color, when it's been visualized on a plot.
+
+- `markerSize` defines marker size in pixels
 
 
-The `axes` object defines kind of labels for horizontal axis as text labels  (`AxisTypes.LabeledAxis`) and vertical as axis with numeric labels (`AxisTypes.NumericAxis`)
+The `axes` object defines types of axes to use for a horizontal and vertical axes. In this Demo, we use Labeled horizontal ( we use `AxisTypes.LabeledAxis`) and numeric vertical (we use `AxisTypes.NumericAxis`) axes.
 
 Playground iframe for this demo is shown on the right pane
 ```html

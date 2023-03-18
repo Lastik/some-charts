@@ -5,10 +5,10 @@ title: Date Time Axis
 category: Demos
 ---
 
-## Date-Time Axis demo
-
-This page contains description of the Date Time Axis Demo.
+See the code below for a simple example of a Marker Plot visualization with Date Time horizontal axis.
 Full documentation is available on the [Codesandbox.io](https://codesandbox.io/s/some-charts-date-time-axis-demo-g70khz?file=/src/app/date-time-axis-demo/date-time-axis-demo.component.ts)
+
+To have a better understanding how it works, have a look at the entire code of the demo with an explanation of all the objects and attributes after it.
 
 ```javascript
 import {Component, OnInit} from '@angular/core';
@@ -93,52 +93,37 @@ export class DateTimeAxisDemoComponent implements OnInit {
 
 ```
 
-The code snippet of `box-demo.component.ts` above starts with import statements that provide needed bindings from  external modules:
+Please take a look into the Angular `ngOnInit` method, where we create and initialize all the stuff:
 
-- Angular/core bindings (`Component`, `OnInit`);
-- some-charts bindings (`AxisTypes`, `Chart`, `DataRect`, `DataSet`,`MarkerPlotOptions`, `PlotKind`, `Skin`);
+- `dataSet` defines initial state of a single-dimensional `DataSet` with a dimension **x** (with Date values) and a metric **y** defined on that dimension
+  - `elements` an array which specifies initial DataSet data
+  - `metrics` a dictionary of metrics by their id's. Each metric is defined by:
+    - `func` a function which extracts metric value from `DataSet` data.
+    - `isArray` a boolean property indicating whether metric value is an array of values or not. For this demo it has false value.
+    - `dimensionXFunc` a function to extract first dimension value out of an array of elements,
+    - `dimensionYFunc` a function to extract second dimension value out of an array of elements. Only relevant for 2D Data Sets so in this example it's undefined.
+    - `dimensionsSorting` a sorting function being applied to both dimensions values to place them in order. For this demo, we have use default value for this attribute. Therefore we use `Sorting.Asc` value here.
 
-Angular component
- ```javascript  
-@Component({
-  selector: 'date-time-axis-demo',
-  templateUrl: './date-time-axis-demo.component.html'
-}) ...
-```
-defines ”placeholder” for the demo component on the webpage.
+`new Chart<XY, Date>('#chart-element',...)` creates chart for given data, options and attributes using [Chart constructor](/typedoc/classes/Chart.html) with parameters:
+- `elementSelector`: string `"#chart-element"`, which specifies selector to an HTML element where chart should be rendered
+- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType> specified data set for this chart;
+- `options`: `ChartOptions` object which specifies how to render this chart in a declarative way (see [Chart options](/typedoc/interfaces/ChartOptions.html)).
 
-In the Angular `ngOnInit` method implements creation and initialization needed for the demo variables and objects:
+`ChartOptions` for this demo is initialized with the following set of attributes:
 
-- `dataSet` defines structure ans data for demo;
-- function `generateSinData` implements dataSet values calculation.
+- `header` attribute defines text displayed on the top of chart;
+- `plots` - an array of plots to display on this chart. For this demo, we render a `Marker` plot. So we need to create a new `MarkerPlotOptions` object.
 
-`new Chart<XY, Date>('#chart-element',...)` creates chart for given data, options and attributes using [Chart constructor](typedoc/classes/Chart.html) with parameters:
-- `elementSelector`: string `"#chart-element"`
-- `dataSet` :DataSet<TItemType, XDimensionType, YDimensionType>, contains data for this chart;
-- `options`: ChartOptions - [Chart options](typedoc/interfaces/ChartOptions.html).  
-  ChartOptions in this demo contains
-- navigation object
- ```javascript 
- navigation: {
-          isFitToViewModeEnabled: true,
-          relativePadding: new Margin(0, 0.1, 0, 0.1)
-        }
-```
-has two properties 	`isFitToViewModeEnabled` that enables .... and `relativePadding` that defines margins for the plot area;
+kind` - defines kind of a plot to draw (in this demo - `PlotKind.Marker`)
 
-- `header` objects defines text displayed on the top of chart;
-- plots object is array of one object `BarsPlotOptions` that defines options to fraw boxes.
+- `metric` - a metric for the plot. For metric, the following attributes must be specified,
+  - `id` specifies metric id in the Data Set
+  - `caption` specifies metric caption in legend and in other places.
+  - `color` specifies metric color, when it's been visualized on a plot.
 
-Object `BarsPlotOptions` has three properties:
+- `markerSize` defines marker size in pixels.
 
-`kind` - defines selected type of drawing (in this example - `PlotKind.Box`)
-
-`metric` defines Y ????? and color as RGB color value `Color('#F47174')`(light red)
-
-`animate` defines if smooth drawing update when data has changed is needed
-
-
-The `axes` object defines kind of labels for horizontal axis as text labels  (`AxisTypes.LabeledAxis`) and vertical as axis with numeric labels (`AxisTypes.NumericAxis`)
+The `axes` object defines types of axes to use for a horizontal and vertical axes. In this Demo, we use Labeled horizontal ( we use `AxisTypes.LabeledAxis`) and numeric vertical (we use `AxisTypes.NumericAxis`) axes.
 
 Playground iframe for this demo is shown on the right pane
 ```html
