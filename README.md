@@ -1,27 +1,29 @@
-# AngularCharts
+# Some Charts
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.2.
+<a href="https://lastik.github.io/some-charts/">
+    <img style="vertical-align: top;" src="./assets/logo.svg?raw=true" alt="logo" height="50px">
+</a>
 
-## Development server
+Some Charts is a free dynamic data visualization library written in pure JavaScript. This library allows you to create enriched visualizations such as bubble charts, marker charts, box plot, bar charts and others. It is based on a <a href="https://github.com/konvajs/konva">Konva</a> HTML5 Canvas JavaScript framework.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+**[HOMEPAGE](https://lastik.github.io/some-charts/)**
 
-## Code scaffolding
+<a href="https://github.com/Lastik/some-charts/blob/main/LICENSE">
+    <img style="vertical-align: top;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/MIT_logo.svg/2880px-MIT_logo.svg.png" alt="license logo" height="20px">
+</a> License
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+[![Build Status](https://github.com/Lastik/some-charts/actions/workflows/CI.yml/badge.svg)](https://github.com/Lastik/some-charts/actions/workflows/CI.yml)
 
-## Build
+## Get Some Charts
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm install some-charts --save`
 
-## Running unit tests
+## Docs
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
++ [Examples](https://lastik.github.io/some-charts/)
++ [API](https://lastik.github.io/some-charts/typedoc/index.html)
 
-## Running end-to-end tests
+## Help
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
++ Found issue or having a feature request? Please write to [GitHub Issues](https://github.com/Lastik/some-charts/issues)
++ Feel free to write to [DmitryGry@gmail.com](mailto:DmitryGry@gmail.com) for any project related questions.
