@@ -202,6 +202,7 @@ export class MouseNavigation extends ChartContent(Object) {
 
   protected onMouseWheel(e: JQuery.Event){
     this.handleScrollEvent((e as any).originalEvent.wheelDelta);
+    e.preventDefault();
   }
 
   protected onMouseDoubleClick(e: JQuery.Event) {
