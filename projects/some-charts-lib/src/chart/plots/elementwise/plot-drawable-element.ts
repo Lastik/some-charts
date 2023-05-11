@@ -1,6 +1,5 @@
 import Konva from "konva";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../../geometry";
-import {TextMeasureUtils} from "../../../services";
 import {AnimatedProperty} from "../animated-property";
 import {isEqual} from "lodash-es";
 import {ACEventTarget} from "../../../events";
@@ -8,8 +7,6 @@ import {AnimationEventType} from "../event";
 import {IDisposable} from "../../../i-disposable";
 
 export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape = Konva.Group | Konva.Shape> implements IDisposable {
-
-
 
   public readonly eventTarget: ACEventTarget<AnimationEventType>;
 
@@ -30,8 +27,7 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
   private runningAnimation: Konva.Animation | undefined;
 
   constructor(public readonly metricId: string,
-              dataPoint: NumericPoint, public readonly rootDrawable: DrawableType,
-              protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
+              dataPoint: NumericPoint, public readonly rootDrawable: DrawableType) {
     this.dataPoint = new AnimatedProperty(dataPoint);
     this.rootDrawable = rootDrawable;
 

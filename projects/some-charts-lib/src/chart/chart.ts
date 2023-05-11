@@ -514,10 +514,15 @@ export class Chart<TItemType = any,
 
   private buildLegend(plotOptionsArr: Array<PlotOptionsClass>) {
 
-    this.legend = new Legend(this.elementSelector, this.size, this.options.legend);
+    this.legend = new Legend(this.elementSelector, this.options.legend);
 
     this.legend.updateContent(plotOptionsArr.flatMap(po => {
-      return po.metricsOptions
+      return po.metricsOptions.map(mo => {
+        return {
+          caption: mo.caption,
+          color: mo.color
+        }
+      })
     }));
   }
 

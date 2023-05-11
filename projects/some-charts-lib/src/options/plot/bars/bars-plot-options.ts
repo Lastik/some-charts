@@ -4,7 +4,7 @@ import {PlotKind} from "../plot-kind";
 import {MetricOptions} from "../metric-options";
 import * as Color from "color";
 import {Skin} from "../../skin";
-import {CommonOptionsValues} from "../../common";
+import {AnimationOptions} from "../../common";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 
 /**
@@ -68,8 +68,8 @@ export class BarsPlotOptionsDefaults extends OptionsDefaults<BarsPlotSkin, BarsP
   protected readonly majorOptions: BarsPlotMajorOptions = {
     metrics: [],
     kind: PlotKind.Bars,
-    animate: CommonOptionsValues.Animate,
-    animationDuration: CommonOptionsValues.AnimationDuration
+    animate: AnimationOptions.animate,
+    animationDuration: AnimationOptions.animationDuration
   }
 
   public static readonly Instance = new BarsPlotOptionsDefaults();

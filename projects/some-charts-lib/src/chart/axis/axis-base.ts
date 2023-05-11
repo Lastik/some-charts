@@ -59,8 +59,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
                         dataTransformation: DataTransformation,
                         options: AxisOptionsType,
                         width?: number,
-                        height?: number,
-                        protected textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
+                        height?: number) {
     super();
 
     this.location = location;
@@ -347,7 +346,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
    * @returns {Size} Label's size.
    */
   protected measureLabelSize(label: string): Size {
-    let width = this.textMeasureUtils!.measureTextWidth(FontHelper.fontToString(this.options?.font!), label);
+    let width = TextMeasureUtils.measureTextWidth(FontHelper.fontToString(this.options?.font!), label);
     let height = this.options?.font?.size!;
     return new Size(width, height);
   }
@@ -442,7 +441,7 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
     }
 
     if (this.initialHeight === undefined && this.orientation == AxisOrientation.Horizontal) {
-      renderHeight = this.textMeasureUtils!.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
+      renderHeight = TextMeasureUtils.measureFontHeight(this.options?.font!) + this.options?.majorTickHeight! + 2;
     }
 
     this._size = new Size(renderWidth!, renderHeight!);

@@ -105,7 +105,7 @@ export class BoxDemoComponent implements OnInit {
             kind: PlotKind.Box,
             metric: {
               id: 'y',
-              caption: 'Y',
+              caption: 'Box',
               color: new Color("#F47174")
             },
             animate: true
@@ -114,7 +114,7 @@ export class BoxDemoComponent implements OnInit {
             kind: PlotKind.BoxOutliers,
             metric: {
               id: 'y',
-              caption: 'Y',
+              caption: 'Outliers',
               color: new Color("#66AADE")
             },
             animate: true

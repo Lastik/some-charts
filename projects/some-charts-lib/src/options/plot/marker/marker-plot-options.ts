@@ -5,7 +5,7 @@ import {MetricDependantValue, Palette} from "../../../chart/plots";
 import {MetricOptions} from "../metric-options";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 import {Skin} from "../../skin";
-import {CommonOptionsValues} from "../../common";
+import {AnimationOptions} from "../../common";
 
 /**
  * Marker plot options
@@ -46,8 +46,8 @@ export class MarkerPlotOptionsDefaults extends OptionsDefaults<MarkerPlotSkin, M
       caption: "",
       color: new Color('#CF2734')
     },
-    animate: CommonOptionsValues.Animate,
-    animationDuration: CommonOptionsValues.AnimationDuration
+    animate: AnimationOptions.animate,
+    animationDuration: AnimationOptions.animationDuration
   }
 
   public static readonly Instance = new MarkerPlotOptionsDefaults();

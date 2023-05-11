@@ -1,7 +1,5 @@
-
-export class ArrayHelper {
-
-  public static groupByMap<ElementType, KeyType>(collection: readonly ElementType[], iteratee: ((_: ElementType) => KeyType)): Map<KeyType, Array<ElementType>> {
+class ArrayHelper {
+  public groupByMap<ElementType, KeyType>(collection: readonly ElementType[], iteratee: ((_: ElementType) => KeyType)): Map<KeyType, Array<ElementType>> {
 
     let grouped = new Map<KeyType, Array<ElementType>>();
 
@@ -18,3 +16,7 @@ export class ArrayHelper {
     return grouped;
   }
 }
+
+const arrayHelper = new ArrayHelper();
+
+export {arrayHelper as ArrayHelper};

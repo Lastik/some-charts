@@ -2,6 +2,6 @@
 import * as Color from "color";
 
 export interface LegendItem {
-  id: string;
+  caption: string;
   color: Color | Palette;
 }

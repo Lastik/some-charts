@@ -1,6 +1,6 @@
 ﻿import {AxisBase} from "../axis-base";
 import {MajorTicksGenerator, MinorTicksGenerator} from "../ticks";
-import {AxisOptions, DataTransformation, MathHelper, NumericPoint, Range, Size} from "../../../index";
+import {AxisOptions, DataTransformation, MathHelper, NumericPoint, Range, Size, TextMeasureUtils} from "../../../index";
 import {AxisOrientation} from "../axis-orientation";
 import {MajorDateTicksGenerator, MinorDateTicksGenerator} from "../ticks/date";
 import Konva from "konva";
@@ -43,7 +43,7 @@ export class DateAxis extends AxisBase<Date, AxisOptions> {
     super.updateAxisSize();
 
     let renderHeight = this.size.height +
-      2 * (this.textMeasureUtils!.measureFontHeight(this.options?.font!) + 2 + DateAxis.paddingBetweenMajorAndMinorTicks);
+      2 * (TextMeasureUtils.measureFontHeight(this.options?.font!) + 2 + DateAxis.paddingBetweenMajorAndMinorTicks);
     this._size = new Size(this._size.width, renderHeight);
   }
 

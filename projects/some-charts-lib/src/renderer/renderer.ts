@@ -41,11 +41,11 @@ export class Renderer implements IDisposable{
     }
 
     this.container = container;
-    container.addClass('fac-renderer')
+    container.addClass('sc-renderer')
 
     this.size = size;
 
-    let backDiv = $('<div class="fac-renderer__back"></div>');
+    let backDiv = $('<div class="sc-renderer__back"></div>');
 
     this.options = merge(cloneDeep(RendererOptionsDefaults.Instance), options);
 
@@ -67,7 +67,7 @@ export class Renderer implements IDisposable{
 
     backDiv.css('margin-left', offsetLeft).css('margin-top', offsetTop);
 
-    this.stageElt = $('<div class="fac-renderer__stage"></div>')
+    this.stageElt = $('<div class="sc-renderer__stage"></div>')
       .css('width', size.width)
       .css('height', size.height);
 

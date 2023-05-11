@@ -86,7 +86,7 @@ export class MouseNavigation extends ChartContent(Object) {
       } else {
         event.preventDefault();
 
-        this.container?.addClass('fac-renderer-move');
+        this.container?.addClass('sc-renderer-move');
 
         this.prevPoint = event.pageX && event.pageY ? new NumericPoint(
           event.pageX - this.location.x,
@@ -112,7 +112,7 @@ export class MouseNavigation extends ChartContent(Object) {
     if (!e.touches) {
       this.isMouseDown = false;
       this.prevPoint = undefined;
-      this.container?.removeClass('fac-renderer-move');
+      this.container?.removeClass('sc-renderer-move');
     } else {
       if (e.touches.length == 0) {
         this.isMouseDown = false;
@@ -130,7 +130,7 @@ export class MouseNavigation extends ChartContent(Object) {
   protected onMouseOut(e: JQuery.Event) {
     this.isMouseDown = false;
     this.prevPoint = undefined;
-    this.container?.removeClass('fac-renderer-move');
+    this.container?.removeClass('sc-renderer-move');
   }
 
   protected onMouseMove(e: JQuery.Event) {

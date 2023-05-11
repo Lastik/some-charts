@@ -24,8 +24,7 @@ export class Label extends ChartRenderableItem<Konva.Shape> {
     return this.textSize.height + this.textTopBottomOffset * 2;
   }
 
-  constructor(location: NumericPoint, width: number, options: LabelOptions,
-              private textMeasureUtils: TextMeasureUtils = TextMeasureUtils.Instance) {
+  constructor(location: NumericPoint, width: number, options: LabelOptions) {
     super();
     this.location = location;
     this.width = width;
@@ -33,7 +32,7 @@ export class Label extends ChartRenderableItem<Konva.Shape> {
 
     let self = this;
 
-    this.textSize = this.textMeasureUtils!.measureTextSize(this.options.font!, this.options.text);
+    this.textSize = TextMeasureUtils.measureTextSize(this.options.font!, this.options.text);
     this.textTopBottomOffset = this.textSize.height * 0.214 + (this.options.verticalPadding ?? 0);
 
     this.labelShape = new Konva.Shape({

@@ -1,13 +1,13 @@
 /**
  * Contains common utility methods.
  */
-export class EventUtils {
+class EventUtils {
 
   /**
    * Stops event from bubbling.
    * @param {Event} e - Event to stop.
    */
-  public static stopEvent(e: Event): void {
+  public stopEvent(e: Event): void {
     if (!e) e = window.event!;
     if (e.stopPropagation) {
       e.stopPropagation();
@@ -23,7 +23,7 @@ export class EventUtils {
    * @param {EventTarget} element - Event target element.
    * @param {boolean} canBubble - Indicates if event can bubble.
    */
-  public static redirectMouseEventToElement(originalEvent: MouseEvent, element: EventTarget, canBubble: boolean): void {
+  public redirectMouseEventToElement(originalEvent: MouseEvent, element: EventTarget, canBubble: boolean): void {
 
     //TODO: support old browsers?
     let event = new MouseEvent(originalEvent.type, {
@@ -49,8 +49,12 @@ export class EventUtils {
    * Stops default event behavior.
    * @param {Event} event - Event object.
    */
-  public static stopDefault(event: Event) {
+  public stopDefault(event: Event) {
     if (event.preventDefault) { event.preventDefault(); } /* Chrome, Safari, Firefox */
     event.returnValue = false; /* IE7, IE8 */
   }
 }
+
+const eventUtils = new EventUtils();
+
+export {eventUtils as EventUtils};

@@ -4,14 +4,14 @@ import {FontInUnits, FontInPx} from "../font";
 import {Size} from "../geometry";
 import {FontHelper} from "./font-helper";
 
-export class TextMeasureUtils {
+class TextMeasureUtils {
 
   private readonly dummyContext: CanvasRenderingContext2D;
 
   /**
    * Provides text measuring utilities methods.
    */
-  private constructor() {
+  constructor() {
     let CONTEXT_2D = '2d';
     this.dummyContext = <CanvasRenderingContext2D>Util.createCanvasElement().getContext(CONTEXT_2D)!;
   }
@@ -62,6 +62,8 @@ export class TextMeasureUtils {
       this.measureTextWidth(fontStr, text),
       this.measureTextHeight(fontStr))
   }
-
-  public static readonly Instance = new TextMeasureUtils();
 }
+
+const textMeasureUtils = new TextMeasureUtils();
+
+export {textMeasureUtils as TextMeasureUtils};

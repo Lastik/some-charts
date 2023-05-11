@@ -1,6 +1,5 @@
 import {OptionsDefaults, SkinOptions} from "./options-defaults";
 import {Skin} from "./skin";
-import {GridOptions} from "./grid-options";
 
 /**
 * Chart legend options

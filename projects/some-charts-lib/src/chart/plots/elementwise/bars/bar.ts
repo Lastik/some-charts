@@ -5,6 +5,7 @@ import {Font} from "../../../../font";
 import {BarsColoring} from "./bars-coloring";
 import * as Color from "color";
 import {AnimatedProperty} from "../../animated-property";
+import {TextMeasureUtils} from "../../../../services";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 
@@ -82,7 +83,7 @@ export class Bar extends PlotDrawableElement<Konva.Group>{
   private arrangeTextWithinBar() {
     if (this.textShape) {
       let labelText = this.textShape.text();
-      let textSize = this.textMeasureUtils.measureTextSize(this.labelFont, labelText);
+      let textSize = TextMeasureUtils.measureTextSize(this.labelFont, labelText);
 
       this.textShape.setAttrs({
         x: -textSize.width / 2,

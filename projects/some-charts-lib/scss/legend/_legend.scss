@@ -1,0 +1,13 @@
+.fac-legend {
+  position: absolute;
+  padding: 0.5em;
+  right: 0;
+  pointer-events: none;
+  border: 1px solid #232b2b;
+  border-radius: 5px;
+  z-index: 1002;
+
+  .fac-legend__table{
+    margin: 0.5em;
+  }
+}

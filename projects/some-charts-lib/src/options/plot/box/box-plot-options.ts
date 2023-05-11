@@ -5,7 +5,7 @@ import {Palette} from "../../../chart/plots";
 import {MetricOptions} from "../metric-options";
 import {Skin} from "../../skin";
 import {cloneDeep} from "lodash-es";
-import {CommonOptionsValues} from "../../common";
+import {AnimationOptions} from "../../common";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 
 /**
@@ -57,8 +57,8 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
       caption: "",
       color: new Color('#CF2734')
     },
-    animate: CommonOptionsValues.Animate,
-    animationDuration: CommonOptionsValues.AnimationDuration
+    animate: AnimationOptions.animate,
+    animationDuration: AnimationOptions.animationDuration
   }
 
   public static readonly Instance = new BoxPlotOptionsDefaults();

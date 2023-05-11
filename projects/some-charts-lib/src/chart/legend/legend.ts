@@ -1,41 +1,30 @@
 import {LegendOptions, LegendOptionsDefaults} from "../../index";
-import {LegendItem, Size} from "../../index";
+import {LegendItem} from "../../index";
 import * as Color from "color";
 import * as $ from 'jquery'
 
 export class Legend {
 
-  private container: JQuery;
-  private readonly uiElt: JQuery;
+  private readonly containerElt: JQuery;
 
-  private legendContainingElt: JQuery | undefined;
+  private legendElt: JQuery | undefined;
 
   private options: LegendOptions;
 
   /**
    * Creates new instance of Legend.
    * @param {string} elementSelector - Selector of HTML element where to create legend.
-   * @param {Size} containerSize - Legend containing element size.
    * @param {LegendOptions | undefined} options - Legend element display options.
    */
-  constructor(elementSelector: string, containerSize: Size, options?: LegendOptions) {
+  constructor(elementSelector: string, options?: LegendOptions) {
 
-    let container = $(elementSelector);
+    let rootElt = $(elementSelector);
 
-    if (!container.length) {
+    if (!rootElt.length) {
       throw new Error(`Element with ${elementSelector} id not found!`);
     }
 
-    this.container = container;
-
-    this.uiElt = $('<div></div>');
-    this.uiElt
-      .width(containerSize.width)
-      .height(containerSize.height)
-      .css('position', 'absolute');
-
-    container.append(this.uiElt);
-
+    this.containerElt = $(elementSelector);
     this.options = LegendOptionsDefaults.Instance.extendWith(options);
   }
 
@@ -43,14 +32,14 @@ export class Legend {
    * Shows legend, if it is hidden.
    */
   showLegend() {
-    this.legendContainingElt?.show();
+    this.legendElt?.show();
   }
 
   /**
    * Hides legend, if it is shown.
    */
   hideLegend() {
-    this.legendContainingElt?.hide();
+    this.legendElt?.hide();
   }
 
   /**
@@ -58,26 +47,22 @@ export class Legend {
    * @param {Array<LegendItem>} legendItems - items to be shown on legend.
    */
   updateContent(legendItems: Array<LegendItem>) {
-    if (!this.legendContainingElt) {
-      this.legendContainingElt = $('<div></div>').
-        css('padding', '0.5em').
-        css('position', 'absolute').
-        addClass('ui-widget-content');
+    if (!this.legendElt) {
+      this.legendElt = $('<div></div>').
+        addClass('fac-legend');
 
-      this.legendContainingElt.
-        css('right', '0px').
+      this.legendElt.
         css('margin-right', this.options.offsetRight).
         css('margin-top', this.options.offsetTop).
         css('opacity', this.options.opacity).
         css('font-size', this.options.fontSize);
 
-      this.uiElt.append(this.legendContainingElt);
-      this.legendContainingElt.hide();
+      this.containerElt.append(this.legendElt);
     }
 
-    this.legendContainingElt.empty();
+    this.legendElt.empty();
 
-    let legendTable = $('<table></table>');
+    let legendTable = $('<table class="fac-legend__table"></table>');
     for (let legendItem of legendItems) {
 
       let colorColumn = $('<td></td>');
@@ -97,7 +82,7 @@ export class Legend {
       colorColumn.append(colorDiv);
 
       let nameColumn = $('<td></td>');
-      let nameDiv = $('<div>' + legendItem.id + '</div>');
+      let nameDiv = $('<div>' + legendItem.caption + '</div>');
       nameColumn.append(nameDiv);
 
       let row = $('<tr></tr>');
@@ -106,6 +91,6 @@ export class Legend {
       legendTable.append(row);
     }
 
-    this.legendContainingElt.append(legendTable);
+    this.legendElt.append(legendTable);
   }
 }

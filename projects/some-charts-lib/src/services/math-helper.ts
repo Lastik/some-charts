@@ -4,18 +4,18 @@ import {NumericPoint} from "../geometry";
 /**
  * Helps to perform math operations with values.
  */
-export class MathHelper {
+class MathHelper {
 
   /**
    * Optimizes point's coordinates for better rendering performance.
    * @param {NumericPoint} point - Point to optimize.
    * @returns {NumericPoint}
    */
-  public static optimizeNumericPoint(point: NumericPoint): NumericPoint {
+  public optimizeNumericPoint(point: NumericPoint): NumericPoint {
     if (UagentUtils.isMsIE) {
       return new NumericPoint(
-        MathHelper.optimizeValue(point.x),
-        MathHelper.optimizeValue(point.y));
+        this.optimizeValue(point.x),
+        this.optimizeValue(point.y));
     } else {
       return point;
     }
@@ -26,9 +26,9 @@ export class MathHelper {
    * @param {number} value - Value to optimize.
    * @returns {number}
    */
-  public static optimizeValue(value: number) {
+  public optimizeValue(value: number) {
     if (UagentUtils.isMsIE) {
-      return MathHelper.truncateValue(value);
+      return this.truncateValue(value);
     } else {
       return value;
     }
@@ -39,19 +39,19 @@ export class MathHelper {
    * @param {number} value - Value to truncate.
    * @returns {number}
    */
-  private static truncateValue(value: number) {
+  private truncateValue(value: number) {
     return (value + .5) | 0
   }
 
-  public static toFixed(num: number, digits: number) {
+  public toFixed(num: number, digits: number) {
     return Math.round(num * 10 ** digits) / 10 ** digits;
   }
 
-  public static log10(number: number) {
+  public log10(number: number) {
     return Math.log(number) / 2.302585092994046;
   }
 
-  public static logByBase(logarithmBase: number, value: number): number {
+  public logByBase(logarithmBase: number, value: number): number {
     return Math.log(value) / Math.log(logarithmBase);
   }
 
@@ -62,7 +62,7 @@ export class MathHelper {
    * @param {boolean} round - Round the number if round = true, take ceiling if round = false.
    * @returns {number}
    * */
-  public static calcNiceNumber(number: number, round: boolean): number {
+  public calcNiceNumber(number: number, round: boolean): number {
     const exponent = Math.floor(Math.log10(number));
     const fraction = number / 10 ** exponent;
 
@@ -91,3 +91,8 @@ export class MathHelper {
     return niceFraction * 10 ** exponent;
   }
 }
+
+const mathHelper = new MathHelper();
+
+export {mathHelper as MathHelper};
+

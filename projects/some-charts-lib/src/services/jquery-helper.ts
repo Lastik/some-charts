@@ -1,19 +1,23 @@
 ﻿/**
  * Helps to operate with jquery objects.
  */
-export class JqueryHelper {
+class JqueryHelper {
 
-  private static IdCounter = 0;
+  private idCounter = 0;
 
   /**
    * Sets unique ID for the jquery element.
    * @param {JQuery<HTMLElement>} element - Jquery element.
    * @returns {JQuery<HTMLElement>}
    */
-  public static setUniqueID(element: JQuery<HTMLElement>): JQuery<HTMLElement> {
+  public setUniqueID(element: JQuery<HTMLElement>): JQuery<HTMLElement> {
 
-    let uniqueEltId = 'ace-' + JqueryHelper.IdCounter++
+    let uniqueEltId = 'ace-' + this.idCounter++
 
     return element.attr('id', uniqueEltId);
   }
 }
+
+const jqueryHelper = new JqueryHelper();
+
+export {jqueryHelper as JqueryHelper};

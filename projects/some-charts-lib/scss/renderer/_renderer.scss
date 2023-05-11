@@ -1,4 +1,4 @@
-.fac-renderer {
+.sc-renderer {
   position: relative;
   cursor: pointer;
 
@@ -7,12 +7,12 @@
   }
 }
 
-.fac-renderer__back {
+.sc-renderer__back {
   position: absolute;
   z-index: 1000;
 }
 
-.fac-renderer__stage {
+.sc-renderer__stage {
   position: absolute;
   z-index: 1001;
 }
