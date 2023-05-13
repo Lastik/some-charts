@@ -23,7 +23,7 @@ import {
   NumericAxisOptions,
   PlotOptions,
   PlotOptionsClass,
-  PlotOptionsClassFactory
+  PlotOptionsClassFactory, RendererOptionsDefaults
 } from "../options";
 
 import {EventBase, EventListener} from "../events";
@@ -36,6 +36,8 @@ import {Label} from "./label";
 import {ResizeSensor} from "css-element-queries";
 
 import * as $ from 'jquery'
+import merge from "lodash-es/merge";
+import {cloneDeep} from "lodash-es";
 
 export class Chart<TItemType = any,
   XDimensionType extends number | string | Date = number | string | Date,
@@ -142,6 +144,10 @@ export class Chart<TItemType = any,
     const containerElt = $(containerSelector);
 
     containerElt.addClass('sc-chart-container');
+
+    let rendererOptions = merge(cloneDeep(RendererOptionsDefaults.Instance), this.options!.renderer!);
+    console.log(rendererOptions);
+    containerElt.css('background-color', rendererOptions.backgroundColor!);
 
     if (this.options.header) {
       this.headerLabel = new Label(containerSelector, this.options.header);

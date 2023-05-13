@@ -8,11 +8,15 @@ export interface LegendOptions extends SkinOptions {
   /**
    * Legend font size.
    */
-  fontSize: number;
+  fontSize?: number;
   /**
    * Legend rectangle size.
    */
-  rectangleSize: number;
+  rectangleSize?: number;
+  /**
+   * Legend text color.
+   */
+  foregroundColor?: string;
 }
 
 export class LegendOptionsDefaults extends OptionsDefaults<LegendOptions, undefined, LegendOptions>
@@ -25,8 +29,15 @@ export class LegendOptionsDefaults extends OptionsDefaults<LegendOptions, undefi
 
   protected readonly skins: { [key: string]: LegendOptions } = {
     [Skin.Default]: {
+      foregroundColor: this.defaultSkinConsts.foregroundColor,
       fontSize: 12,
       rectangleSize: 13
+    },
+    [Skin.Dark]: {
+      foregroundColor: this.darkSkinConsts.foregroundColor,
+    },
+    [Skin.Light]: {
+      foregroundColor: this.lightSkinConsts.foregroundColor,
     }
   }
 

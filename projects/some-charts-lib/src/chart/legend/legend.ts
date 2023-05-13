@@ -52,7 +52,7 @@ export class Legend {
         addClass('sc-legend');
 
       this.legendElt.
-        css('font-size', this.options.fontSize);
+        css('font-size', this.options.fontSize!);
 
       this.containerElt.append(this.legendElt);
     }
@@ -66,8 +66,8 @@ export class Legend {
       let colorDiv = $('<div class="sc-legend-item__color"></div>');
 
       colorDiv.
-        width(this.options.rectangleSize).
-        height(this.options.rectangleSize);
+        width(this.options.rectangleSize!).
+        height(this.options.rectangleSize!);
 
       if(legendItem.color instanceof Color){
         colorDiv.css('background-color', legendItem.color.toString())
@@ -78,7 +78,9 @@ export class Legend {
 
       legendItemElt.append(colorDiv);
 
-      let nameDiv = $('<div class="sc-legend-item__caption">' + legendItem.caption + '</div>');
+      let nameDiv = $('<div class="sc-legend-item__caption">' + legendItem.caption + '</div>').
+        css('color', this.options.foregroundColor!);
+
       legendItemElt.append(nameDiv);
 
       this.legendElt.append(legendItemElt)

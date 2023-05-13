@@ -7,26 +7,23 @@ export interface Constants {
   fontFamily: string;
 }
 
-export class ConstantsDefaults {
+let fontFamily = 'Calibri';
 
-  private readonly fontFamily: string = 'Calibri'
-
-  private constructor() {
-  }
-
-  public readonly bySkin: { [key: string]: Constants } = {
+let ConstantsDefaults = {
+  fontFamily,
+  bySkin: {
     [Skin.Default]: {
       foregroundColor: '#464646',
       backgroundColor: 'white',
-      fontFamily: this.fontFamily,
+      fontFamily: fontFamily,
       outerBorderColor: 'black',
     },
     [Skin.Dark]: {
       foregroundColor: 'white',
       backgroundColor: '#303030',
-      fontFamily: this.fontFamily
+      fontFamily: fontFamily,
     },
   }
-
-  public static readonly Instance = new ConstantsDefaults();
 }
+
+export {ConstantsDefaults as ConstantsDefaults}

@@ -10,9 +10,8 @@ export abstract class OptionsDefaults<SkinOptionsType extends SkinOptions, Major
   OptionsType extends (MajorOptionsType extends undefined ? SkinOptionsType : SkinOptionsType & MajorOptionsType)> {
 
   protected constructor(
-    protected constantsDefaults: ConstantsDefaults = ConstantsDefaults.Instance,
-    protected defaultSkinConsts: Constants = constantsDefaults.bySkin[Skin.Default],
-    protected darkSkinConsts: Constants = constantsDefaults.bySkin[Skin.Dark],
+    protected defaultSkinConsts: Constants = ConstantsDefaults.bySkin[Skin.Default],
+    protected darkSkinConsts: Constants = ConstantsDefaults.bySkin[Skin.Dark],
     protected lightSkinConsts: Constants = defaultSkinConsts
   ) {
   }

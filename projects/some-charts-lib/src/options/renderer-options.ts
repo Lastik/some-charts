@@ -30,7 +30,7 @@ export class RendererOptionsDefaults extends OptionsDefaults<RendererOptions, un
     },
     [Skin.Dark]: {
       backgroundColor: this.darkSkinConsts.backgroundColor,
-      borderStyle: `1px solid ${this.darkSkinConsts.outerBorderColor}`
+      borderStyle: this.darkSkinConsts.outerBorderColor ? `1px solid ${this.darkSkinConsts.outerBorderColor}`: undefined
     }
   }
 
