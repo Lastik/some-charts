@@ -88,29 +88,26 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
     this.majorTicksGenerator = this.createMajorTicksGenerator();
     this.minorTicksGenerator = this.createMinorTicksGenerator();
 
-    let self = this;
-
-
     this.borderShape = new Konva.Shape({
       location: this.location,
       size: this.size,
-      sceneFunc: function (context, shape) {
+      sceneFunc: (context, shape) => {
 
         context.save();
 
-        context.setAttr('fillStyle', self.options.backgroundColor);
-        context.setAttr('strokeStyle', self.options.foregroundColor);
+        context.setAttr('fillStyle', this.options.backgroundColor);
+        context.setAttr('strokeStyle', this.options.foregroundColor);
         context.setAttr('lineWidth', 1);
 
-        let location = self.location;
-        let size = self._size;
+        let location = this.location;
+        let size = this._size;
 
         let roundedX = MathHelper.optimizeValue(location.x);
         let roundedY = MathHelper.optimizeValue(location.y);
 
         let roundedWidth = MathHelper.optimizeValue(size!.width);
         let roundedHeight = MathHelper.optimizeValue(size!.height);
-        if (self.options.drawBorder) {
+        if (this.options.drawBorder) {
           context.strokeRect(roundedX, roundedY, roundedWidth, roundedHeight);
         }
         context.fillRect(roundedX, roundedY, roundedWidth, roundedHeight);
@@ -127,55 +124,55 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
       minorTicks: this.minorTicks,
       majorTicksScreenCoords: this.majorTicksScreenCoords,
       minorTicksScreenCoords: this.minorTicksScreenCoords,
-      sceneFunc: function(context: Konva.Context, shape: Konva.Shape) {
-        let majorTicks = self.majorTicks;
+      sceneFunc: (context: Konva.Context, shape: Konva.Shape) => {
+        let majorTicks = this.majorTicks;
 
-        let majorTicksCount = self.majorTicks.length;
+        let majorTicksCount = this.majorTicks.length;
 
-        let majorTicksScreenCoords = self.majorTicksScreenCoords;
+        let majorTicksScreenCoords = this.majorTicksScreenCoords;
 
-        let axisRenderOriginX = MathHelper.optimizeValue(self.location.x);
-        let axisRenderOriginY = MathHelper.optimizeValue(self.location.y);
+        let axisRenderOriginX = MathHelper.optimizeValue(this.location.x);
+        let axisRenderOriginY = MathHelper.optimizeValue(this.location.y);
 
-        let axisRenderWidth = MathHelper.optimizeValue(self._size.width);
-        let axisRenderHeight = MathHelper.optimizeValue(self._size.height);
+        let axisRenderWidth = MathHelper.optimizeValue(this._size.width);
+        let axisRenderHeight = MathHelper.optimizeValue(this._size.height);
 
         context.save();
 
-        context.setAttr('strokeStyle', self.options.foregroundColor);
+        context.setAttr('strokeStyle', this.options.foregroundColor);
         context.setAttr('lineWidth', 1);
 
-        context.setAttr('fillStyle', self.options.backgroundColor);
+        context.setAttr('fillStyle', this.options.backgroundColor);
         context.beginPath();
         context.rect(axisRenderOriginX, axisRenderOriginY, axisRenderWidth, axisRenderHeight);
         context.clip();
 
-        context.setAttr('font', FontHelper.fontToString(self.options?.font!));
+        context.setAttr('font', FontHelper.fontToString(this.options?.font!));
         context.setAttr('textBaseline', 'top');
-        context.setAttr('fillStyle', self.options.foregroundColor);
+        context.setAttr('fillStyle', this.options.foregroundColor);
 
         context.beginPath();
 
-        if (self.orientation == AxisOrientation.Horizontal) {
+        if (this.orientation == AxisOrientation.Horizontal) {
 
           for (let i = 0; i < majorTicksCount; i++) {
             let tick = majorTicks[i];
 
             let tickScreenCoord = majorTicksScreenCoords[i];
-            let labelSize = self.measureLabelSizeForMajorTick(tick);
+            let labelSize = this.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
-              self.location.x + tickScreenCoord - labelSize.width / 2,
-              self.location.y + tick.length - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
+              this.location.x + tickScreenCoord - labelSize.width / 2,
+              this.location.y + tick.length - labelSize.height * AxisBase.textVerticalOffsetMultiplier);
 
-            let xVal = MathHelper.optimizeValue(self.location.x + tickScreenCoord);
-            let yVal = MathHelper.optimizeValue(self.location.y);
+            let xVal = MathHelper.optimizeValue(this.location.x + tickScreenCoord);
+            let yVal = MathHelper.optimizeValue(this.location.y);
             context.moveTo(xVal, yVal);
-            yVal = MathHelper.optimizeValue(self.location.y + tick.length);
+            yVal = MathHelper.optimizeValue(this.location.y + tick.length);
             context.lineTo(xVal, yVal);
           }
 
-          self.renderHorizontalMinorTicks(context);
+          this.renderHorizontalMinorTicks(context);
         } else {
 
           let labelVerticalDelimiter = 2 - 2 * AxisBase.textVerticalOffsetMultiplier;
@@ -184,20 +181,20 @@ export abstract class AxisBase<DataType extends Object, AxisOptionsType extends 
             let tick = majorTicks[i];
 
             let tickScreenXCoord = majorTicksScreenCoords[i];
-            let labelSize = self.measureLabelSizeForMajorTick(tick);
+            let labelSize = this.measureLabelSizeForMajorTick(tick);
 
             context.fillText(tick.toString(),
-              self.location.x + self._size.width - labelSize.width - (tick.length + 2),
-              self.location.y + tickScreenXCoord - labelSize.height / labelVerticalDelimiter);
+              this.location.x + this._size.width - labelSize.width - (tick.length + 2),
+              this.location.y + tickScreenXCoord - labelSize.height / labelVerticalDelimiter);
 
-            let xVal = MathHelper.optimizeValue(self.location.x + self._size.width - tick.length);
-            let yVal = MathHelper.optimizeValue(self.location.y + tickScreenXCoord);
+            let xVal = MathHelper.optimizeValue(this.location.x + this._size.width - tick.length);
+            let yVal = MathHelper.optimizeValue(this.location.y + tickScreenXCoord);
             context.moveTo(xVal, yVal);
-            xVal = MathHelper.optimizeValue(self.location.x + self._size.width);
+            xVal = MathHelper.optimizeValue(this.location.x + this._size.width);
             context.lineTo(xVal, yVal);
           }
 
-          self.renderVerticalMinorTicks(context);
+          this.renderVerticalMinorTicks(context);
         }
         context.stroke();
         context.restore();

@@ -9,7 +9,7 @@ import {
   PlotKind,
   Skin,
   Sorting
-} from "some-charts";
+} from "../../../../some-charts-lib/src";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 import {MathHelperService} from "../services/math-helper.service";
@@ -25,8 +25,6 @@ export class BoxDemoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    let self = this;
 
     let dataSet = new DataSet<XY, string>(
       [{
@@ -57,29 +55,29 @@ export class BoxDemoComponent implements OnInit {
       Sorting.None
     );
 
-    function updateDataSet(){
+    let updateDataSet = () => {
       dataSet.update([{
         x: 'first',
         y: [650, 540, 700, 807, 730,
-          self.mathHelperService.getRandomInt(450, 700), 740,
-          self.mathHelperService.getRandomInt(450, 800), 780,
-          self.mathHelperService.getRandomInt(450, 800), 800, 780, 720, 450, 560, 610, 800, 850],
+          this.mathHelperService.getRandomInt(450, 700), 740,
+          this.mathHelperService.getRandomInt(450, 800), 780,
+          this.mathHelperService.getRandomInt(450, 800), 800, 780, 720, 450, 560, 610, 800, 850],
       }, {
         x: 'second',
         y: [740, 740, 740, 740,
-          self.mathHelperService.getRandomInt(450, 700), 640, 640, 680,
-          self.mathHelperService.getRandomInt(450, 700), 640, 620, 590,
-          self.mathHelperService.getRandomInt(450, 700), 680, 680, 650, 600, 580]
+          this.mathHelperService.getRandomInt(450, 700), 640, 640, 680,
+          this.mathHelperService.getRandomInt(450, 700), 640, 620, 590,
+          this.mathHelperService.getRandomInt(450, 700), 680, 680, 650, 600, 580]
       }, {
         x: 'third',
         y: [610, 680, 660, 660, 520, 540, 410, 660, 770, 750, 660, 710, 630, 670, 640, 640, 650, 630],
       }, {
         x: 'fourth',
-        y: [self.mathHelperService.getRandomInt(5, 200), 640, 610,
-          self.mathHelperService.getRandomInt(350, 600), 600, 570,
-          self.mathHelperService.getRandomInt(350, 600), 540,
-          self.mathHelperService.getRandomInt(350, 600), 560, 710, 720,
-          self.mathHelperService.getRandomInt(350, 700), 660, 640, 520, 640, 610],
+        y: [this.mathHelperService.getRandomInt(5, 200), 640, 610,
+          this.mathHelperService.getRandomInt(350, 600), 600, 570,
+          this.mathHelperService.getRandomInt(350, 600), 540,
+          this.mathHelperService.getRandomInt(350, 600), 560, 710, 720,
+          this.mathHelperService.getRandomInt(350, 700), 660, 640, 520, 640, 610],
       }])
 
       setTimeout(updateDataSet, 4000)

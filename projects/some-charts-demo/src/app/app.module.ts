@@ -8,6 +8,7 @@ import {DateTimeAxisComponent} from "./date-time-axis/date-time-axis.component";
 import {BarsDemoComponent} from "./bars-demo/bars-demo.component";
 import {BoxDemoComponent} from "./box-demo/box-demo.component";
 import {MathHelperService} from "./services/math-helper.service";
+import {LegendDemoComponent} from "./chart/legend/legend-demo.component";
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {MathHelperService} from "./services/math-helper.service";
     ChartDemoComponent,
     DateTimeAxisComponent,
     BarsDemoComponent,
-    BoxDemoComponent
+    BoxDemoComponent,
+    LegendDemoComponent
   ],
   imports: [
     BrowserModule,

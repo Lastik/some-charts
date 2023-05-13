@@ -1,5 +1,4 @@
 import Konva from "konva";
-import merge from "lodash-es/merge";
 import {Grid} from "./grid";
 import {AnimationEventType, Plot, PlotFactory} from "./plots";
 import {DataSet, DataSetEventType, DimensionType, DimensionValue} from "../data";
@@ -47,9 +46,9 @@ export class Chart<TItemType = any,
 
   public static readonly MinZoomLevel: number = 1e-8;
 
-  private elementSelector: string;
-  private element: HTMLElement | undefined;
-  private jqueryElt: JQuery<HTMLElement>;
+  private readonly containerSelector: string;
+  private readonly element: HTMLElement | undefined;
+  private readonly jqueryElt: JQuery<HTMLElement>;
 
   private readonly _id: number;
 
@@ -120,25 +119,44 @@ export class Chart<TItemType = any,
 
   /**
    * Creates new instance of chart.
-   * @param {string} elementSelector - element selector.
+   * @param {string} containerSelector - element selector.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
    * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
-  constructor(elementSelector: string,
+  constructor(containerSelector: string,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options: ChartOptions,
               visibleRect: DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>> | undefined = undefined,
               private plotFactory: PlotFactory = PlotFactory.Instance,
               private keyboardNavigationsFactory: KeyboardNavigationsFactory = KeyboardNavigationsFactory.Instance ) {
 
-    let self = this;
+    this.options = ChartOptionsDefaults.extendWith(options);
 
-    this.elementSelector = elementSelector;
+    this._id = Chart.getNextId();
 
-    this.jqueryElt = $(elementSelector);
+    this.containerSelector = containerSelector;
+
+    const containerElt = $(containerSelector);
+
+    containerElt.addClass('sc-chart-container');
+
+    if (this.options.header) {
+      this.headerLabel = new Label(containerSelector, this.options.header);
+    }
+
+    let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po))
+      .filter(po => po) as PlotOptionsClass[];
+
+    this.buildLegend(plotOptionsArr);
+
+    this.jqueryElt = $('<div></div').
+      addClass('sc-chart').
+      attr('id', this._id);
+
+    containerElt.append(this.jqueryElt);
 
     this.element = this.jqueryElt.length > 0 ? this.jqueryElt[0] : undefined;
 
@@ -146,16 +164,12 @@ export class Chart<TItemType = any,
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
 
     this.resizeSensorCallback = () => {
-      self.onChartElementResized();
+      this.onChartElementResized();
     };
 
     this.resizeSensor = this.element ? new ResizeSensor(this.element, this.resizeSensorCallback) : undefined;
 
-    this._id = Chart.getNextId();
-
-    this.options = ChartOptionsDefaults.extendWith(options);
-
-    this._renderer = new Renderer(elementSelector, this.size, this.options!.renderer!);
+    this._renderer = new Renderer(`#${this._id}`, this.size, this.options!.renderer!);
 
     this.layersConfigs = [];
 
@@ -177,15 +191,7 @@ export class Chart<TItemType = any,
 
     this.chartGrid = new Grid(this.location, this.size, this.options.grid);
 
-    if (this.options.header) {
-      this.headerLabel = new Label(this.location, this.size.width, this.options.header);
-      this.headerLabel.placeOnChart(this as Chart)
-    }
-
     this.plots = [];
-
-    let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po))
-      .filter(po => po !== undefined) as PlotOptionsClass[];
 
     for (let plotOptions of plotOptionsArr) {
       let plot = this.plotFactory?.createPlot<TItemType, XDimensionType, YDimensionType>(dataSet, this.dataTransformation, plotOptions);
@@ -216,10 +222,6 @@ export class Chart<TItemType = any,
 
     this.chartGrid.placeOnChart(this as Chart)
 
-    if (this.options.header && this.headerLabel) {
-      this.headerLabel.placeOnChart(this as Chart)
-    }
-
     for (let plot of this.plots) {
       plot.attach(this._renderer);
       plot.placeOnChart(this as Chart);
@@ -228,8 +230,6 @@ export class Chart<TItemType = any,
     for (let contentItem of this.contentItems) {
       contentItem.attach(this._renderer);
     }
-
-    this.buildLegend(plotOptionsArr);
 
     if (this.options.navigation!.isEnabled === true) {
       this.keyboardNavigation = this.keyboardNavigationsFactory?.create();
@@ -309,12 +309,6 @@ export class Chart<TItemType = any,
     this._visibleRectAsNumeric = visibleRectAsNumeric;
     this._visibleRect = this.numericVisibleRectToDimensional(visibleRectAsNumeric);
 
-    let offsetYAfterHeader = 0;
-
-    if (this.headerLabel) {
-      offsetYAfterHeader += this.headerLabel.height;
-    }
-
     let horizontalRange = this._visibleRectAsNumeric.getHorizontalRange();
     let verticalRange = this._visibleRectAsNumeric.getVerticalRange();
 
@@ -323,10 +317,8 @@ export class Chart<TItemType = any,
       horizontalAxisHeight = this.horizontalAxis!.size.height;
     }
 
-    let locationWithOffset = new NumericPoint(this._location.x, this._location.y + offsetYAfterHeader);
-
     if(this.verticalAxis) {
-      this.verticalAxis.update(locationWithOffset, verticalRange, undefined, this._size.height - horizontalAxisHeight - offsetYAfterHeader);
+      this.verticalAxis.update(this._location, verticalRange, undefined, this._size.height - horizontalAxisHeight);
     }
 
     let verticalAxisSize = this.verticalAxis?.size;
@@ -341,15 +333,15 @@ export class Chart<TItemType = any,
 
       this.horizontalAxis.update(
         new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0),
-          this._location.y + (verticalAxisSize?.height ?? 0) + offsetYAfterHeader),
+          this._location.y + (verticalAxisSize?.height ?? 0)),
         axisRange,
         this._size.width - (verticalAxisSize?.width ?? 0), undefined);
     }
 
     let horizontalAxisSize = this.horizontalAxis?.size;
 
-    let gridLocation = new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0), this._location.y + offsetYAfterHeader);
-    let gridSize = new Size(horizontalAxisSize?.width ?? this.size.width, verticalAxisSize?.height ?? (this.size.height - offsetYAfterHeader));
+    let gridLocation = new NumericPoint(this._location.x + (verticalAxisSize?.width ?? 0), this._location.y);
+    let gridSize = new Size(horizontalAxisSize?.width ?? this.size.width, verticalAxisSize?.height ?? this.size.height);
 
     let horizontalAxisTicks: Array<number> | undefined = undefined;
     let verticalAxisTicks: Array<number> | undefined = undefined;
@@ -380,8 +372,6 @@ export class Chart<TItemType = any,
         this._screenRect
       );
     }
-
-    this.headerLabel?.update(this.location, this.size.width);
   }
 
   /**
@@ -514,7 +504,7 @@ export class Chart<TItemType = any,
 
   private buildLegend(plotOptionsArr: Array<PlotOptionsClass>) {
 
-    this.legend = new Legend(this.elementSelector, this.options.legend);
+    this.legend = new Legend(this.containerSelector, this.options.legend);
 
     this.legend.updateContent(plotOptionsArr.flatMap(po => {
       return po.metricsOptions.map(mo => {

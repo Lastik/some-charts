@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Chart, DataSet, MarkerPlotOptions, PlotKind, Skin} from "some-charts";
+import {Chart, DataSet, MarkerPlotOptions, PlotKind, Skin} from "../../../../some-charts-lib/src";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 

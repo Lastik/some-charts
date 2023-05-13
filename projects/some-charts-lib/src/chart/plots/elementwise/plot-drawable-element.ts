@@ -45,24 +45,23 @@ export class PlotDrawableElement<DrawableType extends Konva.Group | Konva.Shape 
     this.updateShapesForAnimationFrame(this.dataPoint.displayedValue, dataTransformation, visible, screen);
 
     if (this.isAnimationInProcess && !isEqual(this.runningAnimationsIds, animationsIds)) {
-      let self = this;
 
       if (this.runningAnimation) {
         this.runningAnimation.stop();
       }
 
-      this.runningAnimation = new Konva.Animation(function (frame) {
+      this.runningAnimation = new Konva.Animation( (frame) => {
 
-        self.tickAnimations(frame?.time);
+        this.tickAnimations(frame?.time);
 
-        self.updateRootDrawableRenderLocation(self.dataPoint.displayedValue, dataTransformation, self.visible!, self.screen!);
-        self.updateShapesForAnimationFrame(self.dataPoint.displayedValue, dataTransformation, self.visible!, self.screen!);
+        this.updateRootDrawableRenderLocation(this.dataPoint.displayedValue, dataTransformation, this.visible!, this.screen!);
+        this.updateShapesForAnimationFrame(this.dataPoint.displayedValue, dataTransformation, this.visible!, this.screen!);
 
-        self.eventTarget.fireEvent({type: AnimationEventType.Tick});
+        this.eventTarget.fireEvent({type: AnimationEventType.Tick});
 
-        if (!self.isAnimationInProcess) {
-          self.runningAnimation?.stop();
-          self.runningAnimation = undefined;
+        if (!this.isAnimationInProcess) {
+          this.runningAnimation?.stop();
+          this.runningAnimation = undefined;
         }
       }, this.rootDrawable.getLayer());
       this.runningAnimation.start();

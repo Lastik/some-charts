@@ -49,12 +49,9 @@ export class Legend {
   updateContent(legendItems: Array<LegendItem>) {
     if (!this.legendElt) {
       this.legendElt = $('<div></div>').
-        addClass('fac-legend');
+        addClass('sc-legend');
 
       this.legendElt.
-        css('margin-right', this.options.offsetRight).
-        css('margin-top', this.options.offsetTop).
-        css('opacity', this.options.opacity).
         css('font-size', this.options.fontSize);
 
       this.containerElt.append(this.legendElt);
@@ -62,11 +59,11 @@ export class Legend {
 
     this.legendElt.empty();
 
-    let legendTable = $('<table class="fac-legend__table"></table>');
     for (let legendItem of legendItems) {
 
-      let colorColumn = $('<td></td>');
-      let colorDiv = $('<div></div>');
+      let legendItemElt = $('<div class="sc-legend-item"></div>');
+
+      let colorDiv = $('<div class="sc-legend-item__color"></div>');
 
       colorDiv.
         width(this.options.rectangleSize).
@@ -79,18 +76,12 @@ export class Legend {
         colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.range.min.toString()}, ${legendItem.color.range.max.toString()}`);
       }
 
-      colorColumn.append(colorDiv);
+      legendItemElt.append(colorDiv);
 
-      let nameColumn = $('<td></td>');
-      let nameDiv = $('<div>' + legendItem.caption + '</div>');
-      nameColumn.append(nameDiv);
+      let nameDiv = $('<div class="sc-legend-item__caption">' + legendItem.caption + '</div>');
+      legendItemElt.append(nameDiv);
 
-      let row = $('<tr></tr>');
-      row.append(colorColumn);
-      row.append(nameColumn);
-      legendTable.append(row);
+      this.legendElt.append(legendItemElt)
     }
-
-    this.legendElt.append(legendTable);
   }
 }

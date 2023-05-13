@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin, Sorting} from "some-charts";
+import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin, Sorting} from "../../../../some-charts-lib/src";
 import * as Color from "color";
 import {XY} from "./model/x-y";
 import {MathHelperService} from "../services/math-helper.service";
@@ -15,8 +15,6 @@ export class BarsDemoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    let self = this;
 
     let dataSet = new DataSet<XY, string>(
       [{
@@ -55,23 +53,23 @@ export class BarsDemoComponent implements OnInit {
       Sorting.None
     );
 
-    function updateDataSet() {
+    const updateDataSet = () => {
       dataSet.update([{
         x: 'first',
-        y1: self.mathHelperService.getRandomInt(8, 12),
-        y2: self.mathHelperService.getRandomInt(15, 20),
+        y1: this.mathHelperService.getRandomInt(8, 12),
+        y2: this.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'second',
-        y1: self.mathHelperService.getRandomInt(8, 12),
-        y2: self.mathHelperService.getRandomInt(15, 20),
+        y1: this.mathHelperService.getRandomInt(8, 12),
+        y2: this.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'third',
-        y1: self.mathHelperService.getRandomInt(8, 12),
-        y2: self.mathHelperService.getRandomInt(15, 20),
+        y1: this.mathHelperService.getRandomInt(8, 12),
+        y2: this.mathHelperService.getRandomInt(15, 20),
       }, {
         x: 'fourth',
-        y1: self.mathHelperService.getRandomInt(8, 12),
-        y2: self.mathHelperService.getRandomInt(15, 20),
+        y1: this.mathHelperService.getRandomInt(8, 12),
+        y2: this.mathHelperService.getRandomInt(15, 20),
       }])
       setTimeout(updateDataSet, 4000);
     }

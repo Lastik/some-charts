@@ -82,8 +82,6 @@ export class Renderer implements IDisposable{
 
     this.backgroundElt = backDiv;
 
-    let self = this;
-
     this.renderableItems = [];
   }
 

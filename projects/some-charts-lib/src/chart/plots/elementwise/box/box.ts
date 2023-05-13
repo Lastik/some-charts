@@ -95,19 +95,17 @@ export class Box extends PlotDrawableElement<Konva.Group>{
       shadowForStrokeEnabled: false
     });
 
-    let self = this;
-
     this.topWhiskerShape = new Konva.Shape({
       relative75Percentile: undefined,
       relativeMaxY: undefined,
       whiskersRenderWidth: undefined,
-      fill: self._fill.toString(),
-      sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
+      fill: this._fill.toString(),
+      sceneFunc: (context: Konva.Context, shape: Konva.Shape) => {
 
         context.save();
 
-        context.setAttr('strokeStyle', self.stroke.toString());
-        context.setAttr('lineWidth', self.lineWidth);
+        context.setAttr('strokeStyle', this.stroke.toString());
+        context.setAttr('lineWidth', this.lineWidth);
 
         context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
@@ -126,13 +124,13 @@ export class Box extends PlotDrawableElement<Konva.Group>{
       relative25Percentile: undefined,
       relativeMinY: undefined,
       whiskersRenderWidth: undefined,
-      fill: self._fill.toString(),
-      sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
+      fill: this._fill.toString(),
+      sceneFunc: (context: Konva.Context, shape: Konva.Shape) => {
 
         context.save();
 
-        context.setAttr('strokeStyle', self.stroke.toString());
-        context.setAttr('lineWidth', self.lineWidth);
+        context.setAttr('strokeStyle', this.stroke.toString());
+        context.setAttr('lineWidth', this.lineWidth);
 
         context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();
@@ -149,13 +147,13 @@ export class Box extends PlotDrawableElement<Konva.Group>{
 
     this.avgLineShape = new Konva.Shape({
       relativeAvg: undefined,
-      fill: self._fill.toString(),
-      sceneFunc: function (context: Konva.Context, shape: Konva.Shape) {
+      fill: this._fill.toString(),
+      sceneFunc: (context: Konva.Context, shape: Konva.Shape) => {
 
         context.save();
 
-        context.setAttr('strokeStyle', self.stroke.toString());
-        context.setAttr('lineWidth', self.lineWidth);
+        context.setAttr('strokeStyle', this.stroke.toString());
+        context.setAttr('lineWidth', this.lineWidth);
 
         context.setAttr('fillStyle', shape.getAttr('fill'));
         context.beginPath();

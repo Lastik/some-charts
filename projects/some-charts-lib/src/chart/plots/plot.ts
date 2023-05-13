@@ -60,13 +60,11 @@ export abstract class Plot<
 
     this.eventTarget = new ACEventTarget<AnimationEventType>();
 
-    let self = this;
-
     this.shapesGroup = new Konva.Group({
-      clipFunc: function (context) {
-        if (self.visible && self.screen) {
-          let screenLocation = self.screen.getMinXMinY();
-          let screenSize = self.screen.getSize();
+      clipFunc: (context) => {
+        if (this.visible && this.screen) {
+          let screenLocation = this.screen.getMinXMinY();
+          let screenSize = this.screen.getSize();
           context.rect(screenLocation.x + 0.5, screenLocation.y + 0.5, screenSize.width - 0.5, screenSize.height - 0.5);
         }
       },

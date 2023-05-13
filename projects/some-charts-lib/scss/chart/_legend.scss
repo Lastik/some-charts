@@ -1,0 +1,17 @@
+.sc-legend {
+  padding: 0.5em 0.5em 1.2em;
+}
+
+.sc-legend-item {
+  display: inline-flex;
+  flex-direction: row;
+  margin-right: 0.8em;
+
+  .sc-legend-item__caption {
+    flex: 1 1 auto;
+  }
+
+  .sc-legend-item__color{
+    margin-right: 0.4em;
+  }
+}

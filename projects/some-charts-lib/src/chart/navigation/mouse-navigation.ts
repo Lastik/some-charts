@@ -34,32 +34,29 @@ export class MouseNavigation extends ChartContent(Object) {
     this.isMouseDown = false;
     this.eventTarget = new EventTarget();
 
-    let self = this;
-
     this.onMouseDownTouchStartHandler = (event: JQuery.Event) => {
-      self.onMouseDownTouchStart.call(self, event);
+      this.onMouseDownTouchStart.call(this, event);
     }
 
     this.onMouseUpTouchEndHandler = (event: JQuery.Event) => {
-      self.onMouseUpTouchEnd.call(self, event);
+      this.onMouseUpTouchEnd.call(this, event);
     }
 
     this.onMouseOutHandler = (event: JQuery.Event) => {
-      self.onMouseOut.call(self, event);
+      this.onMouseOut.call(this, event);
     }
 
     this.onMouseMoveHandler = (event: JQuery.Event) => {
-      self.onMouseMove.call(self, event);
+      this.onMouseMove.call(this, event);
     }
 
     this.onMouseWheelHandler = (event: JQuery.Event)=>{
-      self.onMouseWheel.call(self, event)
+      this.onMouseWheel.call(this, event)
     }
 
     this.onMouseDoubleClickHandler = (event: JQuery.Event) => {
-      self.onMouseDoubleClick.call(self, event)
+      this.onMouseDoubleClick.call(this, event)
     }
-
   }
 
   public update(location: NumericPoint, size: Size){
