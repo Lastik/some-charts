@@ -13,18 +13,18 @@ export class Legend {
 
   /**
    * Creates new instance of Legend.
-   * @param {string} elementSelector - Selector of HTML element where to create legend.
+   * @param {string} element - Container element where to create legend.
    * @param {LegendOptions | undefined} options - Legend element display options.
    */
-  constructor(elementSelector: string, options?: LegendOptions) {
+  constructor(element: string | HTMLDivElement, options?: LegendOptions) {
 
-    let rootElt = $(elementSelector);
+    let rootElt = $(element as any);
 
     if (!rootElt.length) {
-      throw new Error(`Element with ${elementSelector} id not found!`);
+      throw new Error(`Element with ${element as string} id not found!`);
     }
 
-    this.containerElt = $(elementSelector);
+    this.containerElt = $(element as any);
     this.options = LegendOptionsDefaults.Instance.extendWith(options);
   }
 

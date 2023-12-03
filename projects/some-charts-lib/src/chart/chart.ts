@@ -48,7 +48,7 @@ export class Chart<TItemType = any,
 
   public static readonly MinZoomLevel: number = 1e-8;
 
-  private readonly containerSelector: string;
+  private readonly container: string | HTMLDivElement;
   private readonly element: HTMLElement | undefined;
   private readonly jqueryElt: JQuery<HTMLElement>;
 
@@ -121,14 +121,14 @@ export class Chart<TItemType = any,
 
   /**
    * Creates new instance of chart.
-   * @param {string} containerSelector - element selector.
+   * @param {string} container - Container element.
    * @param {DataSet} dataSet - DataSet with data for this chart.
    * @param {ChartOptions} options - Chart options.
    * @param {DataRect} visibleRect - Currently visible rectangle on chart.
    * @param {PlotFactory} plotFactory - injected factory to create plots based on options.
    * @param {KeyboardNavigationsFactory} keyboardNavigationsFactory - injected factory to create keyboard navigation.
    * */
-  constructor(containerSelector: string,
+  constructor(container: string | HTMLDivElement,
               dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
               options: ChartOptions,
               visibleRect: DataRect<XDimensionType, YDimensionType extends undefined ? number : Exclude<YDimensionType, undefined>> | undefined = undefined,
@@ -139,9 +139,9 @@ export class Chart<TItemType = any,
 
     this._id = Chart.getNextId();
 
-    this.containerSelector = containerSelector;
+    this.container = container;
 
-    const containerElt = $(containerSelector);
+    const containerElt = $(container as any);
 
     containerElt.addClass('sc-chart-container');
 
@@ -150,7 +150,7 @@ export class Chart<TItemType = any,
     containerElt.css('background-color', rendererOptions.backgroundColor!);
 
     if (this.options.header) {
-      this.headerLabel = new Label(containerSelector, this.options.header);
+      this.headerLabel = new Label(container, this.options.header);
     }
 
     let plotOptionsArr = this.options.plots!.map(po => PlotOptionsClassFactory.buildPlotOptionsClass(po))
@@ -510,7 +510,7 @@ export class Chart<TItemType = any,
 
   private buildLegend(plotOptionsArr: Array<PlotOptionsClass>) {
 
-    this.legend = new Legend(this.containerSelector, this.options.legend);
+    this.legend = new Legend(this.container, this.options.legend);
 
     this.legend.updateContent(plotOptionsArr.flatMap(po => {
       return po.metricsOptions.map(mo => {

@@ -13,18 +13,18 @@ export class Label {
 
   /**
    * Creates new instance of Label.
-   * @param {string} elementSelector - Selector of HTML element where to create label.
+   * @param {string} element - Container element where to create label.
    * @param {LegendOptions | undefined} options - Legend element display options.
    */
-  constructor(elementSelector: string, options?: LabelOptions) {
+  constructor(element: string | HTMLDivElement, options?: LabelOptions) {
 
-    let rootElt = $(elementSelector);
+    let rootElt = $(element as any);
 
     if (!rootElt.length) {
-      throw new Error(`Element with ${elementSelector} selector not found!`);
+      throw new Error(`Element with ${element as string} selector not found!`);
     }
 
-    this.containerElt = $(elementSelector);
+    this.containerElt = $(element as any);
     this.options = LabelOptionsDefaults.Instance.extendWith(options);
 
     this.createLabel();
