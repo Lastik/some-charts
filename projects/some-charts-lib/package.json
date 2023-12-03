@@ -1,6 +1,6 @@
 {
   "name": "some-charts",
-  "version": "0.0.369-beta.18",
+  "version": "0.0.369-beta.19",
   "scripts": {
     "build-dev": "webpack --env=development && tsc --declaration --project tsconfig.lib.json",
     "build": "webpack --env=production && tsc --declaration --project tsconfig.lib.json",
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@types/color": "^3.0.3",
+    "@types/jquery": "^3.5.14",
     "color": "^4.2.3",
     "fast-json-patch": "^3.1.1",
     "konva": "^8.3.6",
