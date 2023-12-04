@@ -6,7 +6,6 @@ import {Chart} from "../chart";
 import {MajorTicksGenerator, MinorTicksGenerator, Tick} from "./ticks";
 import {DataTransformation, NumericPoint, NumericRange, Range, Size} from '../../geometry';
 import zipWith from 'lodash-es/zipWith';
-import merge from "lodash-es/merge";
 import {AxisOrientation} from "./axis-orientation";
 import {LabelsLayout} from "./labels-layout";
 import {LayerId} from "../../layer-id";

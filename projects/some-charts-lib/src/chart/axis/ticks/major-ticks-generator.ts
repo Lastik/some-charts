@@ -1,7 +1,7 @@
 import {Range} from "../../../index";
 import { Tick } from "./tick";
 
-export abstract class MajorTicksGenerator<T> {
+export abstract class MajorTicksGenerator<T extends Object > {
 
   protected tickHeight: number;
 

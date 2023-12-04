@@ -1,6 +1,6 @@
 import {Tick} from "./tick";
 
-export class LabeledTick<T = number> extends Tick<T>{
+export class LabeledTick<T extends Object = number> extends Tick<T>{
   label: string;
 
   constructor(value: T, length: number, index: number, label: string) {

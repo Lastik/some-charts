@@ -1,7 +1,7 @@
 import {Range} from "../../../index";
 import { Tick } from "./tick";
 
-export interface MinorTicksGenerator<T> {
+export interface MinorTicksGenerator<T extends Object> {
   /**
    * Generates minor ticks in specified range.
    * @param {Range} range - data range.
