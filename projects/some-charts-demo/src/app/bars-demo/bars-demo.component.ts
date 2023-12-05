@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {AxisTypes, BarsPlotOptions, Chart, DataSet, Margin, PlotKind, Skin, Sorting} from "../../../../some-charts-lib/src";
-import * as Color from "color";
 import {XY} from "./model/x-y";
 import {MathHelperService} from "../services/math-helper.service";
 
@@ -95,11 +94,11 @@ export class BarsDemoComponent implements OnInit {
             metrics: [{
               id: 'y1',
               caption: 'Y1',
-              color: new Color("#D24E4D")
+              color: "#D24E4D"
             },{
               id: 'y2',
               caption: 'Y2',
-              color: new Color("#43bc82")
+              color: "#43bc82"
             }],
             animate: true
           } as BarsPlotOptions

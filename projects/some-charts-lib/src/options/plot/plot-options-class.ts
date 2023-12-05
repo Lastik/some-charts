@@ -2,7 +2,7 @@ import {PlotKind} from "./plot-kind";
 import {PlotOptions} from "./plot-options";
 import {MetricOptions} from "./metric-options";
 import {Palette} from "../../chart/plots";
-import * as Color from "color";
+import {Color} from "../../color";
 
 export abstract class PlotOptionsClass implements PlotOptions {
   kind: PlotKind;
@@ -15,5 +15,5 @@ export abstract class PlotOptionsClass implements PlotOptions {
     this.animationDuration = plotOptions.animationDuration;
   }
 
-  abstract get metricsOptions(): Array<MetricOptions<Color|Palette>>
+  abstract get metricsOptions(): Array<MetricOptions<Color | Palette>>
 }

@@ -2,10 +2,10 @@ import {Font} from "../../../font";
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
 import {MetricOptions} from "../metric-options";
-import * as Color from "color";
 import {Skin} from "../../skin";
 import {AnimationOptions} from "../../common";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
+import {Color} from "../../../color";
 
 /**
  * Bars plot options
@@ -57,11 +57,11 @@ export class BarsPlotOptionsDefaults extends OptionsDefaults<BarsPlotSkin, BarsP
         size: 13
       },
       useDarkerBorder: true,
-      foregroundColor: new Color(this.lightSkinConsts.foregroundColor)
+      foregroundColor: this.lightSkinConsts.foregroundColor
     },
     [Skin.Dark]: {
       useDarkerBorder: false,
-      foregroundColor: new Color(this.darkSkinConsts.foregroundColor),
+      foregroundColor: this.darkSkinConsts.foregroundColor,
     }
   }
 

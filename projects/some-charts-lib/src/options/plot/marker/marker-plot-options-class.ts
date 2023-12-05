@@ -2,7 +2,7 @@ import {MetricDependantValue, Palette} from "../../../chart/plots";
 import {MarkerPlotOptions} from "./marker-plot-options";
 import {PlotOptionsClass} from "../plot-options-class";
 import {MetricOptions} from "../metric-options";
-import * as Color from "color";
+import {Color} from "../../../color";
 
 /**
  * Marker plot options class

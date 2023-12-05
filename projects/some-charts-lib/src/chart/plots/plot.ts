@@ -9,7 +9,6 @@ import {
   DataSetEventType,
   DimensionValue
 } from "../../data";
-import * as Color from "color";
 import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
 import {IDisposable} from "../../i-disposable";
@@ -17,6 +16,8 @@ import {IDisposable} from "../../i-disposable";
 import {ACEventTarget, EventBase, EventListener} from "../../events";
 import {PlotDrawableElement} from "./elementwise";
 import {AnimationEventType} from "./event";
+import {Color} from "../../color";
+import {isString} from "lodash-es";
 
 export abstract class Plot<
   PlotOptionsType extends PlotOptions,
@@ -132,15 +133,15 @@ export abstract class Plot<
   protected getColor(color: Color | Palette,
                      xDimVal: DimensionValue<XDimensionType>,
                      yDimVal: DimensionValue<Exclude<YDimensionType, undefined>> | undefined = undefined): Color {
-    return color instanceof Color ?
-      color :
-      (() => {
-        if(this.dataSet.isSingleMetricValue(color.metricId)) {
-          let metricValue = this.dataSet.getMetricValueForDimensions(color.metricId, xDimVal, yDimVal) as number;
-          return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricId), metricValue)
-        }
-        else throw new Error('Color transition is only supported for single value metric');
-      })();
+    if (isString(color)) {
+      return color;
+    }
+
+    if (this.dataSet.isSingleMetricValue(color.metricId)) {
+      let metricValue = this.dataSet.getMetricValueForDimensions(color.metricId, xDimVal, yDimVal) as number;
+      return new Transition<Color>(color.range).apply(this.dataSet.getMetricRange(color.metricId), metricValue)
+    } else throw new Error('Color transition is only supported for single value metric');
+
   }
 
   protected getDependantNumericValueForMetricValue(dependant: MetricDependantValue<number>,

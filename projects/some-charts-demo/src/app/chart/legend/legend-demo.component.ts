@@ -13,17 +13,17 @@ export class LegendDemoComponent implements OnInit {
   ngOnInit(): void {
     let legend = new Legend('#chart-element');
     legend.updateContent([
-      {caption: 'First', color: new Color("red")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")},
-      {caption: 'Second', color: new Color("green")}
+      {caption: 'First', color: "red"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"},
+      {caption: 'Second', color: "green"}
     ])
   }
 }

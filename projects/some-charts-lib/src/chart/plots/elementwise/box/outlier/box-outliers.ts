@@ -1,9 +1,9 @@
 import Konva from "konva";
-import * as Color from "color";
 import {PlotDrawableElement} from "../../plot-drawable-element";
 import {DataTransformation, NumericDataRect, NumericPoint} from "../../../../../geometry";
 import {AnimatedProperty} from "../../../animated-property";
 import {zip} from "lodash-es";
+import {Color} from "../../../../../color";
 
 export class BoxOutliers extends PlotDrawableElement {
   private outliersShapes: Konva.Shape[];

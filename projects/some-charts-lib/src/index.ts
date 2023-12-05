@@ -15,3 +15,4 @@ export * from './chart';
 export * from './chart/navigation';
 export * from './layer-id';
 export * from './services';
+export * from './color';

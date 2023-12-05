@@ -1,4 +1,3 @@
-import * as Color from "color";
 import {Lerp} from "./lerp";
 import {NumericLerp} from "./numeric-lerp";
 import {NumericDataRect} from "../geometry";

@@ -72,7 +72,7 @@ export class DateTimeAxisComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Y',
-              color: new Color("#ff392e")
+              color: "#ff392e"
             },
             markerSize: 6
           } as MarkerPlotOptions

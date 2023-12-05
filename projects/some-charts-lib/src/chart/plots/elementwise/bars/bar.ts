@@ -3,9 +3,9 @@ import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../../geometry";
 import {Font} from "../../../../font";
 import {BarsColoring} from "./bars-coloring";
-import * as Color from "color";
 import {AnimatedProperty} from "../../animated-property";
 import {TextMeasureUtils} from "../../../../services";
+import {Color} from "../../../../color";
 
 export class Bar extends PlotDrawableElement<Konva.Group>{
 

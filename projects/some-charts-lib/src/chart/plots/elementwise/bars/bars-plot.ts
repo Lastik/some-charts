@@ -4,13 +4,14 @@ import {BarsPlotOptions, BarsPlotOptionsDefaults, PlotOptionsClassFactory} from 
 import {DataTransformation, NumericDataRect, Range} from "../../../../geometry";
 import {DataSet, DimensionValue} from "../../../../data";
 import {BarsColoring} from "./bars-coloring";
-import * as Color from "color";
 import {MathHelper} from "../../../../services";
 import {BarsPlotOptionsClass} from "../../../../options/plot/bars";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Bar} from "./bar";
 import {cloneDeep} from "lodash-es";
 import {ElementwisePlot} from "../elementwise-plot";
+import {Color} from "../../../../color";
+import * as ColorObj from 'color';
 
 export class BarsPlot<TItemType,
   XDimensionType extends number | string | Date,
@@ -176,16 +177,15 @@ export class BarsPlot<TItemType,
 
   private getBarsColoring(fill: Color): BarsColoring {
 
+    let fromFillColor = new ColorObj(fill).lighten(0.3).rgb().hex() as Color;
 
-    let fromFillColor: Color = fill.lighten(0.3).rgb();
-
-    let toFillColor: Color = fill;
+    let toFillColor = fill;
     let strokeColor: Color;
 
     if (!this.plotOptions.useDarkerBorder)
-      strokeColor = fill.darken(0.1).rgb();
+      strokeColor = new ColorObj(fill).darken(0.1).rgb().hex() as Color;
     else
-      strokeColor = fill.darken(0.3).rgb();
+      strokeColor = new ColorObj(fill).darken(0.3).rgb().hex() as Color;
 
     return new BarsColoring(new Range<Color>(fromFillColor, toFillColor), strokeColor);
   }

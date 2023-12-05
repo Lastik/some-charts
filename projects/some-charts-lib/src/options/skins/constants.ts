@@ -1,9 +1,10 @@
 import {Skin} from "../skin";
+import {Color} from "../../color";
 
 export interface Constants {
-  foregroundColor: string;
-  backgroundColor: string;
-  outerBorderColor?: string;
+  foregroundColor: Color;
+  backgroundColor: Color;
+  outerBorderColor?: Color;
   fontFamily: string;
 }
 
@@ -17,12 +18,12 @@ let ConstantsDefaults = {
       backgroundColor: 'white',
       fontFamily: fontFamily,
       outerBorderColor: 'black',
-    },
+    } as Constants,
     [Skin.Dark]: {
       foregroundColor: 'white',
       backgroundColor: '#303030',
       fontFamily: fontFamily,
-    },
+    } as Constants,
   }
 }
 

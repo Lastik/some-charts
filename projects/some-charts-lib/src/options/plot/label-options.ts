@@ -1,7 +1,6 @@
 import {TextOptions} from "../common";
 import {FontUnits} from "../../font";
 import {HorizontalAlignment} from "../../alignment";
-import * as Color from "color";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../options-defaults";
 import {Skin} from "../skin";
 
@@ -46,12 +45,12 @@ export class LabelOptionsDefaults<LabelOptionsType extends LabelOptions>
         units: FontUnits.Points,
         family: this.defaultSkinConsts.fontFamily
       },
-      foregroundColor: new Color(this.defaultSkinConsts.foregroundColor),
+      foregroundColor: this.defaultSkinConsts.foregroundColor,
       verticalPadding: 6,
       textAlignment: HorizontalAlignment.Center
     } as LabelSkinOptions,
     [Skin.Dark]: {
-      foregroundColor: new Color(this.darkSkinConsts.foregroundColor)
+      foregroundColor: this.darkSkinConsts.foregroundColor
     } as LabelSkinOptions
   }
 

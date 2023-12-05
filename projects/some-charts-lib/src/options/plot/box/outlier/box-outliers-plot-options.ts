@@ -1,9 +1,9 @@
 import {PlotKind} from "../../plot-kind";
-import * as Color from "color";
 import {PlotOptions} from "../../plot-options";
 import {MetricOptions} from "../../metric-options";
 import {Skin} from "../../../skin";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../../options-defaults";
+import {Color} from "../../../../color";
 
 /**
  * Box outliers plot options
@@ -22,7 +22,7 @@ export interface BoxOutliersSkin extends SkinOptions {
   /**
    * Marker size.
    */
-  markerSize: number;
+  markerSize?: number;
 }
 
 export class BoxOutliersPlotOptionsDefaults extends OptionsDefaults<BoxOutliersSkin, BoxOutliersMajorOptions, BoxOutliersPlotOptions>
@@ -41,7 +41,7 @@ export class BoxOutliersPlotOptionsDefaults extends OptionsDefaults<BoxOutliersS
     metric: {
       id: "",
       caption: "",
-      color: new Color('#66AADE')
+      color: '#66AADE'
     },
     kind: PlotKind.BoxOutliers,
     animate: false,

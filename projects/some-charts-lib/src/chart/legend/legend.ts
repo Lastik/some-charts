@@ -1,7 +1,8 @@
 import {LegendOptions, LegendOptionsDefaults} from "../../index";
 import {LegendItem} from "../../index";
-import * as Color from "color";
+import {Color} from "../../color";
 import * as $ from 'jquery'
+import {isString} from "lodash-es";
 
 export class Legend {
 
@@ -69,8 +70,8 @@ export class Legend {
         width(this.options.rectangleSize!).
         height(this.options.rectangleSize!);
 
-      if(legendItem.color instanceof Color){
-        colorDiv.css('background-color', legendItem.color.toString())
+      if(isString(legendItem.color)){
+        colorDiv.css('background-color', legendItem.color)
       }
       else if (legendItem.color.metricId && legendItem.color.range){
         colorDiv.css('background', `linear-gradient(to right, ${legendItem.color.range.min.toString()}, ${legendItem.color.range.max.toString()}`);

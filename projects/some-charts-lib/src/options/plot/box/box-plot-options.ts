@@ -1,12 +1,13 @@
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
-import * as Color from "color";
 import {Palette} from "../../../chart/plots";
 import {MetricOptions} from "../metric-options";
 import {Skin} from "../../skin";
 import {cloneDeep} from "lodash-es";
 import {AnimationOptions} from "../../common";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
+import {Color} from "../../../color";
+import * as ColorObj from "color";
 
 /**
  * Box plot options
@@ -42,11 +43,11 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
   protected readonly skins: { [key: string]: BoxPlotSkin } = {
     [Skin.Default]: {
       lineWidth: 1,
-      stroke: new Color(this.defaultSkinConsts.foregroundColor).darken(1.5),
+      stroke: new ColorObj(this.defaultSkinConsts.foregroundColor).darken(1.5).hex() as Color,
     },
     [Skin.Dark]: {
       lineWidth: 2,
-      stroke: new Color(this.darkSkinConsts.foregroundColor)
+      stroke: this.darkSkinConsts.foregroundColor
     }
   }
 
@@ -55,7 +56,7 @@ export class BoxPlotOptionsDefaults extends OptionsDefaults<BoxPlotSkin, BoxPlot
     metric: {
       id: "",
       caption: "",
-      color: new Color('#CF2734')
+      color: '#CF2734'
     },
     animate: AnimationOptions.animate,
     animationDuration: AnimationOptions.animationDuration

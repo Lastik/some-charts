@@ -2,8 +2,8 @@ import {Font} from "../../../font";
 import {PlotOptionsClass} from "../plot-options-class";
 import {BarsPlotOptions, BarsPlotOptionsDefaults} from "./bars-plot-options";
 import {MetricOptions} from "../metric-options";
-import * as Color from "color";
 import {Palette} from "../../../chart/plots";
+import {Color} from "../../../color";
 
 /**
  * Bars plot options class
@@ -20,7 +20,7 @@ export class BarsPlotOptionsClass extends PlotOptionsClass implements BarsPlotOp
   constructor(barsPlotOptions: BarsPlotOptions) {
     super(barsPlotOptions);
 
-    let defaultSkin = BarsPlotOptionsDefaults.Instance.defaultSkin;
+    const defaultSkin = BarsPlotOptionsDefaults.Instance.defaultSkin;
 
     this.metrics = barsPlotOptions.metrics;
     this.drawLabelsOnBars = barsPlotOptions.drawLabelsOnBars ?? defaultSkin.drawLabelsOnBars!;

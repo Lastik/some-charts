@@ -1,5 +1,4 @@
-import {FontInUnits} from "../../index";
-import * as Color from "color";
+import {Color, FontInUnits} from "../../index";
 
 export interface TextOptions {
   /**

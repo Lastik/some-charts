@@ -104,7 +104,7 @@ export class BoxDemoComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Box',
-              color: new Color("#F47174")
+              color: "#F47174"
             },
             animate: true
           } as BoxPlotOptions,
@@ -113,7 +113,7 @@ export class BoxDemoComponent implements OnInit {
             metric: {
               id: 'y',
               caption: 'Outliers',
-              color: new Color("#66AADE")
+              color: "#66AADE"
             },
             animate: true
           } as BoxOutliersPlotOptions

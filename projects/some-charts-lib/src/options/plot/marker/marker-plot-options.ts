@@ -1,11 +1,11 @@
 import {PlotOptions} from "../plot-options";
 import {PlotKind} from "../plot-kind";
-import * as Color from "color";
 import {MetricDependantValue, Palette} from "../../../chart/plots";
 import {MetricOptions} from "../metric-options";
 import {MajorOptions, OptionsDefaults, SkinOptions} from "../../options-defaults";
 import {Skin} from "../../skin";
 import {AnimationOptions} from "../../common";
+import {Color} from "../../../color";
 
 /**
  * Marker plot options
@@ -44,7 +44,7 @@ export class MarkerPlotOptionsDefaults extends OptionsDefaults<MarkerPlotSkin, M
     metric: {
       id: "",
       caption: "",
-      color: new Color('#CF2734')
+      color: '#CF2734'
     },
     animate: AnimationOptions.animate,
     animationDuration: AnimationOptions.animationDuration

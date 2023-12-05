@@ -1,4 +1,4 @@
-import * as Color from "color";
+import {Color} from "../../color";
 import {NumericDataRect, NumericPoint, Range} from "../../geometry";
 import {Transition} from "../../transition";
 

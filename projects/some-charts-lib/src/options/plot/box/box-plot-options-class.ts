@@ -1,9 +1,9 @@
 import {Palette} from "../../../chart";
 import {PlotOptionsClass} from "../plot-options-class";
 import {MetricOptions} from "../metric-options";
-import * as Color from "color";
 import {BoxPlotOptions, BoxPlotOptionsDefaults} from "./box-plot-options";
 import {Skin} from "../../skin";
+import {Color} from "../../../color";
 
 /**
  * Marker plot options class

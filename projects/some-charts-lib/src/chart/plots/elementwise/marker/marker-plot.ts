@@ -2,12 +2,12 @@ import merge from "lodash-es/merge";
 import {MarkerPlotOptions, MarkerPlotOptionsDefaults, PlotOptionsClassFactory} from "../../../../options";
 import {DataSet, DimensionValue} from "../../../../data";
 import {DataTransformation, NumericPoint} from "../../../../geometry";
-import * as Color from "color";
 import {MarkerPlotOptionsClass} from "../../../../options";
 import {PlotDrawableElement} from "../plot-drawable-element";
 import {Marker} from "./marker";
 import {cloneDeep} from "lodash-es";
 import {ElementwisePlot} from "../elementwise-plot";
+import {Color} from "../../../../color";
 
 export class MarkerPlot<
   TItemType,

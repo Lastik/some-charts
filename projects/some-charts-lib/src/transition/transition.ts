@@ -1,9 +1,10 @@
 import {Range, NumericPoint, NumericDataRect} from '../geometry';
-import * as Color from 'color';
 import {ColorLerp} from "./color-lerp";
 import {NumericLerp} from "./numeric-lerp";
 import {NumericPointLerp} from "./numeric-point-lerp";
 import {NumericDataRectLerp} from "./numeric-data-rect-lerp";
+import {Color} from "../color";
+import {isString} from "lodash-es";
 
 export class Transition<OutputType extends Color | number | NumericPoint | NumericDataRect> {
   to: Range<OutputType>;
@@ -18,7 +19,7 @@ export class Transition<OutputType extends Color | number | NumericPoint | Numer
   }
 
   apply(from: Range<number>, value: number): OutputType {
-    if (this.to.min instanceof Color) {
+    if (isString(this.to.min)) {
       return <OutputType>this.transitionToColor(from, value, <Range<Color>>this.to);
     } else if(this.to.min instanceof NumericPoint) {
       return <OutputType>this.transitionToNumericPoint(from, value, <Range<NumericPoint>>this.to);

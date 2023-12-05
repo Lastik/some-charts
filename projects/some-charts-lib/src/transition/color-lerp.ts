@@ -1,17 +1,21 @@
-import * as Color from "color";
+import * as ColorObj from "color";
 import {Lerp} from "./lerp";
 import {NumericLerp} from "./numeric-lerp";
+import {Color} from "../color";
 
 export class ColorLerp implements Lerp<Color>{
   apply(start: Color, end: Color, weight: number): Color {
 
+    const startObj = new ColorObj(start);
+    const endObj = new ColorObj(end);
+
     let numericLerp = new NumericLerp();
 
-    return new Color({
-      h: numericLerp.apply(start.hue(), end.hue(), weight),
-      s: numericLerp.apply(start.saturationl(), end.saturationl(), weight),
-      l: numericLerp.apply(start.lightness(), end.lightness(), weight),
-      alpha: numericLerp.apply(start.alpha(), end.alpha(), weight),
-    });
+    return new ColorObj({
+      h: numericLerp.apply(startObj.hue(), endObj.hue(), weight),
+      s: numericLerp.apply(startObj.saturationl(), endObj.saturationl(), weight),
+      l: numericLerp.apply(startObj.lightness(), endObj.lightness(), weight),
+      alpha: numericLerp.apply(startObj.alpha(), endObj.alpha(), weight),
+    }).hex() as Color;
   }
 }

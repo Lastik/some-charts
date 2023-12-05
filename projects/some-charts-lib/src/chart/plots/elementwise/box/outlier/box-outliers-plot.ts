@@ -10,8 +10,8 @@ import {cloneDeep} from "lodash-es";
 import {Plot} from "../../../plot";
 import {PercentileHelper} from "../../../../../services";
 import {ElementwisePlot} from "../../elementwise-plot";
-import * as Color from "color";
 import {BoxOutliers} from "./box-outliers";
+import {Color} from "../../../../../color";
 
 export class BoxOutliersPlot<TItemType,
   XDimensionType extends number | string | Date,

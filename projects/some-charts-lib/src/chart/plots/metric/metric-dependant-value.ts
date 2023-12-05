@@ -1,5 +1,5 @@
 import {Range} from "../../../geometry";
-import * as Color from "color";
+import {Color} from "../../../color";
 
 /**
  * Represents value, which depends on metric value.

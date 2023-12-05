@@ -89,7 +89,7 @@ export class ChartDemoComponent implements OnInit {
             metric: {
               id: "y",
               caption: "Y",
-              color: new Color("#ff392e")
+              color: "#ff392e"
             },
             markerSize: 5
           } as MarkerPlotOptions

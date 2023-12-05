@@ -1,8 +1,8 @@
-import {BoxOutliersPlotOptions} from "./box-outliers-plot-options";
+import {BoxOutliersPlotOptions, BoxOutliersPlotOptionsDefaults} from "./box-outliers-plot-options";
 import {MetricOptions} from "../../metric-options";
-import * as Color from "color";
 import {PlotOptionsClass} from "../../plot-options-class";
 import {Palette} from "../../../../chart";
+import {Color} from "../../../../color";
 
 /**
  * Box outliers plot options class
@@ -14,8 +14,11 @@ export class BoxOutliersPlotOptionsClass extends PlotOptionsClass implements Box
 
   constructor(boxOutliersPlotOptionsx: BoxOutliersPlotOptions) {
     super(boxOutliersPlotOptionsx);
+
+    const defaultSkin = BoxOutliersPlotOptionsDefaults.Instance.defaultSkin;
+
     this.metric = boxOutliersPlotOptionsx.metric;
-    this.markerSize = boxOutliersPlotOptionsx.markerSize;
+    this.markerSize = boxOutliersPlotOptionsx.markerSize ?? defaultSkin.markerSize!;
   }
 
   get metricsOptions(): Array<MetricOptions<Color | Palette>> {

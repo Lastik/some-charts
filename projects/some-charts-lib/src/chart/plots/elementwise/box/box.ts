@@ -1,9 +1,9 @@
 import {PlotDrawableElement} from "../plot-drawable-element";
 import Konva from "konva";
 import {NumericDataRect, DataTransformation, NumericPoint} from "../../../../geometry";
-import * as Color from "color";
 import {AnimatedProperty} from "../../animated-property";
 import {PercentileHelper} from "../../../../services";
+import {Color} from "../../../../color";
 
 export class Box extends PlotDrawableElement<Konva.Group>{
 
