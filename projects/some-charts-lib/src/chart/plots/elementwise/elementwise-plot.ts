@@ -34,6 +34,14 @@ export abstract class ElementwisePlot<
     this.plotElements = [];
   }
 
+  protected override clearShapes(): void {
+    for (let plotElt of this.plotElements) {
+      plotElt.dispose();
+      plotElt.rootDrawable.remove();
+    }
+    this.plotElements = [];
+  }
+
   protected rebuildShapesFromDataSet(dataSetChange: DataSetChange<XDimensionType, YDimensionType>): void {
     let updateResult = this.updatePlotElements(dataSetChange);
 

@@ -2,19 +2,12 @@ import Konva from "konva";
 import {PlotOptions, PlotOptionsClass, PlotOptionsClassFactory} from "../../options";
 import {ChartRenderableItem} from "../chart-renderable-item";
 import {DataRect, DataTransformation, Margin, NumericDataRect, NumericPoint} from "../../geometry";
-import {
-  DataSet,
-  DataSetChange,
-  DataSetChangedEvent,
-  DataSetEventType,
-  DimensionValue
-} from "../../data";
+import {DataSet, DataSetChange, DataSetChangedEvent, DataSetEventType, DimensionValue} from "../../data";
 import {MetricDependantValue, Palette} from "./metric";
 import {Transition} from "../../transition";
 import {IDisposable} from "../../i-disposable";
 
 import {ACEventTarget, EventBase, EventListener} from "../../events";
-import {PlotDrawableElement} from "./elementwise";
 import {AnimationEventType} from "./event";
 import {Color} from "../../color";
 import {isString} from "lodash-es";
@@ -46,7 +39,7 @@ export abstract class Plot<
   protected shapesGroup: Konva.Group;
 
   protected constructor(
-    protected readonly dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
+    protected dataSet: DataSet<TItemType, XDimensionType, YDimensionType>,
     dataTransformation: DataTransformation,
     plotOptions: PlotOptionsType) {
     super();
@@ -216,5 +209,15 @@ export abstract class Plot<
   dispose(): void {
     this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
     this.eventTarget.dispose();
+  }
+
+  protected clearShapes(): void { }
+
+  setDataSet(newDataSet: DataSet<TItemType, XDimensionType, YDimensionType>){
+    this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
+    this.dataSet = newDataSet;
+    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
+    this.clearShapes();
+    this.updateFromDataSet(DataSetChange.fromDataSet(this.dataSet));
   }
 }

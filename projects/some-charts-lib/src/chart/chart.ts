@@ -1,7 +1,7 @@
 import Konva from "konva";
 import {Grid} from "./grid";
 import {AnimationEventType, Plot, PlotFactory} from "./plots";
-import {DataSet, DataSetEventType, DimensionType, DimensionValue} from "../data";
+import {DataSet, DataSetChange, DataSetEventType, DimensionType, DimensionValue} from "../data";
 import {Renderer} from "../renderer";
 import {ChartRenderableItem} from "./chart-renderable-item";
 import {KeyboardNavigation, KeyboardNavigationsFactory, MouseNavigation} from "./navigation";
@@ -146,7 +146,6 @@ export class Chart<TItemType = any,
     containerElt.addClass('sc-chart-container');
 
     let rendererOptions = merge(cloneDeep(RendererOptionsDefaults.Instance), this.options!.renderer!);
-    console.log(rendererOptions);
     containerElt.css('background-color', rendererOptions.backgroundColor!);
 
     if (this.options.header) {
@@ -170,7 +169,7 @@ export class Chart<TItemType = any,
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
 
     this.resizeSensorCallback = () => {
-      this.onChartElementResized();
+      this.resize();
     };
 
     this.resizeSensor = this.element ? new ResizeSensor(this.element, this.resizeSensorCallback) : undefined;
@@ -534,11 +533,20 @@ export class Chart<TItemType = any,
     }
   }
 
+  setDataSet(newDataSet: DataSet<TItemType, XDimensionType, YDimensionType>){
+    this.dataSet.eventTarget.removeListener(DataSetEventType.Changed, this);
+    this.dataSet = newDataSet;
+    this.dataSet.eventTarget.addListener(DataSetEventType.Changed, this);
+    this.plots.forEach(plot => {
+      plot.setDataSet(newDataSet);
+    });
+  }
+
   get minZoomLevel(): number {
     return Chart.MinZoomLevel;
   }
 
-  onChartElementResized(){
+  resize(){
     this._size = new Size(this.jqueryElt.innerWidth() ?? 0, this.jqueryElt.innerHeight() ?? 0);
     this._renderer.setSize(this._size);
     this.updateNumeric(this.visibleRectAsNumeric);
