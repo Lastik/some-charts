@@ -19,7 +19,7 @@ import {
 import {
   AxisOptions,
   ChartOptions,
-  ChartOptionsDefaults,
+  ChartOptionsDefaults, HeaderOptions, LabelOptions,
   NumericAxisOptions,
   PlotOptions,
   PlotOptionsClass,
@@ -531,6 +531,11 @@ export class Chart<TItemType = any,
     if (this.resizeSensor) {
       this.resizeSensor.detach(this.resizeSensorCallback);
     }
+
+    this.jqueryElt.remove();
+
+    this.legend?.dispose();
+    this.headerLabel?.dispose();
   }
 
   setDataSet(newDataSet: DataSet<TItemType, XDimensionType, YDimensionType>){
@@ -540,6 +545,10 @@ export class Chart<TItemType = any,
     this.plots.forEach(plot => {
       plot.setDataSet(newDataSet);
     });
+  }
+
+  setHeaderOptions(options: HeaderOptions) {
+    this.headerLabel?.setOptions(options);
   }
 
   get minZoomLevel(): number {

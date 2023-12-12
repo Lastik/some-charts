@@ -1,10 +1,10 @@
-import {LegendOptions, LegendOptionsDefaults} from "../../index";
+import {IDisposable, LegendOptions, LegendOptionsDefaults} from "../../index";
 import {LegendItem} from "../../index";
 import {Color} from "../../color";
 import * as $ from 'jquery'
 import {isString} from "lodash-es";
 
-export class Legend {
+export class Legend implements IDisposable {
 
   private readonly containerElt: JQuery;
 
@@ -86,5 +86,9 @@ export class Legend {
 
       this.legendElt.append(legendItemElt)
     }
+  }
+
+  dispose(): void {
+    this.legendElt?.remove();
   }
 }
